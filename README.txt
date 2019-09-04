@@ -4,3 +4,6 @@ The program try to read some string (or numbers) and remove '-' sign if there is
 In case of successfully read and process the program the new string try to write another file (useful.txt)
 To use CMake first you have to use <cmake .>. It will generate the Makefile and the important dependencies.
 After that you can build with <cmake --build .>. It will build the binary to the room directory.
+
+For using ninja < cmake -GNinja .>. Then after built ninja files just add <ninja > command. It makes much faster compiling and building.
+It will handle to use with simplier commands
