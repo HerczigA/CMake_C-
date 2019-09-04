@@ -6,4 +6,5 @@ To use CMake first you have to use <cmake .>. It will generate the Makefile and 
 After that you can build with <cmake --build .>. It will build the binary to the room directory.
 
 For using ninja < cmake -GNinja .>. Then after built ninja files just add <ninja > command. It makes much faster compiling and building.
-It will handle to use with simplier commands
+It will handle to use with simplier commands. If there is any problem with <cmake -GNinja > remove CMakeCache.txt and after that try again.
+It shoul be handle the problem. Then you could use ninja!!!!!

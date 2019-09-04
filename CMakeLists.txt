@@ -9,16 +9,11 @@ if(NOT CMAKE_CXX_COMPILER)
 
 endif()
 
-if(EXISTS  "/home/adam/Prog/cmakeC++/main.cpp")
     file(GLOB SUBFILES src/*.cpp hdr/*.hpp main.cpp)
-    set(CMAKE_C_FLAGS "-Wall -g")
-    set(sources main.cpp src/test.cpp)
-    set(headers hdr/test.hpp)
+#    set(CMAKE_C_FLAGS "-Wall -g")
+#    set(sources main.cpp src/test.cpp hdr/test.hpp)
+#    set(headers hdr/test.hpp)
     message(STATUS "YOLO " ${SUBFILES})
-else()
-    message(STATUS "not " ${ROOT})
-    
-endif()
 
 #add_library(src src/test.cpp)
 #include_directories("${PROJECT_SOURCE_DIR}/src")
@@ -30,5 +25,5 @@ endif()
 #target_include_directories(test PRIVATE ${INCLUDEDSHIT})
 
 #add_executable(Tutorial ${sources} ${headers})
-add_executable(Tutorial ${SUBFILES} )
+add_executable(Tutorial ${SUBFILES})
 ##target_link_libraries(Tutorial src)
