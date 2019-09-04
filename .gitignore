@@ -4,4 +4,5 @@ CMakeFiles/
 Makefile
 *.cmake
 Tutorial
-CMakeCache.txt
+*.txt
+!README.txt
