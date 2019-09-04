@@ -6,3 +6,4 @@ Makefile
 Tutorial
 *.txt
 !README.txt
+*.ninj*

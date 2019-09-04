@@ -26,7 +26,7 @@ class filehandler
     const string newFile= "usable.txt";
     vector<string> pattern;
     public:
-    filehandler(const char* p): patternFile(p) {};
+    filehandler(const char &p): patternFile(&p) {};
     void getPatternFileName();
     void getInfoFromPattern();
     void getLinesFromVector();
