@@ -9,19 +9,10 @@
 
 using namespace std;
 
-foo::foo()
-{
-    i = 10;
-}
-
-
-foo::foo(int const i_) : i{i_} {};
-
-
 
 void filehandler::getPatternFileName()
 {
-    cout << patternFile << endl; 
+    cout << patternFile << endl;
 }
 
 void filehandler::getInfoFromPattern()
@@ -40,13 +31,13 @@ void filehandler::getInfoFromPattern()
         pattern.push_back(lineFromFile);
 
     fileHand.close();
-    
+
 }
 
 void filehandler::getLinesFromVector()
 {
     for(auto x : pattern)
-        cout << x << endl;       
+        cout << x << endl;
 }
 
 void filehandler::processPattern()
@@ -56,7 +47,7 @@ void filehandler::processPattern()
             while(pattern.size() != 1)
                 pattern.erase(pattern.end());
         }
-    
+
     auto temp = pattern[0];
     auto it = temp.begin();
     while(it != temp.end())
@@ -65,7 +56,7 @@ void filehandler::processPattern()
         ++it;
     }
     pattern[0] = temp;
-    
+
 }
 
 
@@ -81,8 +72,26 @@ void filehandler::FinishProcess()
         std::cout << e.what() << '\n';
         return;
     }
-     
+
     fileHand << pattern[0];
 
     fileHand.close();
+}
+
+string device::getName()
+{
+    string getname(name);
+    return getname;
+}
+
+devType_t device::getType()
+{
+    devType_t type =  dev_Type;
+    return type;
+}
+
+Id_t device::getID()
+{
+    Id_t id_t = id;
+    return id_t;
 }

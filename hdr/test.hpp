@@ -6,8 +6,12 @@
 #include <string>
 #include <vector>
 
+typedef uint8_t devType_t;
+typedef uint16_t Id_t;
 
 using namespace std;
+
+static uint16_t id_counter =1;
 
 enum comm_type
 {
@@ -22,14 +26,14 @@ enum comm_type
 
 enum dev_type
 {
-    Sensor,
+    Sensor = 1,
     Actuator,
     Sensor_Actuator
 };
 
 class foo
 {
-    public: 
+    public:
     int i;
     foo() : i{10} {}
     foo(int const i_) : i{i_} {}
@@ -59,12 +63,22 @@ class device
         uint16_t id;
         uint8_t commType;
         string name;
-        uint8_t dev_Type;
+        devType_t dev_Type;
+
+
     public:
-        device(string Name, uint16_t ID, uint8_t devtype): id{ID}, name{Name}, dev_Type{devtype} {}
+        device(string Name, uint16_t ID, uint8_t devtype): name{Name}, dev_Type{devtype}
+        {
+            if(!ID)
+                id = id_counter;
+            id_counter ++;
+        }
+        string getName();
+        devType_t getType();
+        Id_t getID();
 };
 
-class sensor : protected device
+class sensor : public device
 {
     public:
         sensor(string Name, uint16_t ID, uint8_t devtype) : device(Name,ID,devtype) {}
