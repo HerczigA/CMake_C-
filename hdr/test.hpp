@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#define MAX_PORTS_NUMBER 20
+
 typedef uint8_t devType_t;
 typedef uint16_t Id_t;
 
@@ -76,6 +78,7 @@ class device
         string getName();
         devType_t getType();
         Id_t getID();
+        uint8_t setPins(uint8_t pinNumbers[],bool directions[], uint8_t numberOfPorts);
 };
 
 class sensor : public device
@@ -83,6 +86,12 @@ class sensor : public device
     public:
         sensor(string Name, uint16_t ID, uint8_t devtype) : device(Name,ID,devtype) {}
 
+};
+
+class actuator : public device
+{
+      public:
+        actuator(string Name, uint16_t ID, uint8_t devtype) : device(Name,ID,devtype) {}
 };
 
 

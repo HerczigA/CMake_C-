@@ -15,6 +15,10 @@ endif()
 #    set(headers hdr/test.hpp)
     message(STATUS "YOLO " ${SUBFILES})
 
+if(NOT find_library(WIRINGPI_LIBRRIES PI wiringPi)
+    add_definitions(-L//path/of/pilibrary -lwiringPi)
+
+endif()
 #add_library(src src/test.cpp)
 #include_directories("${PROJECT_SOURCE_DIR}/src")
 #add_subdirectory (src)
@@ -26,4 +30,5 @@ endif()
 
 #add_executable(Tutorial ${sources} ${headers})
 add_executable(Tutorial ${SUBFILES})
-##target_link_libraries(Tutorial src)
+find_library(wiringPi_LIB wiringPi)
+target_link_libraries(Tutorial ${wiringPi_LIB})

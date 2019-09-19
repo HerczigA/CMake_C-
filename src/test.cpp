@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <iterator>
 #include <bits/stdc++.h>
+#include <wiringPi.h>
 
 using namespace std;
 
@@ -80,18 +81,49 @@ void filehandler::FinishProcess()
 
 string device::getName()
 {
-    string getname(name);
-    return getname;
+    return name;
 }
 
 devType_t device::getType()
 {
-    devType_t type =  dev_Type;
-    return type;
+ 
+    return dev_Type;
 }
 
 Id_t device::getID()
 {
-    Id_t id_t = id;
-    return id_t;
+    return id;
+}
+
+
+uint8_t device::setPins(uint8_t pinNumbers[], bool directions[], uint8_t numberOfPorts)
+{
+    int result = 0;
+
+    if(!pinNumbers || numberOfPorts >= MAX_PORTS_NUMBER )
+    {
+         cout << "Nullpointer for pinNumbers or too much number for ports bastard!? " << endl;
+         result = 1;
+    }
+    else
+    {
+        wiringPiSetup();    
+        uint8_t i = 0;
+        
+        while(i++ < numberOfPorts)
+        {
+            if(pinNumbers[i] && directions[i])
+                pinMode(pinNumbers[i],directions[i]);
+            
+            else
+            {
+                cout<< " nullptr got" << endl;
+                result = 2;
+                break;
+            }
+        }
+    }
+
+    return result;   
+
 }
