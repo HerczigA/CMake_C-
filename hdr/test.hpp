@@ -5,8 +5,10 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <stdint.h>
 
 #define MAX_PORTS_NUMBER 20
+#define MAX_DC 1024
 
 typedef uint8_t devType_t;
 typedef uint16_t Id_t;
@@ -17,12 +19,13 @@ static uint16_t id_counter =1;
 
 enum comm_type
 {
-    SPI,
+    SPI = 1,
     CAN,
     UART,
     I2C,
     Bluetooh,
-    Wifi
+    Wifi,
+    COMMTYPE
 
 };
 
@@ -30,7 +33,8 @@ enum dev_type
 {
     Sensor = 1,
     Actuator,
-    Sensor_Actuator
+    Sensor_Actuator,
+    DEVTYPE
 };
 
 class foo
@@ -78,7 +82,7 @@ class device
         string getName();
         devType_t getType();
         Id_t getID();
-        uint8_t setPins(uint8_t pinNumbers[],bool directions[], uint8_t numberOfPorts);
+        uint8_t setPins(uint8_t pinNumbers[],uint8_t directions[], uint8_t numberOfPorts);
 };
 
 class sensor : public device
@@ -92,6 +96,9 @@ class actuator : public device
 {
       public:
         actuator(string Name, uint16_t ID, uint8_t devtype) : device(Name,ID,devtype) {}
+        int pwm_Setup(uint8_t pinNumbers[],  uint8_t numberOfPorts);
+        //void digital_Write();
+        void pwm_Write(uint8_t pinNumbers, uint16_t DC, unsigned int lengthOfDelay);
 };
 
 

@@ -87,7 +87,7 @@ string device::getName()
 devType_t device::getType()
 {
  
-    return dev_Type;
+    return dev_Type < DEVTYPE ? dev_Type : 0;
 }
 
 Id_t device::getID()
@@ -96,7 +96,7 @@ Id_t device::getID()
 }
 
 
-uint8_t device::setPins(uint8_t pinNumbers[], bool directions[], uint8_t numberOfPorts)
+uint8_t device::setPins(uint8_t pinNumbers[], uint8_t directions[], uint8_t numberOfPorts)
 {
     int result = 0;
 
@@ -107,8 +107,15 @@ uint8_t device::setPins(uint8_t pinNumbers[], bool directions[], uint8_t numberO
     }
     else
     {
-        wiringPiSetup();    
         uint8_t i = 0;
+        while(pinNumbers[i])
+            i++;
+        if(i != numberOfPorts-1)
+            result= 3;
+        
+        i=0;
+        wiringPiSetup();    
+        
         
         while(i++ < numberOfPorts)
         {
@@ -125,5 +132,46 @@ uint8_t device::setPins(uint8_t pinNumbers[], bool directions[], uint8_t numberO
     }
 
     return result;   
+
+}
+int actuator::pwmSetup(uint8_t pinNumbers[],  uint8_t numberOfPorts)
+{
+    int result = 0;
+    if(!pinNumbers || numberOfPorts >= MAX_PORTS_NUMBER )
+    {
+         cout << "Nullpointer for pinNumbers or too much number for ports bastard!? " << endl;
+         result = 1;
+    }
+    else
+    {
+        uint8_t i = 0;
+        while(pinNumbers[i])
+            i++;
+        if(i != numberOfPorts-1)
+          {
+            result= 3;
+            cout<< " not equal the given port numbers and the gpio numbers" << endl;
+          }  
+        
+        i = 0;
+        wiringPiSetup();
+
+        while(i++ < numberOfPorts)
+        {
+            pinMode(pinNumbers[i],OUTPUT);
+            digitalWrite(pinNumbers[i],LOW);
+        }
+    }
+
+    return result;
+}
+
+void actuator::pwm_Write(uint8_t pinNumbers, uint16_t DC, unsigned int lengthOfDelay)
+{
+    if(DC >= MAX_DC)
+        DC = MAX_DC -1;
+
+    pwmWrite(pinNumbers,DC);
+    delay(lengthOfDelay);
 
 }

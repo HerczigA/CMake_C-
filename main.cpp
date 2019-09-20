@@ -21,10 +21,10 @@ int main(int argc, char *argv[])
     cout << senDev.getName() << endl;
     cout << senDev.getType() << endl;  
     
-    uint8_t GPIO[] ={0,1};
-    bool dir[] = {true, false};
-
-    if(!senDev.setPins(GPIO,dir,2))
+    uint8_t GPIO[] ={1};
+    uint8_t dir[] = {OUTPUT};
+    uint8_t gpioNum = 1;
+    if(!senDev.setPins(GPIO,dir,gpioNum))
         cout << "yolo" << endl;
     return 0;
 }
