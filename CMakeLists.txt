@@ -13,8 +13,6 @@ endif()
 #    set(CMAKE_C_FLAGS "-Wall -g")
     message(STATUS "YOLO " ${SUBFILES})
 
-endif()
-
 find_library(wiringPi_LIB wiringPi)
 
 add_executable(Tutorial ${SUBFILES})

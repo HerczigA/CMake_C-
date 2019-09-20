@@ -32,15 +32,17 @@ int main(int argc, char *argv[])
         cout << "yolo" << endl;
 */
     if(!Motor.pwm_Setup(GPIO,gpioNum))
-        cout << "yolo" << endl;
-
-    for(;;)
     {
-        for(auto i = 0; i <MAX_DC; i++)
-            Motor.pwm_Write(GPIO[0],i,10);
-        for(auto j = MAX_DC -1; j != 0; j--)
-            Motor.pwm_Write(GPIO[0],j,10);
+        cout << "yolo" << endl;
+        for(;;)
+        {
+            for(auto i = 0; i <MAX_DC; i++)
+                Motor.pwm_Write(GPIO[0],i,10);
+            for(auto j = MAX_DC -1; j != 0; j--)
+                Motor.pwm_Write(GPIO[0],j,10);
+        }
     }
+        
 
     return 0;
 }

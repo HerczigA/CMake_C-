@@ -147,7 +147,7 @@ int actuator::pwm_Setup(uint8_t pinNumbers[],  uint8_t numberOfPorts)
         uint8_t i = 0;
         while(pinNumbers[i])
             i++;
-        if(i != numberOfPorts-1)
+        if(i != numberOfPorts)
           {
             result= 3;
             cout<< " not equal the given port numbers and the gpio numbers" << endl;
