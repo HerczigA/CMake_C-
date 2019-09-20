@@ -108,7 +108,7 @@ uint8_t device::setPins(uint8_t pinNumbers[], uint8_t directions[], uint8_t numb
     else
     {
         uint8_t i = 0;
-        while(pinNumbers[i])
+        while(pinNumbers++)
             i++;
         if(i != numberOfPorts)
             result= 3;
@@ -145,12 +145,12 @@ int actuator::pwm_Setup(uint8_t pinNumbers[],  uint8_t numberOfPorts)
     else
     {
         uint8_t i = 0;
-        while(pinNumbers[i])
+        while(pinNumbers++)
             i++;
         if(i != numberOfPorts)
           {
             result= 3;
-            cout<< " not equal the given port numbers and the gpio numbers" << endl;
+            cout<< " not equal the given port numbers = " <<i<< "and the gpio numbers = "<<numberOfPorts << endl;
           }  
         
         i = 0;

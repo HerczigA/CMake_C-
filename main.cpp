@@ -37,9 +37,15 @@ int main(int argc, char *argv[])
         for(;;)
         {
             for(auto i = 0; i <MAX_DC; i++)
-                Motor.pwm_Write(GPIO[0],i,10);
+                {
+		    Motor.pwm_Write(GPIO[0],i,1);
+		    cout << "DC rising = " << i << endl;
+		}
             for(auto j = MAX_DC -1; j != 0; j--)
-                Motor.pwm_Write(GPIO[0],j,10);
+	    {
+                Motor.pwm_Write(GPIO[0],j,1);
+	        cout << "DC rising = " << j << endl;
+	    }
         }
     }
         
