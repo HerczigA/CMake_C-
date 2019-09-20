@@ -110,7 +110,7 @@ uint8_t device::setPins(uint8_t pinNumbers[], uint8_t directions[], uint8_t numb
         uint8_t i = 0;
         while(pinNumbers[i])
             i++;
-        if(i != numberOfPorts-1)
+        if(i != numberOfPorts)
             result= 3;
         
         i=0;

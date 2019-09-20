@@ -1,6 +1,6 @@
 #include <iostream>
 #include "hdr/test.hpp"
-
+#include <wiringPi.h>
 using namespace std;
 
 int main(int argc, char *argv[])
