@@ -78,6 +78,7 @@ class device
             if(!ID)
                 id = id_counter;
             id_counter ++;
+            //if()
         }
         string getName();
         devType_t getType();

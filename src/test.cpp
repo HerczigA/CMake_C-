@@ -134,7 +134,7 @@ uint8_t device::setPins(uint8_t pinNumbers[], uint8_t directions[], uint8_t numb
     return result;   
 
 }
-int actuator::pwmSetup(uint8_t pinNumbers[],  uint8_t numberOfPorts)
+int actuator::pwm_Setup(uint8_t pinNumbers[],  uint8_t numberOfPorts)
 {
     int result = 0;
     if(!pinNumbers || numberOfPorts >= MAX_PORTS_NUMBER )
