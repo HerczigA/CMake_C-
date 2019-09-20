@@ -1,6 +1,7 @@
 #include <iostream>
 #include "hdr/test.hpp"
 #include <wiringPi.h>
+#include <stdio.h>
 using namespace std;
 
 int main(int argc, char *argv[])
@@ -25,12 +26,13 @@ int main(int argc, char *argv[])
     cout << Motor.getName() << endl;
     cout << Motor.getType() << endl;  
 
-    uint8_t GPIO[] ={1};
+    uint8_t GPIO[2] ={1};
     uint8_t dir[] = {OUTPUT};
     uint8_t gpioNum = 1;
     /*  if(!senDev.setPins(GPIO,dir,gpioNum))
         cout << "yolo" << endl;
     */
+    printf("%p\n", GPIO);
     if(!Motor.pwm_Setup(GPIO,gpioNum))
     {
         cout << "yolo" << endl;

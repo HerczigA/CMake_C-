@@ -7,7 +7,7 @@
 #include <iterator>
 #include <bits/stdc++.h>
 #include <wiringPi.h>
-
+#include <stdio.h>
 using namespace std;
 
 
@@ -137,6 +137,8 @@ uint8_t device::setPins(uint8_t pinNumbers[], uint8_t directions[], uint8_t numb
 int actuator::pwm_Setup(uint8_t pinNumbers[],  uint8_t numberOfPorts)
 {
     int result = 0;
+    uint8_t i = 0;
+
     if(!pinNumbers || numberOfPorts >= MAX_PORTS_NUMBER )
     {
          cout << "Nullpointer for pinNumbers or too much number for ports bastard!? " << endl;
@@ -144,9 +146,16 @@ int actuator::pwm_Setup(uint8_t pinNumbers[],  uint8_t numberOfPorts)
     }
     else
     {
-        uint8_t i = 0;
-        while(pinNumbers++)
+	uint8_t *temp = pinNumbers;
+	printf("%p\n",temp);
+        while(*temp)
+	{
+	    printf("%p\t%d\n",temp,temp[i]);
             i++;
+	    temp++;
+
+	}
+	cout << i<<"/t" << numberOfPorts << endl;
         if(i != numberOfPorts)
           {
             result = 2;
