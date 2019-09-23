@@ -7,6 +7,7 @@
 #include <iterator>
 #include <bits/stdc++.h>
 #include <wiringPi.h>
+#include <softServo.h>
 
 using namespace std;
 
@@ -147,10 +148,14 @@ int actuator::pwm_Setup(uint8_t pinNumbers[],  uint8_t numberOfPorts)
         uint8_t i = 0;
         while(pinNumbers++)
             i++;
+
         if(i != numberOfPorts)
           {
             result = 2;
-            cout<< " not equal the given port numbers = " <<i<< "and the gpio numbers = "<<numberOfPorts << endl;
+            
+            cout<< " not equal the given port numbers = " 
+            << i << "and the gpio numbers = "
+            <<numberOfPorts << endl;
           }  
         
         i = 0;
@@ -166,12 +171,19 @@ int actuator::pwm_Setup(uint8_t pinNumbers[],  uint8_t numberOfPorts)
     return result;
 }
 
-void actuator::pwm_Write(uint8_t pinNumbers, uint16_t DC, unsigned int lengthOfDelay)
+void actuator::pwm_Write(uint8_t pinNumber, uint16_t DC, unsigned int lengthOfDelay)
 {
     if(DC >= MAX_DC)
         DC = MAX_DC -1;
 
-    pwmWrite(pinNumbers,DC);
+    pwmWrite(pinNumber,DC);
+    delay(lengthOfDelay);
+
+}
+void actuator::pwm_Servo_Write(uint8_t pinNumber, int16_t DC, unsigned int lengthOfDelay)
+{
+
+    softServoWrite(pinNumber,DC);
     delay(lengthOfDelay);
 
 }

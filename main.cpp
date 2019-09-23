@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     cout << Motor.getName() << endl;
     cout << Motor.getType() << endl;  
 
-    uint8_t GPIO[] ={1};
+    uint8_t GPIO[] ={5};
     uint8_t dir[] = {OUTPUT};
     uint8_t gpioNum = 1;
     /*  if(!senDev.setPins(GPIO,dir,gpioNum))
@@ -36,17 +36,12 @@ int main(int argc, char *argv[])
         cout << "yolo" << endl;
         for(;;)
         {
-            for(auto i = 0; i <MAX_DC; i++)
-            {
-                Motor.pwm_Write(GPIO[0],i,1);
-                cout << "DC rising = " << i << endl;
-            }
-            for(auto j = MAX_DC -1; j != 0; j--)
-            {
-                Motor.pwm_Write(GPIO[0],j,1);
-                cout << "DC rising = " << j << endl;
-            }
-        }
+                Motor.pwm_Servo_Write(GPIO[0],1000,1);
+                cout << "DC rising = "  << endl;
+            
+                Motor.pwm_Servo_Write(GPIO[0],-200,1);
+                cout << "DC rising = " << endl;
+        }    
     }
         
 
