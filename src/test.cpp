@@ -80,22 +80,26 @@ void filehandler::FinishProcess()
     fileHand.close();
 }
 
-string device::getName()
+string device::get_Name()
 {
     return name;
 }
 
-devType_t device::getType()
+devType_t device::get_Dev_Type()
 {
 
-    return dev_Type < DEVTYPE ? dev_Type : 0;
+    return dev_Type;
 }
 
-Id_t device::getID()
+Id_t device::get_ID()
 {
     return id;
 }
 
+comm_t device::get_Comm_Type()
+{
+    return commType;
+}
 
 uint8_t device::setPins(vector<uint8_t> pinNumbers, uint8_t directions[], uint8_t numberOfPorts)
 {
@@ -204,5 +208,34 @@ void actuator::pwm_Servo_Write(uint8_t pinNumber, int16_t DC, unsigned int lengt
         delay(lengthOfDelay);
     }
 
+
+}
+
+void device::Init_Communication()
+{
+
+    switch(commType)
+    {
+        case SPI:
+            break;
+
+        case I2C:
+            break;
+
+        case CAN:
+            break;
+
+        case UART:
+            break;
+
+        case Bluetooh:
+            break;
+
+        case Wifi:
+            break;
+
+        default:
+
+    }
 
 }

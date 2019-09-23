@@ -29,6 +29,7 @@ enum comm_type
     I2C,
     Bluetooh,
     Wifi,
+    Unknow_communication,
     COMMTYPE
 
 };
@@ -38,7 +39,7 @@ enum dev_type
     Sensor = 1,
     Actuator,
     Sensor_Actuator,
-    Unknow,
+    Unknow_device,
     DEVTYPE
 };
 
@@ -75,31 +76,38 @@ class device
         comm_t commType;
         string name;
         devType_t dev_Type;
-
+        int Init_SPI();
+        int Init_I2C();
+        int Init_Bluetooth();
+        int Init_UART();
+        int Init_CAN();
 
     public:
-        device(string Name, Id_t ID, comm_t devtype): name{Name}
+        device(string Name, Id_t ID, devType_t devtype,comm_t commtype): name{Name}
         {
             id =( !ID && id_counter != 1 ) ? id_counter : id_counter++;
-            dev_Type = (devtype >= Sensor && devtype <= Sensor_Actuator) ? devtype : Unknow;
+            dev_Type = (devtype >= Sensor && devtype <= Sensor_Actuator) ? devtype : Unknow_device;
+            commType = (commtype >= SPI && commtype <= Wifi) ? commtype : Unknow_communication;
         }
-        string getName();
-        devType_t getType();
-        Id_t getID();
+        string get_Name();
+        devType_t get_Dev_Type();
+        Id_t get_ID();
+        comm_t get_Comm_Type();
         uint8_t setPins(vector<uint8_t> pinNumbers,uint8_t directions[], uint8_t numberOfPorts);
+        void Init_Communication();
 };
 
 class sensor : public device
 {
     public:
-        sensor(string Name, uint16_t ID, uint8_t devtype) : device(Name,ID,devtype) {}
+        sensor(string Name, Id_t ID, devType_t devtype, comm_t commtype) : device(Name,ID,devtype,commtype) {}
 
 };
 
 class actuator : public device
 {
       public:
-        actuator(string Name, uint16_t ID, uint8_t devtype) : device(Name,ID,devtype) {}
+        actuator(string Name, Id_t ID, devType_t devtype, comm_t commtype) : device(Name,ID,devtype,commtype) {}
         int pwm_Setup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts);
         //void digital_Write();
         void pwm_Write(uint8_t pinNumber, uint16_t DC, unsigned int lengthOfDelay);
