@@ -100,7 +100,7 @@ class actuator : public device
         int pwm_Setup(uint8_t pinNumbers[],  uint8_t numberOfPorts);
         //void digital_Write();
         void pwm_Write(uint8_t pinNumber, uint16_t DC, unsigned int lengthOfDelay);
-        void pwm_Servo_Write(uint8_t pinNumber, uint16_t DC, unsigned int lengthOfDelay);
+        void pwm_Servo_Write(uint8_t pinNumber, int16_t DC, unsigned int lengthOfDelay);
 };
 
 
