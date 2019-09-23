@@ -17,15 +17,13 @@ int main(int argc, char *argv[])
         fh.FinishProcess();
     }*/
 
-    sensor senDev("IRALED",0,5);
-    actuator Motor("MicroServo",0,2);
+    sensor senDev("IRALED",3,5);
+    actuator Motor("MicroServo",2,2);
     cout << senDev.getID() << endl;
     cout << senDev.getName() << endl;
-    cout << senDev.getType() << endl;
 
     cout << Motor.getID() << endl;
     cout << Motor.getName() << endl;
-    cout << Motor.getType() << endl;
 
     vector<uint8_t> GPIO ={5};
     //uint8_t dir[] = {OUTPUT};
@@ -34,11 +32,13 @@ int main(int argc, char *argv[])
     /*  if(!senDev.setPins(GPIO,dir,gpioNum))
         cout << "yolo" << endl;
     */
+    bool loop = true;
     cout<<" GPIO size = " << sizeof(GPIO) << endl;
     if(!Motor.pwm_Setup(GPIO,gpioNum))
     {
         cout << "yolo" << endl;
-        Motor.pwm_Servo_Write(GPIO[0],DC,1000);
+        Motor.pwm_Servo_Write(GPIO[0],DC,1000,loop);
+
     }
 
 

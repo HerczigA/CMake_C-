@@ -97,11 +97,11 @@ Id_t device::getID()
 }
 
 
-uint8_t device::setPins(uint8_t pinNumbers[], uint8_t directions[], uint8_t numberOfPorts)
+uint8_t device::setPins(vector<uint8_t> pinNumbers, uint8_t directions[], uint8_t numberOfPorts)
 {
     int result = 0;
 
-    if(!pinNumbers || numberOfPorts >= MAX_PORTS_NUMBER )
+    if(pinNumbers.empty() || numberOfPorts >= MAX_PORTS_NUMBER )
     {
          cout << "Nullpointer for pinNumbers or too much number for ports bastard!? " << endl;
          result = 1;
@@ -109,8 +109,10 @@ uint8_t device::setPins(uint8_t pinNumbers[], uint8_t directions[], uint8_t numb
     else
     {
         uint8_t i = 0;
-        while(pinNumbers++)
-            i++;
+        auto pinEnd = pinNumbers.end();
+
+        for(auto it = pinNumbers.begin(); it != pinEnd; ++it)
+            ++i;
         if(i != numberOfPorts)
             result= 3;
 
@@ -182,10 +184,25 @@ void actuator::pwm_Write(uint8_t pinNumber, uint16_t DC, unsigned int lengthOfDe
     delay(lengthOfDelay);
 
 }
-void actuator::pwm_Servo_Write(uint8_t pinNumber, int16_t DC, unsigned int lengthOfDelay)
+void actuator::pwm_Servo_Write(uint8_t pinNumber, int16_t DC, unsigned int lengthOfDelay, bool loop)
 {
     cout << (int) pinNumber <<"   " << DC <<  endl;
-    softServoWrite(pinNumber,DC);
-    delay(lengthOfDelay);
+    if(loop)
+    {
+        while(loop)
+        {
+            softServoWrite(pinNumber,DC);
+            delay(lengthOfDelay);
+            DC -= SERVO_STEP;
+            if(DC < SERVO_LOW_LIMIT)
+                DC = SERVO_HIGH_LIMIT;
+        }
+    }
+    else
+    {
+        softServoWrite(pinNumber,DC);
+        delay(lengthOfDelay);
+    }
+
 
 }
