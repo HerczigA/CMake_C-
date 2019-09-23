@@ -87,7 +87,7 @@ string device::getName()
 
 devType_t device::getType()
 {
- 
+
     return dev_Type < DEVTYPE ? dev_Type : 0;
 }
 
@@ -113,16 +113,16 @@ uint8_t device::setPins(uint8_t pinNumbers[], uint8_t directions[], uint8_t numb
             i++;
         if(i != numberOfPorts)
             result= 3;
-        
+
         i=0;
-        wiringPiSetup();    
-        
-        
+        wiringPiSetup();
+
+
         while(i++ < numberOfPorts)
         {
             if(pinNumbers[i] && directions[i])
                 pinMode(pinNumbers[i],directions[i]);
-            
+
             else
             {
                 cout<< " nullptr got" << endl;
@@ -132,40 +132,42 @@ uint8_t device::setPins(uint8_t pinNumbers[], uint8_t directions[], uint8_t numb
         }
     }
     cout << "result = "<< result << endl;
-    return result;   
+    return result;
 
 }
-int actuator::pwm_Setup(uint8_t pinNumbers[],  uint8_t numberOfPorts)
+int actuator::pwm_Setup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts)
 {
     int result = 0;
-    if(!pinNumbers || numberOfPorts >= MAX_PORTS_NUMBER )
+    int servoOut[] = {-1,-1,-1,-1,-1,-1,-1,-1};
+
+     if(pinNumbers.empty() || numberOfPorts >= MAX_SERVO_PORTS )
     {
          cout << "Nullpointer for pinNumbers or too much number for ports bastard!? " << endl;
          result = 1;
     }
     else
     {
-        uint8_t i = 0;
+        int8_t i  = 0;
+        auto pinEnd = pinNumbers.end();
+        for(auto it = pinNumbers.begin(); it != pinEnd; ++it)
+            ++i;
 
-        while(pinNumbers[i++])
-            ;
         if(i != numberOfPorts)
           {
             result = 2;
-            
-            cout<< " not equal the given port numbers = " 
-            << i << "and the gpio numbers = "
-            <<numberOfPorts << endl;
-          }  
-        
-        i = 0;
-        wiringPiSetup();
 
-        while(i++ < numberOfPorts)
+            cout<< " not equal the given port numbers = "
+            <<(int) i << " and the gpio numbers = "
+            <<(int) numberOfPorts << endl;
+          }
+
+        wiringPiSetup();
+        for(auto j = 0; i >= 0; ++j)
         {
-            pinMode(pinNumbers[i],OUTPUT);
-            digitalWrite(pinNumbers[i],LOW);
+            servoOut[j] = pinNumbers[j];
+            i--;
         }
+        softServoSetup(servoOut[0],servoOut[1],servoOut[2],servoOut[3],servoOut[4],servoOut[5],servoOut[6],servoOut[7]);
     }
 
     return result;
@@ -182,7 +184,7 @@ void actuator::pwm_Write(uint8_t pinNumber, uint16_t DC, unsigned int lengthOfDe
 }
 void actuator::pwm_Servo_Write(uint8_t pinNumber, int16_t DC, unsigned int lengthOfDelay)
 {
-
+    cout << (int) pinNumber <<"   " << DC <<  endl;
     softServoWrite(pinNumber,DC);
     delay(lengthOfDelay);
 

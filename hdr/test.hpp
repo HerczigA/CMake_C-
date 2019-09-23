@@ -7,7 +7,8 @@
 #include <vector>
 #include <stdint.h>
 
-#define MAX_PORTS_NUMBER 20
+#define MAX_PORTS_NUMBER 21
+#define MAX_SERVO_PORTS 8
 #define MAX_DC 1024
 
 typedef uint8_t devType_t;
@@ -97,10 +98,10 @@ class actuator : public device
 {
       public:
         actuator(string Name, uint16_t ID, uint8_t devtype) : device(Name,ID,devtype) {}
-        int pwm_Setup(uint8_t pinNumbers[],  uint8_t numberOfPorts);
+        int pwm_Setup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts);
         //void digital_Write();
         void pwm_Write(uint8_t pinNumber, uint16_t DC, unsigned int lengthOfDelay);
-        void pwm_Servo_Write(uint8_t pinNumber, uint16_t DC, unsigned int lengthOfDelay);
+        void pwm_Servo_Write(uint8_t pinNumber, int16_t DC, unsigned int lengthOfDelay);
 };
 
 
