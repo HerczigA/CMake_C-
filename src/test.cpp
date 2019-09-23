@@ -146,9 +146,9 @@ int actuator::pwm_Setup(uint8_t pinNumbers[],  uint8_t numberOfPorts)
     else
     {
         uint8_t i = 0;
-        while(pinNumbers++)
-            i++;
 
+        while(pinNumbers[i++])
+            ;
         if(i != numberOfPorts)
           {
             result = 2;
