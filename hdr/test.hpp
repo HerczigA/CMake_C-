@@ -13,7 +13,8 @@
 #define SERVO_STEP 100
 #define SERVO_HIGH_LIMIT 1150
 #define SERVO_LOW_LIMIT -150
-
+#define SPI_PACKET_LENGTH 8
+#define I2C_PACKET_LENGTH 16
 typedef uint8_t devType_t;
 typedef uint16_t Id_t;
 typedef uint8_t comm_t;
@@ -52,6 +53,27 @@ class foo
     auto getFooInt(){ return i;}
 };
 
+struct SPI_Frame
+{
+    uint32_t ClockSpeed;
+    uint8_t ClockPin;
+    uint8_t ChipSelect;
+    uint8_t MOSIPin;
+    uint8_t MISOPin;
+    uint8_t clk_Pol_Pha;
+    char Packet[SPI_PACKET_LENGTH];
+
+};
+
+struct I2C_Frame
+{
+    uint32_t ClockSpeed;
+    uint8_t SDO;
+    uint8_t SCL;
+    char Packet[I2C_PACKET_LENGTH];
+    uint16_t address;
+};
+
 class filehandler
 {
         fstream fileHand;
@@ -81,6 +103,7 @@ class device
         int Init_Bluetooth();
         int Init_UART();
         int Init_CAN();
+        int Init_Wifi();
 
     public:
         device(string Name, Id_t ID, devType_t devtype,comm_t commtype): name{Name}

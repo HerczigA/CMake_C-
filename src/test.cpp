@@ -211,31 +211,62 @@ void actuator::pwm_Servo_Write(uint8_t pinNumber, int16_t DC, unsigned int lengt
 
 }
 
+int device::Init_SPI()
+{
+
+
+}
+int device::Init_I2C()
+{
+}
+
+int device::Init_UART()
+{
+}
+
+int device::Init_CAN()
+{
+}
+
+int device::Init_Bluetooth()
+{
+}
+
+int device::Init_Wifi()
+{
+}
+
 void device::Init_Communication()
 {
 
     switch(commType)
     {
         case SPI:
+            Init_SPI();
             break;
 
         case I2C:
+            Init_I2C();
             break;
 
         case CAN:
+            Init_CAN();
             break;
 
         case UART:
+            Init_UART();
             break;
 
         case Bluetooh:
+            Init_Bluetooth();
             break;
 
         case Wifi:
+            Init_Wifi();
             break;
 
         default:
-
+            break;
     }
 
 }
