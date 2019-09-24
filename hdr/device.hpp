@@ -5,19 +5,24 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <stdint.h>
+#include "spi_module.hpp"
+#include "i2c_module.hpp"
 
 #define MAX_PORTS_NUMBER 21
 #define MAX_SERVO_PORTS 8
 #define MAX_DC 1024
-#define SERVO_STEP 100
-#define SERVO_HIGH_LIMIT 1150
+#define SERVO_STEP 200
+#define SERVO_HIGH_LIMIT 1050
 #define SERVO_LOW_LIMIT -150
-#define SPI_PACKET_LENGTH 8
-#define I2C_PACKET_LENGTH 16
+#define MIN_SERVO_DELAY_TIME 100
+#define DEF_SERVO_TIME 200
+#define DEF_SERVO_POSITION 500
+
 typedef uint8_t devType_t;
 typedef uint16_t Id_t;
 typedef uint8_t comm_t;
+typedef unsigned int time_ms_t;
+
 using namespace std;
 
 static uint16_t id_counter =1;
@@ -53,26 +58,6 @@ class foo
     auto getFooInt(){ return i;}
 };
 
-struct SPI_Frame
-{
-    uint32_t ClockSpeed;
-    uint8_t ClockPin;
-    uint8_t ChipSelect;
-    uint8_t MOSIPin;
-    uint8_t MISOPin;
-    uint8_t clk_Pol_Pha;
-    char Packet[SPI_PACKET_LENGTH];
-
-};
-
-struct I2C_Frame
-{
-    uint32_t ClockSpeed;
-    uint8_t SDO;
-    uint8_t SCL;
-    char Packet[I2C_PACKET_LENGTH];
-    uint16_t address;
-};
 
 class filehandler
 {
@@ -98,7 +83,8 @@ class device
         comm_t commType;
         string name;
         devType_t dev_Type;
-        int Init_SPI();
+        bool Initialized;
+        int Init_SPI(SPI_Frame spi);
         int Init_I2C();
         int Init_Bluetooth();
         int Init_UART();
@@ -111,13 +97,15 @@ class device
             id =( !ID && id_counter != 1 ) ? id_counter : id_counter++;
             dev_Type = (devtype >= Sensor && devtype <= Sensor_Actuator) ? devtype : Unknow_device;
             commType = (commtype >= SPI && commtype <= Wifi) ? commtype : Unknow_communication;
+            wiringPiSetup();
+            Initialized = false;
         }
         string get_Name();
         devType_t get_Dev_Type();
         Id_t get_ID();
         comm_t get_Comm_Type();
         uint8_t setPins(vector<uint8_t> pinNumbers,uint8_t directions[], uint8_t numberOfPorts);
-        void Init_Communication();
+        //void Init_Communication();
 };
 
 class sensor : public device
@@ -129,12 +117,15 @@ class sensor : public device
 
 class actuator : public device
 {
+    
       public:
         actuator(string Name, Id_t ID, devType_t devtype, comm_t commtype) : device(Name,ID,devtype,commtype) {}
-        int pwm_Setup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts);
+        void pwm_Setup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts);
         //void digital_Write();
         void pwm_Write(uint8_t pinNumber, uint16_t DC, unsigned int lengthOfDelay);
-        void pwm_Servo_Write(uint8_t pinNumber, int16_t DC, unsigned int lengthOfDelay, bool loop);
+        void pwm_Servo_Write_In_Loop(uint8_t pinNumber, int16_t DC, time_ms_t lengthOfDelay, bool loop);
+        void pwm_Servo_Full_Limit(uint8_t pinNumber,time_ms_t t_length);
+        int16_t get_Servo_DC();
 };
 
 

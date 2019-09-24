@@ -1,4 +1,4 @@
-#include "../hdr/test.hpp"
+#include "../hdr/device.hpp"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -101,119 +101,30 @@ comm_t device::get_Comm_Type()
     return commType;
 }
 
-uint8_t device::setPins(vector<uint8_t> pinNumbers, uint8_t directions[], uint8_t numberOfPorts)
+int device::Init_SPI(SPI_Frame spi)
 {
-    int result = 0;
-
-    if(pinNumbers.empty() || numberOfPorts >= MAX_PORTS_NUMBER )
-    {
-         cout << "Nullpointer for pinNumbers or too much number for ports bastard!? " << endl;
-         result = 1;
-    }
+    SPI_Frame FramePackage;
+    FramePackage.ChipSelect = spi.ChipSelect;
+    FramePackage.MOSIPin = spi.MOSIPin;
+    FramePackage.MISOPin = spi.MISOPin;
+    FramePackage.ClockPin = spi.ClockPin;
+    FramePackage.clk_Pol_Pha = spi.clk_Pol_Pha;
+    FramePackage.ClockSpeed = spi.ClockSpeed;
+    FramePackage.Packet[SPI_PACKET_LENGTH];
+    
+    if(FramePackage.ChipSelect)
+        pinMode(FramePackage.ChipSelect,OUTPUT);
     else
-    {
-        uint8_t i = 0;
-        auto pinEnd = pinNumbers.end();
-
-        for(auto it = pinNumbers.begin(); it != pinEnd; ++it)
-            ++i;
-        if(i != numberOfPorts)
-            result= 3;
-
-        i=0;
-        wiringPiSetup();
 
 
-        while(i++ < numberOfPorts)
-        {
-            if(pinNumbers[i] && directions[i])
-                pinMode(pinNumbers[i],directions[i]);
-
-            else
-            {
-                cout<< " nullptr got" << endl;
-                result = 2;
-                break;
-            }
-        }
-    }
-    cout << "result = "<< result << endl;
-    return result;
-
-}
-int actuator::pwm_Setup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts)
-{
-    int result = 0;
-    int servoOut[] = {-1,-1,-1,-1,-1,-1,-1,-1};
-
-     if(pinNumbers.empty() || numberOfPorts >= MAX_SERVO_PORTS )
-    {
-         cout << "Nullpointer for pinNumbers or too much number for ports bastard!? " << endl;
-         result = 1;
-    }
-    else
-    {
-        int8_t i  = 0;
-        auto pinEnd = pinNumbers.end();
-        for(auto it = pinNumbers.begin(); it != pinEnd; ++it)
-            ++i;
-
-        if(i != numberOfPorts)
-          {
-            result = 2;
-
-            cout<< " not equal the given port numbers = "
-            <<(int) i << " and the gpio numbers = "
-            <<(int) numberOfPorts << endl;
-          }
-
-        wiringPiSetup();
-        for(auto j = 0; i >= 0; ++j)
-        {
-            servoOut[j] = pinNumbers[j];
-            i--;
-        }
-        softServoSetup(servoOut[0],servoOut[1],servoOut[2],servoOut[3],servoOut[4],servoOut[5],servoOut[6],servoOut[7]);
-    }
-
-    return result;
-}
-
-void actuator::pwm_Write(uint8_t pinNumber, uint16_t DC, unsigned int lengthOfDelay)
-{
-    if(DC >= MAX_DC)
-        DC = MAX_DC -1;
-
-    pwmWrite(pinNumber,DC);
-    delay(lengthOfDelay);
-
-}
-void actuator::pwm_Servo_Write(uint8_t pinNumber, int16_t DC, unsigned int lengthOfDelay, bool loop)
-{
-    cout << (int) pinNumber <<"   " << DC <<  endl;
-    if(loop)
-    {
-        while(loop)
-        {
-            softServoWrite(pinNumber,DC);
-            delay(lengthOfDelay);
-            DC -= SERVO_STEP;
-            if(DC < SERVO_LOW_LIMIT)
-                DC = SERVO_HIGH_LIMIT;
-        }
-    }
-    else
-    {
-        softServoWrite(pinNumber,DC);
-        delay(lengthOfDelay);
-    }
-
-
-}
-
-int device::Init_SPI()
-{
-
+    if(FramePackage.MOSIPin)
+        pinMode(FramePackage.MOSIPin,OUTPUT);
+    
+    if(FramePackage.MISOPin)
+        pinMode(FramePackage.MISOPin,INPUT);
+    
+    if(FramePackage.ClockPin)
+        pinMode(FramePackage.ChipSelect,OUTPUT);
 
 }
 int device::Init_I2C()
@@ -236,7 +147,7 @@ int device::Init_Wifi()
 {
 }
 
-void device::Init_Communication()
+/*void device::Init_Communication()
 {
 
     switch(commType)
@@ -267,6 +178,148 @@ void device::Init_Communication()
 
         default:
             break;
+    }
+
+}*/
+
+uint8_t device::setPins(vector<uint8_t> pinNumbers, uint8_t directions[], uint8_t numberOfPorts)
+{
+    int result = 0;
+
+    if(pinNumbers.empty() || numberOfPorts >= MAX_PORTS_NUMBER )
+    {
+         cout << "Nullpointer for pinNumbers or too much number for ports bastard!? " << endl;
+         result = 1;
+    }
+    else
+    {
+        uint8_t i = 0;
+        auto pinEnd = pinNumbers.end();
+
+        for(auto it = pinNumbers.begin(); it != pinEnd; ++it)
+            ++i;
+        if(i != numberOfPorts)
+            result= 3;
+
+        i=0;
+        //wiringPiSetup();
+
+
+        while(i++ < numberOfPorts)
+        {
+            if(pinNumbers[i] && directions[i])
+                pinMode(pinNumbers[i],directions[i]);
+
+            else
+            {
+                cout<< " nullptr got" << endl;
+                result = 2;
+                break;
+            }
+        }
+    }
+    cout << "result = "<< result << endl;
+    return result;
+
+}
+void actuator::pwm_Setup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts)
+{
+
+    int servoOut[] = {-1,-1,-1,-1,-1,-1,-1,-1};
+
+     if(pinNumbers.empty() || numberOfPorts >= MAX_SERVO_PORTS )
+    {
+         cout << "Nullpointer for pinNumbers or too much number for ports bastard!? " << endl;
+        return;
+    }
+    else
+    {
+        int8_t i  = 0;
+        auto pinEnd = pinNumbers.end();
+        for(auto it = pinNumbers.begin(); it != pinEnd; ++it)
+            ++i;
+
+        if(i != numberOfPorts)
+          {
+
+            cout<< " not equal the given port numbers = "
+            <<(int) i << " and the gpio numbers = "
+            <<(int) numberOfPorts << endl;
+            return ;
+          }
+
+        for(auto j = 0; i >= 0; ++j)
+        {
+            servoOut[j] = pinNumbers[j];
+            i--;
+        }
+        softServoSetup(servoOut[0],servoOut[1],servoOut[2],servoOut[3],servoOut[4],servoOut[5],servoOut[6],servoOut[7]);
+        Initialized = true;
+    }
+
+}
+
+void actuator::pwm_Write(uint8_t pinNumber, uint16_t DC, unsigned int lengthOfDelay)
+{
+    if(!Initialized)
+        return;
+    if(DC >= MAX_DC)
+        DC = MAX_DC -1;
+
+    pwmWrite(pinNumber,DC);
+    delay(lengthOfDelay);
+
+}
+void actuator::pwm_Servo_Write_In_Loop(uint8_t pinNumber, int16_t DC, unsigned int lengthOfDelay, bool loop)
+{
+    if(!Initialized)
+        return;
+    cout << "Start servo in Loop" << endl;
+    time_ms_t delaytime = lengthOfDelay;
+    
+    if(delaytime <= MIN_SERVO_DELAY_TIME)
+        delaytime = DEF_SERVO_TIME;
+
+    cout << (int) pinNumber <<"   " << DC <<  endl;
+    if(loop)
+    {
+        while(loop)
+        {
+            softServoWrite(pinNumber,DC);
+            delay(delaytime);
+            DC -= SERVO_STEP;
+            if(DC < SERVO_LOW_LIMIT)
+                DC = SERVO_HIGH_LIMIT;
+        }
+    }
+    else
+    {
+        softServoWrite(pinNumber,DC);
+        delay(delaytime);
+    }
+
+
+}
+
+void actuator::pwm_Servo_Full_Limit(uint8_t pinNumber, time_ms_t t_length)
+{
+    if(!Initialized)
+        return;
+    cout << "Start servo FULL Limit" << endl;
+    time_ms_t delaytime = t_length;
+    
+    if(delaytime <= MIN_SERVO_DELAY_TIME)
+        delaytime = DEF_SERVO_TIME;
+
+    softServoWrite(pinNumber,DEF_SERVO_POSITION);
+        delay(delaytime);
+
+    while(true)
+    {
+        softServoWrite(pinNumber,SERVO_HIGH_LIMIT);
+        delay(delaytime);
+        softServoWrite(pinNumber,SERVO_LOW_LIMIT);
+        delay(delaytime);
     }
 
 }

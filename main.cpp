@@ -1,5 +1,5 @@
 #include <iostream>
-#include "hdr/test.hpp"
+#include "hdr/device.hpp"
 #include <wiringPi.h>
 #include <stdlib.h>
 
@@ -29,18 +29,17 @@ int main(int argc, char *argv[])
     uint8_t dir[] = {OUTPUT};
     uint8_t gpioNum = 1;
     int16_t DC = (argc > 1) ? atoi(argv[1]) : 0;
+    time_ms_t waiting = (*argv[2]) ? atoi(argv[2]) : 500;
 
     if(!senDev.setPins(GPIO,dir,gpioNum))
         cout << "yolo" << endl;
 
     bool loop = false;
     cout<<" GPIO size = " << sizeof(GPIO) << endl;
-    if(!Motor.pwm_Setup(GPIO,gpioNum))
-    {
-        cout << "yolo" << endl;
-        Motor.pwm_Servo_Write(GPIO[0],DC,1000,loop);
+    Motor.pwm_Setup(GPIO,gpioNum);
+    Motor.pwm_Servo_Write_In_Loop(GPIO[0],DC,waiting,loop);
 
-    }
+    
 
 
     return 0;
