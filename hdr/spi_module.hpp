@@ -2,6 +2,7 @@
 #define _SPI_MODULE_H
 
 #define SPI_PACKET_LENGTH 8
+#define MAX_CLK 500000 //MAX speed 500kHz
 
 #include <stdint.h>
 

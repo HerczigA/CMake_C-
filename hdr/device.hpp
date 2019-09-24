@@ -8,6 +8,7 @@
 #include "spi_module.hpp"
 #include "i2c_module.hpp"
 #include <wiringPi.h>
+#include <sys/ioctl.h>
 
 #define MAX_PORTS_NUMBER 21
 #define MAX_SERVO_PORTS 8
@@ -118,7 +119,7 @@ class sensor : public device
 
 class actuator : public device
 {
-    
+        
       public:
         actuator(string Name, Id_t ID, devType_t devtype, comm_t commtype) : device(Name,ID,devtype,commtype) {}
         void pwm_Setup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts);
@@ -126,7 +127,7 @@ class actuator : public device
         void pwm_Write(uint8_t pinNumber, uint16_t DC, unsigned int lengthOfDelay);
         void pwm_Servo_Write_In_Loop(uint8_t pinNumber, int16_t DC, time_ms_t lengthOfDelay, bool loop);
         void pwm_Servo_Full_Limit(uint8_t pinNumber,time_ms_t t_length);
-        int16_t get_Servo_DC();
+        
 };
 
 

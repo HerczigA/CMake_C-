@@ -22,11 +22,12 @@ void filehandler::getInfoFromPattern()
     try
     {
         fileHand.open(patternFile.c_str(), ios::in);
+        
     }
-    catch(const std::exception& e)
+    catch(fstream::failure e)
     {
         std::cerr << e.what() << '\n';
-        std::cout << e.what() << '\n';
+        std::cout << e.what() << "Exception under opening" << '\n';
         return;
     }
     while(getline(fileHand,lineFromFile))
@@ -133,6 +134,7 @@ int device::Init_I2C()
 
 int device::Init_UART()
 {
+    
 }
 
 int device::Init_CAN()
@@ -281,7 +283,6 @@ void actuator::pwm_Servo_Write_In_Loop(uint8_t pinNumber, int16_t DC, unsigned i
     if(delaytime <= MIN_SERVO_DELAY_TIME)
         delaytime = DEF_SERVO_TIME;
 
-    cout << (int) pinNumber <<"   " << DC <<  endl;
     if(loop)
     {
         while(loop)
@@ -324,3 +325,4 @@ void actuator::pwm_Servo_Full_Limit(uint8_t pinNumber, time_ms_t t_length)
     }
 
 }
+
