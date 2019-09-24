@@ -202,14 +202,15 @@ uint8_t device::setPins(vector<uint8_t> pinNumbers, uint8_t directions[], uint8_
             result= 3;
 
         i=0;
-        //wiringPiSetup();
-
-
-        while(i++ < numberOfPorts)
+	cout<<"before while i < NumberOfPorts " << endl;
+        while(i < numberOfPorts)
         {
-            if(pinNumbers[i] && directions[i])
-                pinMode(pinNumbers[i],directions[i]);
 
+            if(pinNumbers[i] && directions[i])
+            {
+	        pinMode(pinNumbers[i],directions[i]);
+		i++;
+	    }
             else
             {
                 cout<< " nullptr got" << endl;

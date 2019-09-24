@@ -7,6 +7,7 @@
 #include <vector>
 #include "spi_module.hpp"
 #include "i2c_module.hpp"
+#include <wiringPi.h>
 
 #define MAX_PORTS_NUMBER 21
 #define MAX_SERVO_PORTS 8

@@ -29,15 +29,16 @@ int main(int argc, char *argv[])
     uint8_t dir[] = {OUTPUT};
     uint8_t gpioNum = 1;
     int16_t DC = (argc > 1) ? atoi(argv[1]) : 0;
-    time_ms_t waiting = (*argv[2]) ? atoi(argv[2]) : 500;
+    time_ms_t waiting = (argv[2]) ? atoi(argv[2]) : DEF_SERVO_TIME;
 
+    cout << "start setpins()" << endl;
     if(!senDev.setPins(GPIO,dir,gpioNum))
         cout << "yolo" << endl;
 
     bool loop = false;
     cout<<" GPIO size = " << sizeof(GPIO) << endl;
     Motor.pwm_Setup(GPIO,gpioNum);
-    Motor.pwm_Servo_Write_In_Loop(GPIO[0],DC,waiting,loop);
+    Motor.pwm_Servo_Full_Limit(GPIO[0],waiting);
 
     
 
