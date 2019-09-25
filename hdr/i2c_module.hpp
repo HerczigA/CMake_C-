@@ -15,6 +15,7 @@ struct I2C_Frame
     uint8_t SCL;
     char Packet[I2C_PACKET_LENGTH];
     uint16_t address;
+    int i2CFD;
 };
 
 #endif

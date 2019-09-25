@@ -112,6 +112,7 @@ int device::Init_SPI(SPI_Frame spi)
     FramePackage.clk_Pol_Pha = spi.clk_Pol_Pha;
     FramePackage.ClockSpeed = spi.ClockSpeed;
     FramePackage.Packet[SPI_PACKET_LENGTH];
+    FramePackage.endianess = spi.endianess;
     
     if(FramePackage.ChipSelect)
         pinMode(FramePackage.ChipSelect,OUTPUT);
@@ -134,7 +135,61 @@ int device::Init_I2C()
 
 int device::Init_UART()
 {
+    vector<string> serial;
+    serial.push_back("/dev/ttyUSB0");
+    serial.push_back("/dev/ttyAMA0");
+    serial.push_back("/dev/ttyS0");
+    serial.push_back("/dev/ttyS1");
+
+    /*if(!( init->numbOfDev ))
+        return -1;
+    */
+    auto endOfDev = serial.end();
+    for(auto it = serial.begin(); it != endOfDev; ++it)
+    {
+        string temp = *it;
+        COM.serialport.uartFD = open(temp.c_str,O_RDWR | O_NOCTTY | O_NDELAY );    /* code */
+        if(COM.serialport.uartFD > 0)   
+            break;
+    }
     
+    if(COM.serialport.uartFD < 0)
+        {
+            cout <<"Invalid Filedescriptor\n" \
+                   "maybe don't connect any wire?"<<endl;
+    //        syslog(LOG_ERR,"%s",strerror(errno));
+            return -1;
+        }
+    fcntl(COM.serialport.uartFD,F_SETFL,O_RDWR);
+    
+    tcgetattr(COM.serialport.uartFD,&COM.serialport.old);
+    COM.serialport.term.c_cflag = CS8 | CLOCAL | CREAD ;
+    COM.serialport.term.c_iflag = IGNPAR;
+    COM.serialport.term.c_lflag &= ~( ICANON | ECHO | ISIG);
+    COM.serialport.term.c_oflag =0;
+    COM.serialport.term.c_cc[VTIME]=0;
+    COM.serialport.term.c_cc[VMIN]=0;
+    cfsetispeed(&COM.serialport.term,(speed_t)&COM.serialport.BAUD);
+    cfsetospeed(&COM.serialport.term,(speed_t)&COM.serialport.BAUD);
+
+    tcflush(COM.serialport.uartFD, TCIOFLUSH);
+    if(!tcsetattr(COM.serialport.uartFD,TCSANOW,&COM.serialport.term))
+        {
+          
+            cout <<"Serial port has succesfully initialized" << endl;
+            //syslog(LOG_INFO,"Serial port OK");
+            return 0;
+        }
+    else
+        {
+            //closeOnFAIL(init);
+            
+            //syslog(LOG_ERR,"%s %d",strerror(errno),COM.serialport.uartFD);
+            close(COM.serialport.uartFD);
+            return -1;
+        }
+
+
 }
 
 int device::Init_CAN()
@@ -149,7 +204,7 @@ int device::Init_Wifi()
 {
 }
 
-/*void device::Init_Communication()
+void device::Init_Communication()
 {
 
     switch(commType)
@@ -182,7 +237,7 @@ int device::Init_Wifi()
             break;
     }
 
-}*/
+}
 
 uint8_t device::setPins(vector<uint8_t> pinNumbers, uint8_t directions[], uint8_t numberOfPorts)
 {
@@ -326,3 +381,17 @@ void actuator::pwm_Servo_Full_Limit(uint8_t pinNumber, time_ms_t t_length)
 
 }
 
+void actuator::digital_Write(vector<int> pinNumbers, vector<int> states )
+{
+    if(pinNumbers.empty() || states.empty())
+    {
+        cout << "some arguments are empty" << endl;
+    }
+    if(pinNumbers.size() == states.size())
+    {
+        auto endOfVector = pinNumbers.end();
+
+        for(auto it = pinNumbers.begin(); it != endOfVector; it++)
+            digitalWrite(pinNumbers[*it],states[*it]) ;
+    }
+}

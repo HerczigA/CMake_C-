@@ -7,8 +7,11 @@
 #include <vector>
 #include "spi_module.hpp"
 #include "i2c_module.hpp"
+#include "uart_module.hpp"
 #include <wiringPi.h>
 #include <sys/ioctl.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 #define MAX_PORTS_NUMBER 21
 #define MAX_SERVO_PORTS 8
@@ -51,6 +54,14 @@ enum dev_type
     DEVTYPE
 };
 
+
+struct Communications
+{
+    SPI_Frame spi;
+    I2C_Frame i2c;
+    term serialport;
+};
+
 class foo
 {
     public:
@@ -81,10 +92,13 @@ class filehandler
 class device
 {
     protected:
+        Communications COM;
         Id_t id;
         comm_t commType;
         string name;
         devType_t dev_Type;
+    
+
         bool Initialized;
         int Init_SPI(SPI_Frame spi);
         int Init_I2C();
@@ -107,7 +121,7 @@ class device
         Id_t get_ID();
         comm_t get_Comm_Type();
         uint8_t setPins(vector<uint8_t> pinNumbers,uint8_t directions[], uint8_t numberOfPorts);
-        //void Init_Communication();
+        void Init_Communication();
 };
 
 class sensor : public device
@@ -123,7 +137,7 @@ class actuator : public device
       public:
         actuator(string Name, Id_t ID, devType_t devtype, comm_t commtype) : device(Name,ID,devtype,commtype) {}
         void pwm_Setup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts);
-        //void digital_Write();
+        void digital_Write(vector<int> pinNumbers,vector<int> states);
         void pwm_Write(uint8_t pinNumber, uint16_t DC, unsigned int lengthOfDelay);
         void pwm_Servo_Write_In_Loop(uint8_t pinNumber, int16_t DC, time_ms_t lengthOfDelay, bool loop);
         void pwm_Servo_Full_Limit(uint8_t pinNumber,time_ms_t t_length);
