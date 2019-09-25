@@ -5,10 +5,13 @@ import os
 
 argNum = len(sys.argv)
 cnt = 1
-cmd =  "cmake"
+cmd =  "cmake -GNinja ."
 ninja ="ninja"
 make = "make"
 isbuild = False
+cleaning = False
+iscompile = False
+rm = "rm -rf CMakeFiles *.ninja *.cmake *Cache* Tutorial"
 
 if argNum > 1:
     helper = sys.argv[1]
@@ -34,7 +37,8 @@ if argNum > 1:
 	files, then the python script try to compile the 
 	project with ninja.
 	
-	-x or --purge remove....
+	-x or --purge remove all the unnecessary build 
+	files, executable files  and directory(CMakeFiles)
 	"""
 	exit()
 else:
@@ -45,26 +49,36 @@ else:
     """
     exit()
 
-print  len(sys.argv)
+
 if argNum > 1:
     temp = sys.argv[1]
     while cnt < argNum:
-        print "cmaking and maybe compiling"
-        
-        if temp  == "-c" or temp =="--cmake":
-            cmd = cmd + " -GNinja ."
-        
+
+        if temp  == "-c" or temp == "--cmake":
+	    isbuild = True
+	    os.system(cmd)
+
         elif  temp == "-b" or temp == "--build":
-            isbuild = True
-        
-	if argNum-1 > cnt:
-            cnt = cnt +1
+            iscompile = True
+
+	elif temp == "-x" or temp == "--purge":
+	    cleaning = True
+
+        cnt = cnt +1
+	if (argNum-1) >= cnt:
 	    temp = sys.argv[cnt]
 
-os.system(cmd)
 
-if isbuild :
-    if cmd == "cmake .": 
-        os.system(make)
-    elif cmd == "cmake -GNinja .":
-        os.system(ninja)
+if cleaning:
+    os.system(rm)
+    if isbuild :
+	os.system(cmd)
+    if iscompile:
+	os.system(ninja)
+
+elif isbuild :
+	os.system(cmd)
+	if iscompile:
+	    os.system(ninja)
+elif iscompile:
+    os.system(ninja)    
