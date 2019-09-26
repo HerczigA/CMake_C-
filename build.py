@@ -11,7 +11,8 @@ make = "make"
 isbuild = False
 cleaning = False
 iscompile = False
-rm = "rm -rf CMakeFiles *.ninja *.cmake *Cache* Tutorial"
+dirName = "build"
+rm = "rm -rf CMakeFiles *.ninja *.cmake *Cache* RPI_tutorial .ninja*"
 
 if argNum > 1:
     helper = sys.argv[1]
@@ -84,3 +85,9 @@ elif isbuild :
 	    os.system(ninja)
 elif iscompile:
     os.system(ninja)    
+    
+
+if isbuild:   
+    if not os.path.exists(dirName):
+        os.mkdir(dirName)
+    os.system("mv RPI_tutorial build/")

@@ -11,12 +11,24 @@ if(NOT CMAKE_CXX_COMPILER)
 
 endif()
 
-    file(GLOB SUBFILES src/*.cpp hdr/*.hpp main.cpp)
+#    file(GLOB SUBFILES src/*.cpp hdr/*.hpp main.cpp Communication/*.cpp Communication/*.hpp)
+#if(__DEBUG)
 #    set(CMAKE_C_FLAGS "-Wall -g")
-    message(STATUS "YOLO " ${SUBFILES})
+#endif()
+    set(SOURCES Communication/i2c_module.cpp
+		src/device.cpp
+		main.cpp)
+
+    set(HEADERS Communication/i2c_module.hpp
+		Communication/spi_module.hpp
+		Communication/uart_module.hpp
+		hdr/device.hpp)
+
+    message(STATUS "These are the sources :" ${SOURCES})
+    message(STATUS "And headers: " ${HEADERS})
 
 find_library(wiringPi_LIB wiringPi)
 
-add_executable(${PROJECT} ${SUBFILES})
+add_executable(${PROJECT} ${SOURCES} ${HEADERS})
 
 target_link_libraries(${PROJECT} ${wiringPi_LIB} pthread)
