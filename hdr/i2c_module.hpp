@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <linux/i2c-dev.h>
 #include <string>
+#include <fstream>
 #include <iostream>
 #include <vector>
 #include <string.h>
@@ -45,7 +46,7 @@ int getAddress()
     delay(10);
     try
     {
-        ifile.open(resultI2CAddress.c_str, std::ifstream::in);
+        ifile.open(resultI2CAddress.c_str(), std::ifstream::in);
         if(!ifile.is_open())
            throw "could not open i2c file"; 
     }

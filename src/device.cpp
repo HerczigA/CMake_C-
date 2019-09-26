@@ -184,7 +184,7 @@ int device::Init_UART()
     for(auto it = serial.begin(); it != endOfDev; ++it)
     {
         const string temp = *it;
-        COM.serialport.uartFD = open(temp.c_str,O_RDWR | O_NOCTTY | O_NDELAY );    /* code */
+        COM.serialport.uartFD = open(temp.c_str(),O_RDWR | O_NOCTTY | O_NDELAY );    /* code */
         if(COM.serialport.uartFD > 0)   
             break;
     }
