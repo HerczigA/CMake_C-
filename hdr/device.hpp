@@ -5,9 +5,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "spi_module.hpp"
-#include "i2c_module.hpp"
-#include "uart_module.hpp"
+#include "../Communication/spi_module.hpp"
+#include "../Communication/i2c_module.hpp"
+#include "../Communication/uart_module.hpp"
 #include <wiringPi.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
