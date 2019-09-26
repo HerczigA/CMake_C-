@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.6)
-project(Tutorial)
 
-set(Tutorial_VERSION_MAJOR 1)
-set(Tutorial_VERSION_MINOR 0)
+set(PROJECT "RPI_tutorial")
+project(${PROJECT})
+
+set(PROJECT_VERSION_MAJOR 1)
+set(PROJECT_VERSION_MINOR 0)
 
 if(NOT CMAKE_CXX_COMPILER)
     set(CMAKE_CXX_COMPILER /usr/bin/g++)
@@ -15,6 +17,6 @@ endif()
 
 find_library(wiringPi_LIB wiringPi)
 
-add_executable(Tutorial ${SUBFILES})
+add_executable(${PROJECT} ${SUBFILES})
 
-target_link_libraries(Tutorial ${wiringPi_LIB})
+target_link_libraries(${PROJECT} ${wiringPi_LIB} pthread)
