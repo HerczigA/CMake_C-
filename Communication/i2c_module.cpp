@@ -1,6 +1,3 @@
-#ifndef _I2C_MODULE_H
-#define _I2C_MODULE_H
-
 #include <stdint.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
@@ -11,30 +8,7 @@
 #include <vector>
 #include <string.h>
 #include <wiringPi.h>
-
-#define I2C_PACKET_LENGTH 16
-
-
-
-enum I2C_error
-{
-    E_I2C_OK,
-    E_I2C_OPEN,
-    E_I2C_SELECT,
-    E_I2C_SPEED_SET,
-    E_I2C_FILE_OPEN,
-    E_I2C_ADDRESS,
-    E_I2C_UNKOW,
-    E_I2C_ALL
-};
-
-struct I2C_Frame
-{
-    uint32_t ClockSpeed;
-    char Packet[I2C_PACKET_LENGTH];
-    uint8_t address;
-    int i2CFD;
-};
+#include "i2c_module.hpp"
 
 int getAddress()
 {
@@ -48,7 +22,7 @@ int getAddress()
     {
         ifile.open(resultI2CAddress.c_str(), std::ifstream::in);
         if(!ifile.is_open())
-           throw "could not open i2c file"; 
+           throw "could not open i2c file";
     }
     catch(const std::string msg)
     {
@@ -57,9 +31,9 @@ int getAddress()
         return E_I2C_FILE_OPEN;
     }
     int j =0;
-    
+
     while(getline(ifile,line))
-    {   
+    {
         if(j == 0)
             j++;
         else
@@ -67,11 +41,11 @@ int getAddress()
             char *p,*k;
             p = new char[line.length()+1];
             k=p;
-            
+
             strcpy(p,line.c_str());
-             
+
             char *t;
-             
+
             while(*p!= EOF || *p != '\n' )
             {
                 if( *p == ':')
@@ -83,7 +57,7 @@ int getAddress()
                     t++;
                     if(isdigit(*t))
                     {
-                        result = atoi(t);   //hex number also! 
+                        result = atoi(t);   //hex number also!
                         *t = 'a';
                     }
                     else
@@ -96,19 +70,19 @@ int getAddress()
                         case 'b':
                             result = 11;
                             break;
-                        
+
                         case 'c':
                             result = 12;
                             break;
-                        
+
                         case 'd':
                             result = 13;
                             break;
-                        
+
                         case 'e':
                             result = 14;
                             break;
-                        
+
                         case 'f':
                             result = 15;
                             break;
@@ -125,8 +99,7 @@ int getAddress()
             }
             delete[] k;
         }
-            
+
     }
     return result;
 }
-#endif
