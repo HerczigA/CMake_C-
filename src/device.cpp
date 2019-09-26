@@ -131,6 +131,8 @@ int device::Init_SPI(SPI_Frame spi)
     if(FramePackage.ClockPin)
         pinMode(FramePackage.ChipSelect,OUTPUT);
 
+    return 0;
+
 }
 int device::Init_I2C(I2C_Frame i2c)
 {
@@ -138,7 +140,7 @@ int device::Init_I2C(I2C_Frame i2c)
     
     (void) i2c;
     int result  = E_I2C_OK;
-    string Path_I2C = "/dev/i2c-1";
+    const string Path_I2C = "/dev/i2c-1";
     COM.i2c.i2CFD = open (Path_I2C.c_str(),O_RDWR );
     if(COM.i2c.i2CFD >= 0)
     {
@@ -181,7 +183,7 @@ int device::Init_UART()
     auto endOfDev = serial.end();
     for(auto it = serial.begin(); it != endOfDev; ++it)
     {
-        string temp = *it;
+        const string temp = *it;
         COM.serialport.uartFD = open(temp.c_str,O_RDWR | O_NOCTTY | O_NDELAY );    /* code */
         if(COM.serialport.uartFD > 0)   
             break;

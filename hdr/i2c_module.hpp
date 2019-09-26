@@ -9,6 +9,8 @@
 #include <iostream>
 #include <vector>
 #include <string.h>
+#include <wiringPi.h>
+
 #define I2C_PACKET_LENGTH 16
 
 

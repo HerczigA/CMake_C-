@@ -16,7 +16,7 @@ struct SPI_Frame
     int MISOPin;
     int clk_Pol_Pha;
     uint8_t endianess;
-    char Packet[];
+    char Packet[SPI_PACKET_LENGTH];
     int spiFD;
 };
 
