@@ -56,6 +56,7 @@ if argNum > 1:
 
         if temp  == "-c" or temp == "--cmake":
 	    isbuild = True
+	    print "will build"
 	    os.system(cmd)
 
         elif  temp == "-b" or temp == "--build":
@@ -77,6 +78,7 @@ if cleaning:
 	os.system(ninja)
 
 elif isbuild :
+	print "building" 
 	os.system(cmd)
 	if iscompile:
 	    os.system(ninja)
