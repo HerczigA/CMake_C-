@@ -101,7 +101,7 @@ class device
 
         bool Initialized;
         int Init_SPI(SPI_Frame spi);
-        int Init_I2C();
+        int Init_I2C(I2C_Frame i2c);
         int Init_Bluetooth();
         int Init_UART();
         int Init_CAN();

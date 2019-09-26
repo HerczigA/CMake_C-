@@ -1,6 +1,9 @@
 #include "../hdr/device.hpp"
 #include <iostream>
 #include <string>
+#include <string.h>
+#include <errno.h>
+#include <error.h>
 #include <vector>
 #include <fstream>
 #include <algorithm>
@@ -27,7 +30,7 @@ void filehandler::getInfoFromPattern()
     catch(fstream::failure e)
     {
         std::cerr << e.what() << '\n';
-        std::cout << e.what() << "Exception under opening" << '\n';
+        std::cout << e.what() << "Exception under opening" << endl;
         return;
     }
     while(getline(fileHand,lineFromFile))
@@ -128,9 +131,42 @@ int device::Init_SPI(SPI_Frame spi)
     if(FramePackage.ClockPin)
         pinMode(FramePackage.ChipSelect,OUTPUT);
 
+    return 0;
+
 }
-int device::Init_I2C()
+int device::Init_I2C(I2C_Frame i2c)
 {
+    /*system(char* ) find i2c dev address!*/
+    
+    (void) i2c;
+    int result  = E_I2C_OK;
+    const string Path_I2C = "/dev/i2c-1";
+    COM.i2c.i2CFD = open (Path_I2C.c_str(),O_RDWR );
+    if(COM.i2c.i2CFD >= 0)
+    {
+        int temp = getAddress();
+        if(temp) 
+        {
+            COM.i2c.address = temp;   
+            if(ioctl(COM.i2c.i2CFD, I2C_SLAVE, COM.i2c.address) < 0)
+            {
+                cout << "Unable to select I2C device " << strerror(errno) << endl;
+                result = E_I2C_SELECT;    
+            }
+        }
+        else
+        {
+            cout << "address is 0"  << endl;
+            result = E_I2C_ADDRESS;
+        }
+    }
+    else
+    {
+        cout<< "can not open I2C.Try with sudo or check the path, wiring!" << endl;
+        result = E_I2C_OPEN;
+    }
+    
+    return result;
 }
 
 int device::Init_UART()
@@ -147,7 +183,7 @@ int device::Init_UART()
     auto endOfDev = serial.end();
     for(auto it = serial.begin(); it != endOfDev; ++it)
     {
-        string temp = *it;
+        const string temp = *it;
         COM.serialport.uartFD = open(temp.c_str,O_RDWR | O_NOCTTY | O_NDELAY );    /* code */
         if(COM.serialport.uartFD > 0)   
             break;
@@ -156,7 +192,8 @@ int device::Init_UART()
     if(COM.serialport.uartFD < 0)
         {
             cout <<"Invalid Filedescriptor\n" \
-                   "maybe don't connect any wire?"<<endl;
+                   "maybe don't connect any wire or privilage not proper?" \
+                   "Try with sudo"<<endl;
     //        syslog(LOG_ERR,"%s",strerror(errno));
             return -1;
         }
@@ -210,11 +247,11 @@ void device::Init_Communication()
     switch(commType)
     {
         case SPI:
-            Init_SPI();
+            Init_SPI(COM.spi);
             break;
 
         case I2C:
-            Init_I2C();
+            Init_I2C(COM.i2c);
             break;
 
         case CAN:
