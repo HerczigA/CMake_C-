@@ -137,7 +137,7 @@ int device::Init_I2C(I2C_Frame i2c)
     /*system(char* ) find i2c dev address!*/
     
     (void) i2c;
-    int result  = E_OK;
+    int result  = E_I2C_OK;
     string Path_I2C = "/dev/i2c-1";
     COM.i2c.i2CFD = open (Path_I2C.c_str(),O_RDWR );
     if(COM.i2c.i2CFD >= 0)
@@ -149,19 +149,19 @@ int device::Init_I2C(I2C_Frame i2c)
             if(ioctl(COM.i2c.i2CFD, I2C_SLAVE, COM.i2c.address) < 0)
             {
                 cout << "Unable to select I2C device " << strerror(errno) << endl;
-                result = E_SELECT;    
+                result = E_I2C_SELECT;    
             }
         }
         else
         {
             cout << "address is 0"  << endl;
-            result = E_ADDRESS;
+            result = E_I2C_ADDRESS;
         }
     }
     else
     {
         cout<< "can not open I2C.Try with sudo or check the path, wiring!" << endl;
-        result = E_OPEN;
+        result = E_I2C_OPEN;
     }
     
     return result;
@@ -245,11 +245,11 @@ void device::Init_Communication()
     switch(commType)
     {
         case SPI:
-            Init_SPI();
+            Init_SPI(COM.spi);
             break;
 
         case I2C:
-            Init_I2C();
+            Init_I2C(COM.i2c);
             break;
 
         case CAN:

@@ -15,13 +15,13 @@
 
 enum I2C_error
 {
-    E_OK,
-    E_OPEN,
-    E_SELECT,
-    E_SPEED_SET,
+    E_I2C_OK,
+    E_I2C_OPEN,
+    E_I2C_SELECT,
+    E_I2C_SPEED_SET,
     E_I2C_FILE_OPEN,
-    E_ADDRESS,
-    E_UNKOW,
+    E_I2C_ADDRESS,
+    E_I2C_UNKOW,
     E_I2C_ALL
 };
 
