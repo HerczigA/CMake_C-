@@ -3,6 +3,8 @@
 import sys
 import os
 
+sys.path.append('/tools/pythonScripts/ ')
+import dirhandling.py   
 argNum = len(sys.argv)
 cnt = 1
 cmd =  "cmake -GNinja ."
@@ -12,6 +14,7 @@ isbuild = False
 cleaning = False
 iscompile = False
 dirName = "build"
+target = "RPI_tutorial"
 rm = "rm -rf CMakeFiles *.ninja *.cmake *Cache* RPI_tutorial .ninja*"
 
 if argNum > 1:
@@ -74,20 +77,18 @@ if argNum > 1:
 if cleaning:
     os.system(rm)
     if isbuild :
-	os.system(cmd)
+        os.system(cmd)
     if iscompile:
-	os.system(ninja)
+        os.system(ninja)
+        MakeDir_And_Mv_binary(dirName,target)
 
 elif isbuild :
 	print "building" 
 	os.system(cmd)
 	if iscompile:
 	    os.system(ninja)
+        MakeDir_And_Mv_binary(dirName,target)
+	    
 elif iscompile:
     os.system(ninja)    
-    
-
-if isbuild:   
-    if not os.path.exists(dirName):
-        os.mkdir(dirName)
-    os.system("mv RPI_tutorial build/")
+    MakeDir_And_Mv_binary(dirName,target)
