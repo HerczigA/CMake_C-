@@ -20,6 +20,7 @@ enum I2C_error
     E_SELECT,
     E_SPEED_SET,
     E_I2C_FILE_OPEN,
+    E_ADDRESS,
     E_UNKOW,
     E_I2C_ALL
 };
@@ -30,7 +31,6 @@ struct I2C_Frame
     char Packet[I2C_PACKET_LENGTH];
     uint8_t address;
     int i2CFD;
-    std::string Path_I2C
 };
 
 int getAddress()
@@ -54,21 +54,25 @@ int getAddress()
         return E_I2C_FILE_OPEN;
     }
     int j =0;
-    char *p;
+    
     while(getline(ifile,line))
     {   
         if(j == 0)
             j++;
         else
         {
-             strcpy(p,line.c_str());
+            char *p,*k;
+            p = new char[line.length()+1];
+            k=p;
+            
+            strcpy(p,line.c_str());
              
-             char *t;
+            char *t;
              
-             while(*p)
-             {
-                 if( *p == ':')
-                 {
+            while(*p!= EOF || *p != '\n' )
+            {
+                if( *p == ':')
+                {
                     p++;
                     while(!isdigit(*p))
                         p++;
@@ -113,9 +117,10 @@ int getAddress()
 
                     result = result + (16*atoi(p));
                     break;
-                 }
-             }
-
+                }
+                p++;
+            }
+            delete[] k;
         }
             
     }

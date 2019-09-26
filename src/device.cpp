@@ -137,26 +137,34 @@ int device::Init_I2C(I2C_Frame i2c)
     /*system(char* ) find i2c dev address!*/
     
     (void) i2c;
-    int result  = 0;
+    int result  = E_OK;
     string Path_I2C = "/dev/i2c-1";
     COM.i2c.i2CFD = open (Path_I2C.c_str(),O_RDWR );
     if(COM.i2c.i2CFD >= 0)
     {
         int temp = getAddress();
-        COM.i2c.address = temp;
-        if(ioctl(COM.i2c.i2CFD, I2C_SLAVE, COM.i2c.address) < 0)
+        if(temp) 
         {
-            cout << "Unable to select I2C device " << strerror(errno) << endl;
-            result = E_SELECT;    
+            COM.i2c.address = temp;   
+            if(ioctl(COM.i2c.i2CFD, I2C_SLAVE, COM.i2c.address) < 0)
+            {
+                cout << "Unable to select I2C device " << strerror(errno) << endl;
+                result = E_SELECT;    
+            }
+        }
+        else
+        {
+            cout << "address is 0"  << endl;
+            result = E_ADDRESS;
         }
     }
     else
     {
         cout<< "can not open I2C.Try with sudo or check the path, wiring!" << endl;
-        return E_OPEN;
+        result = E_OPEN;
     }
     
-    
+    return result;
 }
 
 int device::Init_UART()
