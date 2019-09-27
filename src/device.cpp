@@ -325,10 +325,6 @@ void device::Init_Communication()
             Init_Bluetooth();
             break;
 
-        case Wifi:
-            Init_Wifi();
-            break;
-
         default:
             break;
     }
