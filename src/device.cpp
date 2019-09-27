@@ -114,8 +114,8 @@ spi_error device::Init_SPI(SPI_Frame spi)
     size_t i = 0;
     size_t limit = 0;
     for(; i < MAX_SPI_CHANNELS; i++)
-    {
-        if(COM.spi.spiFD[i] = open(COM.spi.spiChns[i].c_str(),O_RDWR) < 0)
+    {   string temp = COM.spi.spiChns[i];
+        if(COM.spi.spiFD[i] = open(temp.c_str(), O_RDWR) < 0)
            {
                cnt++;
                if(cnt == 1 && i == 1)
@@ -150,7 +150,7 @@ spi_error device::Init_SPI(SPI_Frame spi)
     {
         if (ioctl (COM.spi.spiFD[i], SPI_IOC_WR_MODE, &COM.spi.clk_Pol_Pha[i])< 0)
         {
-            cout<< "SPI Write Mode POL & Pha failure" << COM.spi.spiChns[i] << endl;
+            cout<< "SPI Write Mode POL & Pha failure" << (string) COM.spi.spiChns[i] << endl;
             result = E_SPI_PHA_POL;
         }
          
