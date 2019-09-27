@@ -8,6 +8,7 @@
 #include <linux/spi/spidev.h>
 #include <string>
 #include <vector>
+#include <iostream>
 
 #define MAX_SPI_CHANNELS 2
 
@@ -22,13 +23,11 @@ enum errorSPI
     E_SPI_ALL
 };
 typedef uint8_t spi_error;
-const static std::string chn0 = "/dev/spidev0.0";
-const static std::string chn1 = "/dev/spidev0.1";
 
 struct SPI_Frame
 {
     uint32_t ClockSpeed[MAX_SPI_CHANNELS];
-    std::vector <string> spiChns;
+    std::vector<string> spiChns;
     int clk_Pol_Pha[MAX_SPI_CHANNELS];
     uint8_t endianess[MAX_SPI_CHANNELS];    //0 MSB other LSB
     char Packet[SPI_PACKET_LENGTH];

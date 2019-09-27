@@ -39,7 +39,6 @@ enum comm_type
     UART,
     I2C,
     Bluetooh,
-    Wifi,
     Unknow_communication,
     COMMTYPE
 
@@ -105,7 +104,6 @@ class device
         int Init_Bluetooth();
         int Init_UART();
         int Init_CAN();
-        int Init_Wifi();
 
     public:
         device(string Name, Id_t ID, devType_t devtype,comm_t commtype): name{Name}
