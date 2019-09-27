@@ -110,7 +110,7 @@ class device
         {
             id =( !ID && id_counter != 1 ) ? id_counter : id_counter++;
             dev_Type = (devtype >= Sensor && devtype <= Sensor_Actuator) ? devtype : Unknow_device;
-            commType = (commtype >= SPI && commtype <= Wifi) ? commtype : Unknow_communication;
+            commType = (commtype >= SPI && commtype <= Bluetooth) ? commtype : Unknow_communication;
             wiringPiSetup();
             Initialized = false;
         }
