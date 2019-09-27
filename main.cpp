@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     }
 
     sensor senDev("IRALED",3,5,SPI);
-    actuator Motor("MicroServo",2,2,Wifi);
+    actuator Motor("MicroServo",2,2,Bluetooth);
     cout << senDev.get_ID() << endl;
     cout << senDev.get_Name() << endl;
 

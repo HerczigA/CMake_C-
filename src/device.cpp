@@ -258,9 +258,7 @@ void device::Init_Communication()
             break;
 
         /*case Wifi:
-            Init_Wifi();
             break;*/
-
         default:
             break;
     }
