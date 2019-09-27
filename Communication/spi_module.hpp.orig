@@ -6,9 +6,13 @@
 
 #include <stdint.h>
 #include <linux/spi/spidev.h>
+<<<<<<< HEAD
 #include <string>
 #include <vector>
 #include <iostream>
+=======
+#include <vector>
+>>>>>>> 	modified:   Communication/spi_module.hpp
 
 #define MAX_SPI_CHANNELS 2
 
@@ -23,19 +27,34 @@ enum errorSPI
     E_SPI_ALL
 };
 typedef uint8_t spi_error;
+<<<<<<< HEAD
 
 struct SPI_Frame
 {
+    /*For Full duplex com-> ioctl(fd,SPI_IOC_MESSAGE,struct spi_ioc_transfer).
+      Full duplex communication needs:
+      Cross-compile with cross-gcc -I/path/to/cross-kernel/include
+      if you don't work on the fixed hardware.
+      For half duplex, read or write but just one at time read/write()... */
     uint32_t ClockSpeed[MAX_SPI_CHANNELS];
-<<<<<<< HEAD
     std::vector<std::string> spiChns;
-=======
-    std::vector<string> spiChns;
->>>>>>>  chn1 use more then one variable
     int clk_Pol_Pha[MAX_SPI_CHANNELS];
     uint8_t endianess[MAX_SPI_CHANNELS];    //0 MSB other LSB
     char Packet[SPI_PACKET_LENGTH];
     int spiFD[MAX_SPI_CHANNELS];
+=======
+const static std::string chn0 = "/dev/spidev0.0";
+const static std::string chn1 = "/dev/spidev0.1";
+
+struct SPI_Frame
+{
+    uint32_t ClockSpeed[];
+    std::vector <string> spiChns;
+    int clk_Pol_Pha[];
+    uint8_t endianess[];    //0 MSB other LSB
+    char Packet[SPI_PACKET_LENGTH];
+    int spiFD[2];
+>>>>>>> 	modified:   Communication/spi_module.hpp
 
 };
 
