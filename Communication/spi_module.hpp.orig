@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <linux/spi/spidev.h>
 #include <string>
+#include <string>
 #include <vector>
 #include <iostream>
 
@@ -32,11 +33,8 @@ struct SPI_Frame
       if you don't work on the fixed hardware.
       For half duplex, read or write but just one at time read/write()... */
     uint32_t ClockSpeed[MAX_SPI_CHANNELS];
-<<<<<<< HEAD
     std::vector<std::string> spiChns;
-=======
     std::vector<string> spiChns;
->>>>>>>  chn1 use more then one variable
     int clk_Pol_Pha[MAX_SPI_CHANNELS];
     uint8_t endianess[MAX_SPI_CHANNELS];    //0 MSB other LSB
     char Packet[SPI_PACKET_LENGTH];
