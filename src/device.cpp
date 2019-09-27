@@ -14,6 +14,8 @@
 
 using namespace std;
 
+const static std::string chn0 = "/dev/spidev0.0";
+const static std::string chn1 = "/dev/spidev0.1";
 
 
 string device::get_Name()
@@ -39,26 +41,30 @@ comm_t device::get_Comm_Type()
 
 spi_error device::Init_SPI(SPI_Frame spi)
 {
-    
+    (void) spi;
     spi_error result =E_SPI_OK;
     size_t cnt = 0;
-    size_t chn1 = 0;
+    size_t channel = 0;
     size_t i = 0;
     size_t limit = 0;
+    COM.spi.spiChns.push_back(chn0);
+    
+    COM.spi.spiChns.push_back(chn1);
+    
     for(; i < MAX_SPI_CHANNELS; i++)
     {   string temp = COM.spi.spiChns[i];
         if(COM.spi.spiFD[i] = open(temp.c_str(), O_RDWR) < 0)
            {
                cnt++;
                if(cnt == 1 && i == 1)
-                    chn1++;
+                    channel++;
                if(cnt == MAX_SPI_CHANNELS)
                     result = E_SPI_FD_OPEN;
            }        
     }
     if(cnt)
     {
-        if(chn1)
+        if(channel)
         {
             i = 0;
             limit = 1;
@@ -222,10 +228,8 @@ int device::Init_CAN()
 
 int device::Init_Bluetooth()
 {
-}
+    return 0;
 /*
-int device::Init_Wifi()
-{
 }*/
 
 void device::Init_Communication()
