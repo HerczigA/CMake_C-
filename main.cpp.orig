@@ -18,11 +18,18 @@ int main(int argc, char *argv[])
         fh.FinishProcess();
     }
 
+<<<<<<< HEAD
     sensor Button("button",1,Actuator,Unknow_communication);
     
     actuator Motor("MicroServo",2,2,Bluetooth);
     cout << Button.get_ID() << endl;
     cout << Button.get_Name() << endl;
+=======
+    sensor senDev("IRALED",3,5,SPI);
+    actuator Motor("MicroServo",2,2,Bluetooth);
+    cout << senDev.get_ID() << endl;
+    cout << senDev.get_Name() << endl;
+>>>>>>> 	modified:   hdr/device.hpp
 
     cout << Motor.get_ID() << endl;
     cout << Motor.get_Name() << endl;
@@ -41,25 +48,17 @@ int main(int argc, char *argv[])
 
     bool loop = true;
     cout<<" GPIO size = " << sizeof(GPIO) << endl;
-<<<<<<< HEAD
-    Motor.pwm_Setup(GPIO,gpioNum);
-    Motor.pwm_Servo_Full_Limit(GPIO[0],waiting);
+    
+    while (loop)
     */
     const char* JSONpath ="JSON/pattern/template.json";
     json_herczig::json JSONobj(*JSONpath);
-=======
-    
-    while (loop)
-    {
-        if(Button.getButtonState())
-            Motor.pwm_Servo_Full_Limit
             ;
         Button.digital_Read(buttonka);
     }
     //Motor.pwm_ServoSetup(GPIO,gpioNum);
     //Motor.pwm_Servo_Full_Limit(GPIO[0],waiting);
 
->>>>>>> started input implementing
 
         JSONobj.OpenPattern();
         JSONobj.processPattern();
