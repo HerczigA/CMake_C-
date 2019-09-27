@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <linux/spi/spidev.h>
 #include <string>
+#include <string>
 #include <vector>
 #include <iostream>
 
