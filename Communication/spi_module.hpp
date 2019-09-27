@@ -23,6 +23,8 @@ enum errorSPI
     E_SPI_ALL
 };
 typedef uint8_t spi_error;
+const static std::string chn0 = "/dev/spidev0.0";
+const static std::string chn1 = "/dev/spidev0.1";
 
 struct SPI_Frame
 {

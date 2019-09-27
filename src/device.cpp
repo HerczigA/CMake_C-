@@ -103,6 +103,69 @@ spi_error device::Init_SPI(SPI_Frame spi)
             cout<< "SPI Read Mode LSB/MSB failure" << COM.spi.spiChns[i] << endl;
             result = E_SPI_ENDIANESS;
         }
+    size_t chn1 = 0;
+    size_t i = 0;
+    size_t limit = 0;
+    for(; i < MAX_SPI_CHANNELS; i++)
+    {
+        if(COM.spi.spiFD[i] = open(COM.spi.spiChns[i].c_str(),O_RDWR) < 0)
+           {
+               cnt++;
+               if(cnt == 1 && i == 1)
+                    chn1++;
+               if(cnt == MAX_SPI_CHANNELS)
+                    result = E_SPI_FD_OPEN;
+           }        
+    }
+    if(cnt)
+    {
+        if(chn1)
+        {
+            i = 0;
+            limit = 1;
+        }
+        {
+            i = 1;
+            limit = MAX_SPI_CHANNELS;
+        }
+
+        if (ioctl (COM.spi.spiFD[i], SPI_IOC_WR_LSB_FIRST, &COM.spi.endianess[i]) < 0)
+        {
+            cout<< "SPI Write Mode LSB/MSB failure" << COM.spi.spiChns[i] << endl;
+            result = E_SPI_ENDIANESS;
+        }
+    }
+        
+        if (ioctl (COM.spi.spiFD[i], SPI_IOC_WR_MAX_SPEED_HZ,&COM.spi.ClockSpeed[i]) < 0)
+        {
+            cout<< "SPI Write Mode speed failure" << COM.spi.spiChns[i] << endl;
+            result = E_SPI_SPEED;
+        }
+
+        if (ioctl (COM.spi.spiFD[i], SPI_IOC_WR_MAX_SPEED_HZ,&COM.spi.ClockSpeed[i]) < 0)
+        {
+            cout<< "SPI Read Mode speed failure" << COM.spi.spiChns[i] << endl;
+            result = E_SPI_SPEED;
+        }
+    }
+
+        if (ioctl (COM.spi.spiFD[i], SPI_IOC_WR_MODE, &COM.spi.clk_Pol_Pha[i])< 0)
+        {
+            cout<< "SPI Write Mode POL & Pha failure" << COM.spi.spiChns[i] << endl;
+            result = E_SPI_PHA_POL;
+        }
+         
+    return result;
+        {
+            cout<< "SPI Read Mode POL & Pha failure" << COM.spi.spiChns[i] << endl;
+            result = E_SPI_PHA_POL;
+        }
+
+        if (ioctl (COM.spi.spiFD[i], SPI_IOC_RD_LSB_FIRST, &COM.spi.endianess[i]) < 0)
+        {
+            cout<< "SPI Read Mode LSB/MSB failure" << COM.spi.spiChns[i] << endl;
+            result = E_SPI_ENDIANESS;
+        }
 
         if (ioctl (COM.spi.spiFD[i], SPI_IOC_WR_LSB_FIRST, &COM.spi.endianess[i]) < 0)
         {
