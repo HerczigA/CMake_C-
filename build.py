@@ -14,8 +14,9 @@ isbuild = False
 cleaning = False
 iscompile = False
 dirName = "build"
-target = " RPI_tutorial "
-rm = "rm -rf CMakeFiles *.ninja *.cmake *Cache* RPI_tutorial .ninja*"
+target = " mv RPI_tutorial build/"
+rm = "rm -rf CMakeFiles *.ninja *.cmake *Cache* build/RPI_tutorial .ninja*"
+rm_withoutBinary = "rm -rf CMakeFiles *.ninja *.cmake *Cache* .ninja*"
 
 if argNum > 1:
     helper = sys.argv[1]
@@ -68,6 +69,9 @@ if argNum > 1:
 
 	elif temp == "-x" or temp == "--purge":
 	    cleaning = True
+
+	elif temp == "-r " or temp == "--Rb":
+	    os.system(rm_withoutBinary)
 
         cnt = cnt +1
 	if (argNum-1) >= cnt:

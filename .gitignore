@@ -7,3 +7,4 @@ Tutorial
 *.txt
 !README.txt
 *.ninj*
+/tools/pythonScripts/*.pyc
