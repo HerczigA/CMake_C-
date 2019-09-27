@@ -103,23 +103,27 @@ spi_error device::Init_SPI(SPI_Frame spi)
             cout<< "SPI Read Mode LSB/MSB failure" << COM.spi.spiChns[i] << endl;
             result = E_SPI_ENDIANESS;
         }
-    size_t chn1 = 0;
+    size_t channel = 0;
     size_t i = 0;
     size_t limit = 0;
+    COM.spi.spiChns.push_back(chn0);
+    
+    COM.spi.spiChns.push_back(chn1);
+    
     for(; i < MAX_SPI_CHANNELS; i++)
     {
         if(COM.spi.spiFD[i] = open(COM.spi.spiChns[i].c_str(),O_RDWR) < 0)
            {
                cnt++;
                if(cnt == 1 && i == 1)
-                    chn1++;
+                    channel++;
                if(cnt == MAX_SPI_CHANNELS)
                     result = E_SPI_FD_OPEN;
            }        
     }
     if(cnt)
     {
-        if(chn1)
+        if(channel)
         {
             i = 0;
             limit = 1;
