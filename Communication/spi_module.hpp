@@ -27,7 +27,7 @@ typedef uint8_t spi_error;
 struct SPI_Frame
 {
     uint32_t ClockSpeed[MAX_SPI_CHANNELS];
-    std::vector<string> spiChns;
+    std::vector<std::string> spiChns;
     int clk_Pol_Pha[MAX_SPI_CHANNELS];
     uint8_t endianess[MAX_SPI_CHANNELS];    //0 MSB other LSB
     char Packet[SPI_PACKET_LENGTH];
