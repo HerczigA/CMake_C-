@@ -43,8 +43,8 @@ enum comm_type
     Bluetooth,
     //Wifi,
 =======
-    Bluetooh,
->>>>>>>  chn1 use more then one variable
+    Bluetooth,
+>>>>>>> fixed namespace issue, comtype name and this using
     Unknow_communication,
     COMMTYPE
 
@@ -92,12 +92,8 @@ class device
         int Init_I2C(I2C_Frame i2c);
         int Init_Bluetooth();
         int Init_UART();
-<<<<<<< HEAD
         //int Init_CAN();
         //int Init_Wifi();
-=======
-        int Init_CAN();
->>>>>>>  chn1 use more then one variable
 
     public:
         device(string Name, Id_t ID, devType_t devtype,comm_t commtype): name{Name}
