@@ -47,9 +47,9 @@ spi_error device::Init_SPI(SPI_Frame spi)
     size_t channel = 0;
     size_t i = 0;
     size_t limit = 0;
-    COM.spi.spiChns.push_back(chn0);
+    this->COM.spi.spiChns.push_back(chn0);
     
-    COM.spi.spiChns.push_back(chn1);
+    this->COM.spi.spiChns.push_back(chn1);
     
     for(; i < MAX_SPI_CHANNELS; i++)
     {   string temp = COM.spi.spiChns[i];
@@ -253,7 +253,7 @@ void device::Init_Communication()
             Init_UART();
             break;
 
-        case Bluetooh:
+        case Bluetooth:
             Init_Bluetooth();
             break;
 
