@@ -38,7 +38,7 @@ enum comm_type
     CAN,
     UART,
     I2C,
-    Bluetooh,
+    Bluetooth,
     Unknow_communication,
     COMMTYPE
 
