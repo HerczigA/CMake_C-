@@ -104,6 +104,7 @@ spi_error device::Init_SPI(SPI_Frame spi)
         {
             cout<< "SPI Read Mode LSB/MSB failure" << COM.spi.spiChns[i] << endl;
             result = E_SPI_ENDIANESS;
+            break;
         }
     size_t channel = 0;
     size_t i = 0;
@@ -177,18 +178,21 @@ spi_error device::Init_SPI(SPI_Frame spi)
         {
             cout<< "SPI Write Mode LSB/MSB failure" << COM.spi.spiChns[i] << endl;
             result = E_SPI_ENDIANESS;
+            break;
         }
         
         if (ioctl (COM.spi.spiFD[i], SPI_IOC_WR_MAX_SPEED_HZ,&COM.spi.ClockSpeed[i]) < 0)
         {
             cout<< "SPI Write Mode speed failure" << COM.spi.spiChns[i] << endl;
             result = E_SPI_SPEED;
+            break;
         }
 
         if (ioctl (COM.spi.spiFD[i], SPI_IOC_RD_MAX_SPEED_HZ,&COM.spi.ClockSpeed[i]) < 0)
         {
             cout<< "SPI Read Mode speed failure" << COM.spi.spiChns[i] << endl;
             result = E_SPI_SPEED;
+            break;
         }
     }
 
