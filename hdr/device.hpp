@@ -112,8 +112,13 @@ class device
 
 class sensor : public device
 {
+    bool buttonPushed;
     public:
-        sensor(string Name, Id_t ID, devType_t devtype, comm_t commtype) : device(Name,ID,devtype,commtype) {}
+        sensor(string Name, Id_t ID, devType_t devtype, comm_t commtype) : device(Name,ID,devtype,commtype) {
+            buttonPushed = false;
+        }
+        void digital_Read(int pin);
+        bool getButtonState();
 
 };
 
