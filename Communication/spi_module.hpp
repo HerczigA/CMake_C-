@@ -27,6 +27,11 @@ typedef uint8_t spi_error;
 
 struct SPI_Frame
 {
+    /*For Full duplex com-> ioctl(fd,SPI_IOC_MESSAGE,struct spi_ioc_transfer).
+      Full duplex communication needs:
+      Cross-compile with cross-gcc -I/path/to/cross-kernel/include
+      if you don't work on the fixed hardware.
+      For half duplex, read or write but just one at time read/write()... */
     uint32_t ClockSpeed[MAX_SPI_CHANNELS];
     std::vector<std::string> spiChns;
     int clk_Pol_Pha[MAX_SPI_CHANNELS];
