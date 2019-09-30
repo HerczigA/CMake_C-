@@ -339,10 +339,26 @@ void device::Init_Communication()
 
 }
 
+void sensor::digital_Read(int pin)
+{
+    if(pin >= MAX_PORTS_NUMBER)
+        return;
+    
+    buttonPushed = digitalRead(pin) ?  true : false;
+    
+}
+
+bool sensor::getButtonState()
+{
+    return buttonPushed;
+}
+
+
 uint8_t device::setPins(vector<uint8_t> pinNumbers, uint8_t directions[], uint8_t numberOfPorts)
 {
     int result = 0;
 
+    
     if(pinNumbers.empty() || numberOfPorts >= MAX_PORTS_NUMBER )
     {
          cout << "Nullpointer for pinNumbers or too much number for ports bastard!? " << endl;
@@ -359,14 +375,19 @@ uint8_t device::setPins(vector<uint8_t> pinNumbers, uint8_t directions[], uint8_
             result= 3;
 
         i=0;
-	cout<<"before while i < NumberOfPorts " << endl;
+
+
         while(i < numberOfPorts)
         {
-
+            if((this->dev_Type == Actuator && directions[i] == INPUT) || (this->dev_Type == Sensor && directions[i] == OUTPUT)) 
+            {
+                result=4;   //can not be actuator input and vice versa
+                break;
+            }
             if(pinNumbers[i] && directions[i])
             {
 	        pinMode(pinNumbers[i],directions[i]);
-		i++;
+		    i++;
 	    }
             else
             {
@@ -448,7 +469,7 @@ void actuator::pwm_Write_Breathing(uint8_t pinNumber,time_ms_t lengthOfDelay)
         pwmWrite(pinNumber,i);
         delay(lengthOfDelay);
         
-        if(i == PWM_RANGE_MAX )
+        if(i == MAX_DC )
             increase = false;
         else if(i == 0)
             increase = true;
