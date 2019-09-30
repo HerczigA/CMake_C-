@@ -22,6 +22,7 @@
 #define MIN_SERVO_DELAY_TIME 100
 #define DEF_SERVO_TIME 200
 #define DEF_SERVO_POSITION 500
+#define PWM_RANGE_MAX 100
 
 typedef uint8_t devType_t;
 typedef uint16_t Id_t;
@@ -98,9 +99,10 @@ class device
         devType_t dev_Type;
     
 
-        bool Initialized;
+        bool device_Initialized;
+        bool communication_Initialized;
         spi_error Init_SPI(SPI_Frame spi);
-        int Init_I2C(I2C_Frame i2c);
+        i2c_error_t Init_I2C(I2C_Frame i2c);
         int Init_Bluetooth();
         int Init_UART();
         int Init_CAN();
@@ -112,7 +114,7 @@ class device
             dev_Type = (devtype >= Sensor && devtype <= Sensor_Actuator) ? devtype : Unknow_device;
             commType = (commtype >= SPI && commtype <= Bluetooth) ? commtype : Unknow_communication;
             wiringPiSetup();
-            Initialized = false;
+            device_Initialized = false;
         }
         string get_Name();
         devType_t get_Dev_Type();
@@ -131,12 +133,19 @@ class sensor : public device
 
 class actuator : public device
 {
-        
+        int pwmRange ;
+        int initValue ;
+
       public:
-        actuator(string Name, Id_t ID, devType_t devtype, comm_t commtype) : device(Name,ID,devtype,commtype) {}
-        void pwm_Setup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts);
+        actuator(string Name, Id_t ID, devType_t devtype, comm_t commtype) : device(Name,ID,devtype,commtype) {
+            pwmRange = PWM_RANGE_MAX;
+            initValue = 0;
+        }
+        void pwm_Setup(int pinNumber);
+        void pwm_ServoSetup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts);
         void digital_Write(vector<int> pinNumbers,vector<int> states);
-        void pwm_Write(uint8_t pinNumber, uint16_t DC, unsigned int lengthOfDelay);
+        void pwm_Write(uint8_t pinNumber, int DC, time_ms_t  lengthOfDelay);
+        void pwm_Write_Breathing(uint8_t pinNumber, time_ms_t  lengthOfDelay);
         void pwm_Servo_Write_In_Loop(uint8_t pinNumber, int16_t DC, time_ms_t lengthOfDelay, bool loop);
         void pwm_Servo_Full_Limit(uint8_t pinNumber,time_ms_t t_length);
         

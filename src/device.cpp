@@ -11,6 +11,7 @@
 #include <bits/stdc++.h>
 #include <wiringPi.h>
 #include <softServo.h>
+#include <softPwm.h>
 
 using namespace std;
 
@@ -158,36 +159,42 @@ spi_error device::Init_SPI(SPI_Frame spi)
         {
             cout<< "SPI Write Mode POL & Pha failure" << (string) COM.spi.spiChns[i] << endl;
             result = E_SPI_PHA_POL;
+            break;
         }
          
         if (ioctl (COM.spi.spiFD[i], SPI_IOC_RD_MODE, &COM.spi.clk_Pol_Pha[i])< 0)
         {
             cout<< "SPI Read Mode POL & Pha failure" << COM.spi.spiChns[i] << endl;
             result = E_SPI_PHA_POL;
+            break;
         }
 
         if (ioctl (COM.spi.spiFD[i], SPI_IOC_RD_LSB_FIRST, &COM.spi.endianess[i]) < 0)
         {
             cout<< "SPI Read Mode LSB/MSB failure" << COM.spi.spiChns[i] << endl;
             result = E_SPI_ENDIANESS;
+            break;
         }
 
         if (ioctl (COM.spi.spiFD[i], SPI_IOC_WR_LSB_FIRST, &COM.spi.endianess[i]) < 0)
         {
             cout<< "SPI Write Mode LSB/MSB failure" << COM.spi.spiChns[i] << endl;
             result = E_SPI_ENDIANESS;
+            break;
         }
         
         if (ioctl (COM.spi.spiFD[i], SPI_IOC_WR_MAX_SPEED_HZ,&COM.spi.ClockSpeed[i]) < 0)
         {
             cout<< "SPI Write Mode speed failure" << COM.spi.spiChns[i] << endl;
             result = E_SPI_SPEED;
+            break;
         }
 
         if (ioctl (COM.spi.spiFD[i], SPI_IOC_WR_MAX_SPEED_HZ,&COM.spi.ClockSpeed[i]) < 0)
         {
             cout<< "SPI Read Mode speed failure" << COM.spi.spiChns[i] << endl;
             result = E_SPI_SPEED;
+            break;
         }
     }
 
@@ -195,14 +202,14 @@ spi_error device::Init_SPI(SPI_Frame spi)
     return result;
 
 }
-int device::Init_I2C(I2C_Frame i2c)
+i2c_error_t device::Init_I2C(I2C_Frame i2c)
 {
     /*system(char* ) find i2c dev address!*/
     
     (void) i2c;
-    int result  = E_I2C_OK;
+    i2c_error_t result  = E_I2C_OK;
     const string Path_I2C = "/dev/i2c-1";
-    COM.i2c.i2CFD = open (Path_I2C.c_str(),O_RDWR );
+    this->COM.i2c.i2CFD = open (Path_I2C.c_str(),O_RDWR );
     if(COM.i2c.i2CFD >= 0)
     {
         int temp = getAddress();
@@ -372,7 +379,7 @@ uint8_t device::setPins(vector<uint8_t> pinNumbers, uint8_t directions[], uint8_
     return result;
 
 }
-void actuator::pwm_Setup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts)
+void actuator::pwm_ServoSetup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts)
 {
 
     int servoOut[] = {-1,-1,-1,-1,-1,-1,-1,-1};
@@ -404,25 +411,53 @@ void actuator::pwm_Setup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts)
             i--;
         }
         softServoSetup(servoOut[0],servoOut[1],servoOut[2],servoOut[3],servoOut[4],servoOut[5],servoOut[6],servoOut[7]);
-        Initialized = true;
+        device_Initialized = true;
     }
 
 }
-
-void actuator::pwm_Write(uint8_t pinNumber, uint16_t DC, unsigned int lengthOfDelay)
+void actuator::pwm_Setup(int pinNumber)
 {
-    if(!Initialized)
+    if( !softPwmCreate(pinNumber,this->initValue, this->pwmRange))
+        device_Initialized = true;
+}
+
+void actuator::pwm_Write(uint8_t pinNumber, int DC, time_ms_t lengthOfDelay)
+{
+    if(!device_Initialized)
         return;
-    if(DC >= MAX_DC)
-        DC = MAX_DC -1;
 
     pwmWrite(pinNumber,DC);
     delay(lengthOfDelay);
 
 }
-void actuator::pwm_Servo_Write_In_Loop(uint8_t pinNumber, int16_t DC, unsigned int lengthOfDelay, bool loop)
+
+void actuator::pwm_Write_Breathing(uint8_t pinNumber,time_ms_t lengthOfDelay)
 {
-    if(!Initialized)
+    if(!device_Initialized)
+        return;
+    
+    if(lengthOfDelay > 200)
+        lengthOfDelay = 200;
+    
+    bool increase = true;
+    for(auto i =0 ; ; )
+    {
+        increase ? ++i : i--;
+
+        pwmWrite(pinNumber,i);
+        delay(lengthOfDelay);
+        
+        if(i == PWM_RANGE_MAX )
+            increase = false;
+        else if(i == 0)
+            increase = true;
+
+    }
+}
+
+void actuator::pwm_Servo_Write_In_Loop(uint8_t pinNumber, int16_t DC,time_ms_t lengthOfDelay, bool loop)
+{
+    if(!device_Initialized)
         return;
     cout << "Start servo in Loop" << endl;
     time_ms_t delaytime = lengthOfDelay;
@@ -452,7 +487,7 @@ void actuator::pwm_Servo_Write_In_Loop(uint8_t pinNumber, int16_t DC, unsigned i
 
 void actuator::pwm_Servo_Full_Limit(uint8_t pinNumber, time_ms_t t_length)
 {
-    if(!Initialized)
+    if(!device_Initialized)
         return;
     cout << "Start servo FULL Limit" << endl;
     time_ms_t delaytime = t_length;
