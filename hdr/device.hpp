@@ -38,6 +38,7 @@ enum comm_type
     CAN,
     UART,
     I2C,
+    PWM,
     Bluetooh,
     Wifi,
     Unknow_communication,
@@ -69,23 +70,6 @@ class foo
     foo() : i{10} {}
     foo(int const i_) : i{i_} {}
     auto getFooInt(){ return i;}
-};
-
-
-class filehandler
-{
-        fstream fileHand;
-        string patternFile;
-        string lineFromFile;
-        const string newFile= "usable.txt";
-        vector<string> pattern;
-    public:
-        filehandler(const char &p): patternFile(&p) {};
-        void getPatternFileName();
-        void getInfoFromPattern();
-        void getLinesFromVector();
-        void processPattern();
-        void FinishProcess();
 };
 
 
