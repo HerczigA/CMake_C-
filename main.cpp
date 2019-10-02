@@ -43,9 +43,8 @@ int main(int argc, char *argv[])
     */
     const char* JSONpath ="JSON/pattern/template.json";
     json_herczig::json JSONobj(*JSONpath);
-        JSONobj.getPatternFileName();
-        JSONobj.getInfoFromPattern();
-        JSONobj.getLinesFromVector();
+
+        JSONobj.OpenPattern();
         JSONobj.processPattern();
         JSONobj.FinishProcess();
 

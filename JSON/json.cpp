@@ -5,16 +5,11 @@
 #include <iterator>
 #include <cstddef>
 #include <regex>
-#include <stdlib.h>#include "json.hpp"
+#include <stdlib.h>
+#include "json.hpp"
+#include "./hdr/device.hpp"
 
-
-
-void json_herczig::json::getPatternFileName()
-{
-    cout << jsonFile << endl;
-}
-
-void json_herczig::json::getInfoFromPattern()
+void json_herczig::json::OpenPattern()
 {
     try
     {
@@ -34,26 +29,20 @@ void json_herczig::json::getInfoFromPattern()
 
 }
 
-void json_herczig::json::getLinesFromVector()
-{
-    for(auto x : pattern)
-        cout << x << endl;
-}
-
 uint8_t json_herczig::json::regexmatcherForDevType(std::string& temp)
 {
     uint8_t result;
     if(regex_match(temp, this->devPattern.sensorPattern))
-        result = 1;
+        result = Sensor;
     
     else if(regex_match(temp, this->devPattern.actuatorPattern))
-        result = 2;
+        result = Actuator;
     
     else if(regex_match(temp, this->devPattern.sensorActuatorPattern))  
-        result = 3;
+        result = Sensor_Actuator;
     
     else
-        result = 4;
+        result = Unknow_device;
         
     return result;
 }
@@ -62,22 +51,22 @@ uint8_t json_herczig::json::regexmatcherForComType(std::string& temp)
 {
     uint8_t result = 0;
     if(regex_match(temp, this->comPattern.SPIPattern))
-        result = 1;
+        result = SPI;
     
     else if(regex_match(temp, this->comPattern.I2CPattern))
-        result = 2;
+        result = I2C;
     
     else if(regex_match(temp, this->comPattern.UARTPattern))  
-        result = 3;
+        result = UART;
     
     else if(regex_match(temp, this->comPattern.PWMPattern))  
-        result = 4;
+        result = PWM;
 
-    else if(regex_match(temp, this->comPattern.BluetoohPattern))  
-        result = 5;
+    else if(regex_match(temp, this->comPattern.BluetoothPattern))  
+        result = Bluetooth;
     
     else
-        result = 6;
+        result = Unknow_communication;
 }
 
 
@@ -85,8 +74,9 @@ void json_herczig::json::processPattern()
 {
   
     size_t found;
-    auto it = pattern.begin();
-    while(it != pattern.end())
+    auto endOfPattern = pattern.end();
+    
+    while(pattern.begin() != endOfPattern)
     {
         
         auto temp = pattern[0];
@@ -117,8 +107,7 @@ void json_herczig::json::processPattern()
             {   return str == "name"; }   ))
         {
 
-            found = temp.find_last_of(":");
-          
+            found = temp.find_last_of(":");      
             temp = temp.substr(found+1); 
             temp.erase(temp.end()-1);
             this->name.push_back(temp);
@@ -132,8 +121,7 @@ void json_herczig::json::processPattern()
             temp.erase(temp.begin()+1);
             this->id.push_back(atoi(temp.c_str()));
         }
-
-        it++;  
+        pattern.erase(pattern.begin());
     }
     
 
@@ -142,18 +130,12 @@ void json_herczig::json::processPattern()
 
 void json_herczig::json::FinishProcess()
 {
-    try
+    while(this->deviceNumber >= 0)
     {
-        fileHand.open(newFile.c_str(),ios::out);
+        std::cout << this->devicetype[this->deviceNumber] << std::endl;
+        std::cout << this->commtype[this->deviceNumber] << std::endl;
+        std::cout << this->name[this->deviceNumber] << std::endl;
+        std::cout << this->id[this->deviceNumber] << std::endl;
+        this->deviceNumber--;
     }
-    catch(const std::exception& e)
-    {
-        std::cerr << e.what() << '\n';
-        std::cout << e.what() << '\n';
-        return;
-    }
-
-    fileHand << pattern[0];
-
-    fileHand.close();
 }

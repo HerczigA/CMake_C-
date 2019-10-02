@@ -18,8 +18,8 @@ enum json_objects
 
 struct devpatterns
 {
-    regex sensorPattern;//(".*Sens.*");
-    regex actuatorPattern;//(".*Actuat.*");
+    regex sensorPattern;        //(".*Sens.*");
+    regex actuatorPattern;      //(".*Actuat.*");
     regex sensorActuatorPattern;//(".*sor_Actu.*");
 };
 
@@ -63,9 +63,7 @@ namespace json_herczig
                 comPattern.PWMattern(".*PWM.*[a-zA-Z]");
                 comPattern.BluetoothPattern(".*Bluetooth.*[a-zA-Z]");
             };
-            void getPatternFileName();
-            void getInfoFromPattern();
-            void getLinesFromVector();
+            void OpenPattern();
             void processPattern();
             void FinishProcess();
 

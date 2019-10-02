@@ -39,7 +39,7 @@ enum comm_type
     UART,
     I2C,
     PWM,
-    Bluetooh,
+    Bluetooth,
     //Wifi,
     Unknow_communication,
     COMMTYPE
