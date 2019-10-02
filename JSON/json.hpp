@@ -7,7 +7,7 @@
 #include "json.hpp"
 #include <vector>
 #include <iostream>
-
+#include <regex>
 
 using namespace std;
 
@@ -16,6 +16,12 @@ enum json_objects
 
 };
 
+struct devpatterns
+{
+    regex sensorPattern;//(".*Sens.*");
+    regex actuatorPattern;//(".*Actuat.*");
+    regex sensorActuatorPattern;//(".*sor_Actu.*");
+};
 
 namespace json_herczig
 {
@@ -23,6 +29,7 @@ namespace json_herczig
     {
             fstream fileHand;
             const string jsonFile;
+            devpatterns devPattern;
             string lineFromFile;
             vector<string> pattern;
             vector <string > name;
@@ -30,10 +37,16 @@ namespace json_herczig
             vector <int> commtype;
             vector <int> id;
             uint8_t deviceNumber;
+            uint8_t regexmatcherForDevType(std::string &temp);
+            uint8_t regexmatcherForComType(std::string &temp);
+            uint8_t regexmatcherForIDType(std::string &temp);
         
         public:
             json(const char &p): jsonFile(&p) {
                 deviceNumber = 0;
+                devPattern.actuatorPattern(".*Actuat.*");
+                devPattern.sensorPattern(".*Sens.*");
+                devPattern.sensorActuatorPattern(".*sor_Actu.*");
             };
             void getPatternFileName();
             void getInfoFromPattern();

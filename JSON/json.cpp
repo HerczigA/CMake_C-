@@ -4,7 +4,8 @@
 #include <algorithm>
 #include <iterator>
 #include <cstddef>
-#include "json.hpp"
+#include <regex>
+#include <stdlib.h>#include "json.hpp"
 
 
 
@@ -39,10 +40,29 @@ void json_herczig::json::getLinesFromVector()
         cout << x << endl;
 }
 
+uint8_t json_herczig::json::regexmatcherForDevType(std::string& temp)
+{
+    uint8_t result;
+    if(regex_match(temp, this->devPattern.sensorPattern))
+        result = 1;
+    
+    else if(regex_match(temp, this->devPattern.actuatorPattern))
+        result = 2;
+    
+    else if(regex_match(temp, this->devPattern.sensorActuatorPattern))  
+        result = 3;
+    
+    else
+        result = 4;
+        
+    return result;
+}
+
+
 void json_herczig::json::processPattern()
 {
   
-    
+    size_t found;
     auto it = pattern.begin();
     while(it != pattern.end())
     {
@@ -54,39 +74,14 @@ void json_herczig::json::processPattern()
         
         else if( temp.end() != std::find_if(temp.begin(),temp.end(),[] (std::string str)
             {   return str == "Device"; }   ))
-        this->deviceNumber++;   
+            this->deviceNumber++;   
         
         else if( temp.end() != std::find_if(temp.begin(),temp.end(),[] (std::string str)
             {   return str == "devtype"; }   ))
         {
-          size_t found = temp.find_last_of(":");
-          size_t dev ;
-          temp.erase(temp.begin() + 0, temp.begin() + found + 1); // second begin should be end.. then found  = find_end_if
-          temp.erase(temp.begin() + temp.length());
-
-
-
-          switch (temp) 
-          {
-            case "Sensor" :
-                dev = 1;
-                break;
-            
-            case "Actuator" :
-                dev = 2;
-                break;
-            
-            case "Sensor_Actuator" :
-                dev = 3;
-                break;
-            
-            default :
-                dev = 4;
-                break;
-          }
-          
-
-          this->devicetype.push_back(dev);
+            size_t dev;
+            dev = regexmatcherForDevType(temp);
+            this->devicetype.push_back(dev);
         }
         
         else if( temp.end() != std::find_if(temp.begin(),temp.end(),[] (std::string str)
@@ -97,13 +92,21 @@ void json_herczig::json::processPattern()
         else if( temp.end() != std::find_if(temp.begin(),temp.end(),[] (std::string str)
             {   return str == "name"; }   ))
         {
-            
+
+            found = temp.find_last_of(":");
+          
+            temp = temp.substr(found+1); 
+            temp.erase(temp.end()-1);
+            this->name.push_back(temp);
         }
         
         else if( temp.end() != std::find_if(temp.begin(),temp.end(),[] (std::string str)
             {   return str == "ID"; }   ))
         {
-            
+            found = temp.find_last_of(":");
+            temp = temp.substr(found+1); 
+            temp.erase(temp.begin()+1);
+            this->id.push_back(atoi(temp.c_str()));
         }
 
         it++;
