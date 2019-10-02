@@ -35,12 +35,12 @@ static uint16_t id_counter =1;
 enum comm_type
 {
     SPI = 1,
-    CAN,
+    //CAN,
     UART,
     I2C,
     PWM,
     Bluetooh,
-    Wifi,
+    //Wifi,
     Unknow_communication,
     COMMTYPE
 
@@ -88,8 +88,8 @@ class device
         int Init_I2C(I2C_Frame i2c);
         int Init_Bluetooth();
         int Init_UART();
-        int Init_CAN();
-        int Init_Wifi();
+        //int Init_CAN();
+        //int Init_Wifi();
 
     public:
         device(string Name, Id_t ID, devType_t devtype,comm_t commtype): name{Name}

@@ -58,6 +58,28 @@ uint8_t json_herczig::json::regexmatcherForDevType(std::string& temp)
     return result;
 }
 
+uint8_t json_herczig::json::regexmatcherForComType(std::string& temp)
+{
+    uint8_t result = 0;
+    if(regex_match(temp, this->comPattern.SPIPattern))
+        result = 1;
+    
+    else if(regex_match(temp, this->comPattern.I2CPattern))
+        result = 2;
+    
+    else if(regex_match(temp, this->comPattern.UARTPattern))  
+        result = 3;
+    
+    else if(regex_match(temp, this->comPattern.PWMPattern))  
+        result = 4;
+
+    else if(regex_match(temp, this->comPattern.BluetoohPattern))  
+        result = 5;
+    
+    else
+        result = 6;
+}
+
 
 void json_herczig::json::processPattern()
 {
@@ -87,7 +109,9 @@ void json_herczig::json::processPattern()
         else if( temp.end() != std::find_if(temp.begin(),temp.end(),[] (std::string str)
             {   return str == "commtype"; }   ))
         {
-            
+            size_t dev;
+            dev = regexmatcherForComType(temp);
+            this->commtype.push_back(dev);
         }
         else if( temp.end() != std::find_if(temp.begin(),temp.end(),[] (std::string str)
             {   return str == "name"; }   ))
@@ -109,9 +133,7 @@ void json_herczig::json::processPattern()
             this->id.push_back(atoi(temp.c_str()));
         }
 
-        it++;
-        
-        
+        it++;  
     }
     
 

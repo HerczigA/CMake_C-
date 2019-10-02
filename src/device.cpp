@@ -160,18 +160,18 @@ int device::Init_UART()
 
 
 }
-
+/*
 int device::Init_CAN()
 {
-}
+}*/
 
 int device::Init_Bluetooth()
 {
 }
-
+/*
 int device::Init_Wifi()
 {
-}
+}*/
 
 void device::Init_Communication()
 {
@@ -186,9 +186,9 @@ void device::Init_Communication()
             Init_I2C(COM.i2c);
             break;
 
-        case CAN:
+       /* case CAN:
             Init_CAN();
-            break;
+            break;*/
 
         case UART:
             Init_UART();
@@ -198,9 +198,9 @@ void device::Init_Communication()
             Init_Bluetooth();
             break;
 
-        case Wifi:
+        /*case Wifi:
             Init_Wifi();
-            break;
+            break;*/
 
         default:
             break;
