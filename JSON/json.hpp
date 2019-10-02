@@ -9,7 +9,6 @@
 #include <iostream>
 #include <regex>
 
-using namespace std;
 
 enum json_objects
 {
@@ -18,20 +17,20 @@ enum json_objects
 
 struct devpatterns
 {
-    regex sensorPattern;        //(".*Sens.*");
-    regex actuatorPattern;      //(".*Actuat.*");
-    regex sensorActuatorPattern;//(".*sor_Actu.*");
+    std::regex sensorPattern;        //(".*Sens.*");
+    std::regex actuatorPattern;      //(".*Actuat.*");
+    std::regex sensorActuatorPattern;//(".*sor_Actu.*");
 };
 
 struct compatterns
 {
-    regex SPIPattern;
-    regex I2CPattern;
-    regex UARTPattern;
-    regex PWMPattern;
-    regex BluetoothPattern;
+    std::regex SPIPattern;
+    std::regex I2CPattern;
+    std::regex UARTPattern;
+    std::regex PWMPattern;
+    std::regex BluetoothPattern;
 
-}
+};
 
 namespace json_herczig
 {
@@ -60,7 +59,7 @@ namespace json_herczig
                 comPattern.SPIPattern(".*SPI.*[a-zA-Z]");
                 comPattern.I2CPattern(".*I2C.*[a-zA-Z]");
                 comPattern.UARTPattern(".*UART.*[a-zA-Z]");
-                comPattern.PWMattern(".*PWM.*[a-zA-Z]");
+                comPattern.PWMPattern(".*PWM.*[a-zA-Z]");
                 comPattern.BluetoothPattern(".*Bluetooth.*[a-zA-Z]");
             };
             void OpenPattern();
