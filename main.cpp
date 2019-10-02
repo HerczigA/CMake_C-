@@ -46,13 +46,7 @@ int main(int argc, char *argv[])
     */
     const char* JSONpath ="JSON/pattern/template.json";
     json_herczig::json JSONobj(*JSONpath);
-            ;
-        Button.digital_Read(buttonka);
-    }
-    //Motor.pwm_ServoSetup(GPIO,gpioNum);
-    //Motor.pwm_Servo_Full_Limit(GPIO[0],waiting);
-
-
+ 
         JSONobj.OpenPattern();
         JSONobj.processPattern();
         JSONobj.FinishProcess();
