@@ -39,13 +39,9 @@ enum comm_type
     //CAN,
     UART,
     I2C,
-<<<<<<< HEAD
-    Bluetooth,
-=======
     PWM,
     Bluetooth,
     //Wifi,
->>>>>>> 7c06c670484ce57aac4baf1023aca3ca47a24c90
     Unknow_communication,
     COMMTYPE
 
@@ -94,12 +90,8 @@ class device
         i2c_error_t Init_I2C(I2C_Frame i2c);
         int Init_Bluetooth();
         int Init_UART();
-<<<<<<< HEAD
-        int Init_CAN();
-=======
         //int Init_CAN();
         //int Init_Wifi();
->>>>>>> 7c06c670484ce57aac4baf1023aca3ca47a24c90
 
     public:
         device(string Name, Id_t ID, devType_t devtype,comm_t commtype): name{Name}

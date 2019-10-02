@@ -175,7 +175,6 @@ spi_error device::Init_SPI(SPI_Frame spi)
             result = E_SPI_ENDIANESS;
         }
 
-<<<<<<< HEAD
 spi_error device::Init_SPI(SPI_Frame spi)
 {
     (void) spi;
@@ -219,21 +218,6 @@ spi_error device::Init_SPI(SPI_Frame spi)
         limit = MAX_SPI_CHANNELS;
     }
      
-=======
-        if (ioctl (COM.spi.spiFD[i], SPI_IOC_WR_LSB_FIRST, &COM.spi.endianess[i]) < 0)
-        {
-            cout<< "SPI Write Mode LSB/MSB failure" << COM.spi.spiChns[i] << endl;
-            result = E_SPI_ENDIANESS;
-            break;
-        }
-        
-        if (ioctl (COM.spi.spiFD[i], SPI_IOC_WR_MAX_SPEED_HZ,&COM.spi.ClockSpeed[i]) < 0)
-        {
-            cout<< "SPI Write Mode speed failure" << COM.spi.spiChns[i] << endl;
-            result = E_SPI_SPEED;
-            break;
-        }
->>>>>>> 7c06c670484ce57aac4baf1023aca3ca47a24c90
 
         if (ioctl (COM.spi.spiFD[i], SPI_IOC_WR_MAX_SPEED_HZ,&COM.spi.ClockSpeed[i]) < 0)
         {
@@ -243,7 +227,6 @@ spi_error device::Init_SPI(SPI_Frame spi)
         }
     }
 
-<<<<<<< HEAD
     for(; i < limit; i++ )
     {
         if (ioctl (COM.spi.spiFD[i], SPI_IOC_WR_MODE, &COM.spi.clk_Pol_Pha[i])< 0)
@@ -290,9 +273,6 @@ spi_error device::Init_SPI(SPI_Frame spi)
     }
 
 
-=======
-
->>>>>>> 7c06c670484ce57aac4baf1023aca3ca47a24c90
     return result;
 
 }
@@ -393,22 +373,13 @@ int device::Init_UART()
 /*
 int device::Init_CAN()
 {
-<<<<<<< HEAD
     return 0;
 }
-=======
-}*/
->>>>>>> 7c06c670484ce57aac4baf1023aca3ca47a24c90
 
 int device::Init_Bluetooth()
 {
     return 0;
-<<<<<<< HEAD
 }
-=======
-/*
-}*/
->>>>>>> 7c06c670484ce57aac4baf1023aca3ca47a24c90
 
 void device::Init_Communication()
 {
@@ -435,11 +406,6 @@ void device::Init_Communication()
             Init_Bluetooth();
             break;
 
-<<<<<<< HEAD
-=======
-        /*case Wifi:
-            break;*/
->>>>>>> 7c06c670484ce57aac4baf1023aca3ca47a24c90
         default:
             break;
     }
