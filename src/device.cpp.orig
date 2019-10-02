@@ -110,6 +110,7 @@ spi_error device::Init_SPI(SPI_Frame spi)
         {
             cout<< "SPI Read Mode LSB/MSB failure" << COM.spi.spiChns[i] << endl;
             result = E_SPI_ENDIANESS;
+            break;
         }
     
         
@@ -126,16 +127,11 @@ spi_error device::Init_SPI(SPI_Frame spi)
         }
     }
 
-        
-        
-
-
-       
 
 
     return result;
-
 }
+
 i2c_error_t device::Init_I2C(I2C_Frame i2c)
 {
     /*system(char* ) find i2c dev address!*/
@@ -233,7 +229,7 @@ int device::Init_UART()
 /*
 int device::Init_CAN()
 {
-
+*/
 int device::Init_Bluetooth()
 {
     return 0;
