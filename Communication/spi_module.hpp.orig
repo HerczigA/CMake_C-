@@ -7,10 +7,7 @@
 #include <stdint.h>
 #include <linux/spi/spidev.h>
 #include <string>
-<<<<<<< HEAD
-=======
 #include <string>
->>>>>>> 7c06c670484ce57aac4baf1023aca3ca47a24c90
 #include <vector>
 #include <iostream>
 
@@ -30,13 +27,12 @@ typedef uint8_t spi_error;
 
 struct SPI_Frame
 {
-    /*For Full duplex com-> ioctl(fd,SPI_IOC_MESSAGE,struct spi_ioc_transfer).
-      Full duplex communication needs:
-      Cross-compile with cross-gcc -I/path/to/cross-kernel/include
-      if you don't work on the fixed hardware.
-      For half duplex, read or write but just one at time read/write()... */
     uint32_t ClockSpeed[MAX_SPI_CHANNELS];
+<<<<<<< HEAD
     std::vector<std::string> spiChns;
+=======
+    std::vector<string> spiChns;
+>>>>>>>  chn1 use more then one variable
     int clk_Pol_Pha[MAX_SPI_CHANNELS];
     uint8_t endianess[MAX_SPI_CHANNELS];    //0 MSB other LSB
     char Packet[SPI_PACKET_LENGTH];

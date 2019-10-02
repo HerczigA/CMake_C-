@@ -1,0 +1,18 @@
+{
+    "Device1" :
+    {
+        "devtype" : "Sensor",
+        "commtype" : "Unknown_communication",
+        "name" : "Button",
+        "ID" : "1"
+    }, 
+    
+    "Device2" :
+    {
+        "devtype" : "Actuator",
+        "commtype" : "pwm",
+        "name" : "ServoMotor",
+        "ID" : "1"
+    } 
+     
+}

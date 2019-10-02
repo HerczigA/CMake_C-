@@ -1,5 +1,6 @@
 #include <iostream>
 #include "hdr/device.hpp"
+#include "JSON/json.hpp"
 #include <wiringPi.h>
 #include <stdlib.h>
 
@@ -15,7 +16,7 @@ int main(int argc, char *argv[])
         fh.getLinesFromVector();
         fh.processPattern();
         fh.FinishProcess();
-    }*/
+    }
 
     sensor Button("button",1,Actuator,Unknow_communication);
     
@@ -40,6 +41,7 @@ int main(int argc, char *argv[])
 
     bool loop = true;
     cout<<" GPIO size = " << sizeof(GPIO) << endl;
+<<<<<<< HEAD
     
     while (loop)
     {
@@ -52,7 +54,23 @@ int main(int argc, char *argv[])
     //Motor.pwm_Servo_Full_Limit(GPIO[0],waiting);
 
 
+=======
+>>>>>>> 7c06c670484ce57aac4baf1023aca3ca47a24c90
     
+    while (loop)
+    */
+    const char* JSONpath ="JSON/pattern/template.json";
+    json_herczig::json JSONobj(*JSONpath);
+            ;
+        Button.digital_Read(buttonka);
+    }
+    //Motor.pwm_ServoSetup(GPIO,gpioNum);
+    //Motor.pwm_Servo_Full_Limit(GPIO[0],waiting);
+
+
+        JSONobj.OpenPattern();
+        JSONobj.processPattern();
+        JSONobj.FinishProcess();
 
 
     return 0;
