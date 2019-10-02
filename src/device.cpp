@@ -107,148 +107,6 @@ spi_error device::Init_SPI(SPI_Frame spi)
             result = E_SPI_ENDIANESS;
             break;
         }
-    size_t channel = 0;
-    size_t i = 0;
-    size_t limit = 0;
-    COM.spi.spiChns.push_back(chn0);
-    
-    COM.spi.spiChns.push_back(chn1);
-    
-    for(; i < MAX_SPI_CHANNELS; i++)
-    {
-        if(COM.spi.spiFD[i] = open(COM.spi.spiChns[i].c_str(),O_RDWR) < 0)
-           {
-               cnt++;
-               if(cnt == 1 && i == 1)
-                    channel++;
-               if(cnt == MAX_SPI_CHANNELS)
-                    result = E_SPI_FD_OPEN;
-           }        
-    }
-    if(cnt)
-    {
-        if(channel)
-        {
-            i = 0;
-            limit = 1;
-        }
-        {
-            i = 1;
-            limit = MAX_SPI_CHANNELS;
-        }
-
-        if (ioctl (COM.spi.spiFD[i], SPI_IOC_WR_LSB_FIRST, &COM.spi.endianess[i]) < 0)
-        {
-            cout<< "SPI Write Mode LSB/MSB failure" << COM.spi.spiChns[i] << endl;
-            result = E_SPI_ENDIANESS;
-        }
-    }
-        
-        if (ioctl (COM.spi.spiFD[i], SPI_IOC_WR_MAX_SPEED_HZ,&COM.spi.ClockSpeed[i]) < 0)
-        {
-            cout<< "SPI Write Mode speed failure" << COM.spi.spiChns[i] << endl;
-            result = E_SPI_SPEED;
-        }
-
-        if (ioctl (COM.spi.spiFD[i], SPI_IOC_WR_MAX_SPEED_HZ,&COM.spi.ClockSpeed[i]) < 0)
-        {
-            cout<< "SPI Read Mode speed failure" << COM.spi.spiChns[i] << endl;
-            result = E_SPI_SPEED;
-        }
-    }
-
-        if (ioctl (COM.spi.spiFD[i], SPI_IOC_WR_MODE, &COM.spi.clk_Pol_Pha[i])< 0)
-        {
-            cout<< "SPI Write Mode POL & Pha failure" << COM.spi.spiChns[i] << endl;
-            result = E_SPI_PHA_POL;
-        }
-         
-    return result;
-        {
-            cout<< "SPI Read Mode POL & Pha failure" << COM.spi.spiChns[i] << endl;
-            result = E_SPI_PHA_POL;
-        }
-
-        if (ioctl (COM.spi.spiFD[i], SPI_IOC_RD_LSB_FIRST, &COM.spi.endianess[i]) < 0)
-        {
-            cout<< "SPI Read Mode LSB/MSB failure" << COM.spi.spiChns[i] << endl;
-            result = E_SPI_ENDIANESS;
-        }
-
-spi_error device::Init_SPI(SPI_Frame spi)
-{
-    (void) spi;
-    spi_error result =E_SPI_OK;
-    size_t cnt = 0;
-    size_t channel = 0;
-    size_t i = 0;
-    size_t limit = 0;
-    this->COM.spi.spiChns.push_back(chn0);
-    
-    this->COM.spi.spiChns.push_back(chn1);
-    
-    for(; i < MAX_SPI_CHANNELS; i++)
-    {   string temp = COM.spi.spiChns[i];
-        if(COM.spi.spiFD[i] = open(temp.c_str(), O_RDWR) < 0)
-           {
-               cnt++;
-               if(cnt == 1 && i == 1)
-                    channel++;
-               if(cnt == MAX_SPI_CHANNELS)
-                    result = E_SPI_FD_OPEN;
-           }        
-    }
-    if(cnt)
-    {
-        if(channel)
-        {
-            i = 0;
-            limit = 1;
-        }
-        else
-        {
-            i = 1;
-            limit = MAX_SPI_CHANNELS;
-        }
-
-    }
-    else
-    {
-        i = 0;
-        limit = MAX_SPI_CHANNELS;
-    }
-     
-
-        if (ioctl (COM.spi.spiFD[i], SPI_IOC_WR_MAX_SPEED_HZ,&COM.spi.ClockSpeed[i]) < 0)
-        {
-            cout<< "SPI Read Mode speed failure" << COM.spi.spiChns[i] << endl;
-            result = E_SPI_SPEED;
-            break;
-        }
-    }
-
-    for(; i < limit; i++ )
-    {
-        if (ioctl (COM.spi.spiFD[i], SPI_IOC_WR_MODE, &COM.spi.clk_Pol_Pha[i])< 0)
-        {
-            cout<< "SPI Write Mode POL & Pha failure" << (string) COM.spi.spiChns[i] << endl;
-            result = E_SPI_PHA_POL;
-            break;
-        }
-         
-        if (ioctl (COM.spi.spiFD[i], SPI_IOC_RD_MODE, &COM.spi.clk_Pol_Pha[i])< 0)
-        {
-            cout<< "SPI Read Mode POL & Pha failure" << COM.spi.spiChns[i] << endl;
-            result = E_SPI_PHA_POL;
-            break;
-        }
-
-        if (ioctl (COM.spi.spiFD[i], SPI_IOC_RD_LSB_FIRST, &COM.spi.endianess[i]) < 0)
-        {
-            cout<< "SPI Read Mode LSB/MSB failure" << COM.spi.spiChns[i] << endl;
-            result = E_SPI_ENDIANESS;
-            break;
-        }
 
         if (ioctl (COM.spi.spiFD[i], SPI_IOC_WR_LSB_FIRST, &COM.spi.endianess[i]) < 0)
         {
@@ -264,7 +122,7 @@ spi_error device::Init_SPI(SPI_Frame spi)
             break;
         }
 
-        if (ioctl (COM.spi.spiFD[i], SPI_IOC_WR_MAX_SPEED_HZ,&COM.spi.ClockSpeed[i]) < 0)
+        if (ioctl (COM.spi.spiFD[i], SPI_IOC_RD_MAX_SPEED_HZ,&COM.spi.ClockSpeed[i]) < 0)
         {
             cout<< "SPI Read Mode speed failure" << COM.spi.spiChns[i] << endl;
             result = E_SPI_SPEED;
@@ -274,8 +132,8 @@ spi_error device::Init_SPI(SPI_Frame spi)
 
 
     return result;
-
 }
+
 i2c_error_t device::Init_I2C(I2C_Frame i2c)
 {
     /*system(char* ) find i2c dev address!*/
@@ -375,7 +233,7 @@ int device::Init_CAN()
 {
     return 0;
 }
-
+*/
 int device::Init_Bluetooth()
 {
     return 0;

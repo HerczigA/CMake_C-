@@ -31,7 +31,7 @@ struct compatterns
     regex PWMPattern;
     regex BluetoothPattern;
 
-}
+};
 
 namespace json_herczig
 {

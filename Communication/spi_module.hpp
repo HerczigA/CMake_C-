@@ -7,10 +7,7 @@
 #include <stdint.h>
 #include <linux/spi/spidev.h>
 #include <string>
-<<<<<<< HEAD
-=======
 #include <string>
->>>>>>> 7c06c670484ce57aac4baf1023aca3ca47a24c90
 #include <vector>
 #include <iostream>
 
