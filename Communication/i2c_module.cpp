@@ -101,5 +101,6 @@ int getAddress()
         }
 
     }
+    std::cout << "I2C slave address : " << result << std::endl;
     return result;
 }
