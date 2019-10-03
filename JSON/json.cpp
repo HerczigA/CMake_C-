@@ -6,15 +6,18 @@
 #include <cstddef>
 #include <regex>
 #include <stdlib.h>
+#include <bits/stdc++.h>
 #include "json.hpp"
-#include "../hdr/device.hpp"
+#include <string>
+
+using namespace std;
 
 void json_herczig::json::OpenPattern()
 {
     try
     {
         fileHand.open(jsonFile.c_str(), ios::in);
-        
+
     }
     catch(fstream::failure e)
     {
@@ -34,108 +37,108 @@ uint8_t json_herczig::json::regexmatcherForDevType(std::string& temp)
     uint8_t result;
     if(regex_match(temp, this->devPattern.sensorPattern))
         result = Sensor;
-    
+
     else if(regex_match(temp, this->devPattern.actuatorPattern))
         result = Actuator;
-    
-    else if(regex_match(temp, this->devPattern.sensorActuatorPattern))  
+
+    else if(regex_match(temp, this->devPattern.sensorActuatorPattern))
         result = Sensor_Actuator;
-    
+
     else
         result = Unknow_device;
-        
+
     return result;
 }
 
 uint8_t json_herczig::json::regexmatcherForComType(std::string& temp)
 {
     uint8_t result = 0;
-    if(regex_match(temp, this->comPattern.SPIPattern))
+    if(regex_search(temp, this->comPattern.SPIPattern))
         result = SPI;
-    
-    else if(regex_match(temp, this->comPattern.I2CPattern))
+
+    else if(regex_search(temp, this->comPattern.I2CPattern))
         result = I2C;
-    
-    else if(regex_match(temp, this->comPattern.UARTPattern))  
+
+    else if(regex_search(temp, this->comPattern.UARTPattern))
         result = UART;
-    
-    else if(regex_match(temp, this->comPattern.PWMPattern))  
+
+    else if(regex_search(temp, this->comPattern.PWMPattern))
         result = PWM;
 
-    else if(regex_match(temp, this->comPattern.BluetoothPattern))  
+    else if(regex_search(temp, this->comPattern.BluetoothPattern))
         result = Bluetooth;
-    
+
     else
         result = Unknow_communication;
+
+    return result;
 }
 
 
 void json_herczig::json::processPattern()
 {
-  
+
     size_t found;
     auto endOfPattern = pattern.end();
-    
+
     while(pattern.begin() != endOfPattern)
     {
-        
+
         auto temp = pattern[0];
-        if( temp.end() != std::find_if(temp.begin(),temp.end(),[] (char c)
+        auto tempEnd =temp.end();
+
+        if( tempEnd != std::find_if(temp.begin(),tempEnd,[] (char c)
             {  return (c == '{' || c == '}' ); }   ))
             ;
-        
-        else if( temp.end() != std::find_if(temp.begin(),temp.end(),[] (std::string str)
-            {   return str == "Device"; }   ))
-            this->deviceNumber++;   
-        
-        else if( temp.end() != std::find_if(temp.begin(),temp.end(),[] (std::string str)
-            {   return str == "devtype"; }   ))
+        else if( std::string::npos !=temp.find("Device" ))
+
+            this->deviceNumber++;
+
+        else if( std::string::npos !=temp.find("devtype"))
         {
             size_t dev;
             dev = regexmatcherForDevType(temp);
             this->devicetype.push_back(dev);
         }
-        
-        else if( temp.end() != std::find_if(temp.begin(),temp.end(),[] (std::string str)
-            {   return str == "commtype"; }   ))
+
+        else if( std::string::npos !=temp.find("commtype"))
         {
             size_t dev;
             dev = regexmatcherForComType(temp);
             this->commtype.push_back(dev);
         }
-        else if( temp.end() != std::find_if(temp.begin(),temp.end(),[] (std::string str)
-            {   return str == "name"; }   ))
+        else if( std::string::npos !=temp.find("name"))
         {
 
-            found = temp.find_last_of(":");      
-            temp = temp.substr(found+1); 
-            temp.erase(temp.end()-1);
+            found = temp.find_last_of(":");
+            temp = temp.substr(found+1);
+            temp.erase(0,2);
+            temp.erase(temp.end()-2,temp.end()-0);
             this->name.push_back(temp);
         }
-        
-        else if( temp.end() != std::find_if(temp.begin(),temp.end(),[] (std::string str)
-            {   return str == "ID"; }   ))
+
+        else if( std::string::npos !=temp.find("ID"))
         {
             found = temp.find_last_of(":");
-            temp = temp.substr(found+1); 
+            temp = temp.substr(found+1);
             temp.erase(temp.begin()+1);
             this->id.push_back(atoi(temp.c_str()));
         }
         pattern.erase(pattern.begin());
     }
-    
+
 
 }
 
 
 void json_herczig::json::FinishProcess()
 {
-    while(deviceNumber >= 0)
+    while(deviceNumber)
     {
-        std::cout << devicetype[deviceNumber] << std::endl;
-        std::cout << commtype[deviceNumber] << std::endl;
-        std::cout << (std::string)name[deviceNumber] << std::endl;
-        std::cout << id[deviceNumber] << std::endl;
+        std::cout << devicetype[deviceNumber-1] << std::endl;
+        std::cout << commtype[deviceNumber-1] << std::endl;
+        std::cout << (std::string)name[deviceNumber-1] << std::endl;
+        std::cout << id[deviceNumber-1] << std::endl;
         deviceNumber--;
     }
 }
