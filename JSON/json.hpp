@@ -17,9 +17,9 @@ enum json_objects
 
 struct devpatterns
 {
-    std::regex sensorPattern;        //(".*Sens.*");
-    std::regex actuatorPattern;      //(".*Actuat.*");
-    std::regex sensorActuatorPattern;//(".*sor_Actu.*");
+    std::regex sensorPattern;
+    std::regex actuatorPattern;
+    std::regex sensorActuatorPattern;
 };
 
 struct compatterns
@@ -36,16 +36,16 @@ namespace json_herczig
 {
     class json
     {
-            fstream fileHand;
+            std::fstream fileHand;
             const string jsonFile;
             devpatterns devPattern;
             compatterns comPattern;
             string lineFromFile;
             vector<string> pattern;
-            vector <string > name;
-            vector <int> devicetype;
-            vector <int> commtype;
-            vector <int> id;
+            std::vector <string > name;
+            std::vector <int> devicetype;
+            std::vector <int> commtype;
+            std::vector <int> id;
             uint8_t deviceNumber;
             uint8_t regexmatcherForDevType(std::string &temp);
             uint8_t regexmatcherForComType(std::string &temp);
