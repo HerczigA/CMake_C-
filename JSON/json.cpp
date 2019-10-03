@@ -17,7 +17,8 @@ void json_herczig::json::OpenPattern()
     try
     {
         fileHand.open(jsonFile.c_str(), ios::in);
-        throw "can not open the file";
+        if(!fileHand.is_open())
+            throw "can not open the file";
     }
     catch(char const* msg)
     {
