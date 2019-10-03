@@ -79,9 +79,7 @@ void json_herczig::json::processPattern()
 {
 
     size_t found;
-    auto endOfPattern = pattern.end();
-
-    while(pattern.begin() != endOfPattern)
+    while(pattern.begin() != pattern.end())
     {
 
         auto temp = pattern[0];
