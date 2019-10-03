@@ -7,6 +7,7 @@
 #include <vector>
 #include <iostream>
 #include <regex>
+#include "../hdr/device.hpp"
 
 
 enum json_objects
