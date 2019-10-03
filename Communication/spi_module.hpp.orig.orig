@@ -27,6 +27,14 @@ typedef uint8_t spi_error;
 
 struct SPI_Frame
 {
+<<<<<<< HEAD
+    uint32_t ClockSpeed[MAX_SPI_CHANNELS];
+<<<<<<< HEAD
+    std::vector<std::string> spiChns;
+=======
+    std::vector<string> spiChns;
+>>>>>>>  chn1 use more then one variable
+=======
     /*For Full duplex com-> ioctl(fd,SPI_IOC_MESSAGE,struct spi_ioc_transfer).
       Full duplex communication needs:
       Cross-compile with cross-gcc -I/path/to/cross-kernel/include
@@ -35,6 +43,7 @@ struct SPI_Frame
     uint32_t ClockSpeed[MAX_SPI_CHANNELS];
     std::vector<std::string> spiChns;
     std::vector<string> spiChns;
+>>>>>>> json
     int clk_Pol_Pha[MAX_SPI_CHANNELS];
     uint8_t endianess[MAX_SPI_CHANNELS];    //0 MSB other LSB
     char Packet[SPI_PACKET_LENGTH];

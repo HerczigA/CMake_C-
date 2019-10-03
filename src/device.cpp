@@ -84,7 +84,6 @@ spi_error device::Init_SPI(SPI_Frame spi)
     }
      
 
-
     for(; i < limit; i++ )
     {
         if (ioctl (COM.spi.spiFD[i], SPI_IOC_WR_MODE, &COM.spi.clk_Pol_Pha[i])< 0)
@@ -93,14 +92,14 @@ spi_error device::Init_SPI(SPI_Frame spi)
             result = E_SPI_PHA_POL;
             break;
         }
-         
+
         if (ioctl (COM.spi.spiFD[i], SPI_IOC_RD_MODE, &COM.spi.clk_Pol_Pha[i])< 0)
         {
             cout<< "SPI Read Mode POL & Pha failure" << COM.spi.spiChns[i] << endl;
             result = E_SPI_PHA_POL;
             break;
         }
-
+         
         if (ioctl (COM.spi.spiFD[i], SPI_IOC_RD_LSB_FIRST, &COM.spi.endianess[i]) < 0)
         {
             cout<< "SPI Read Mode LSB/MSB failure" << COM.spi.spiChns[i] << endl;
@@ -114,7 +113,7 @@ spi_error device::Init_SPI(SPI_Frame spi)
             result = E_SPI_ENDIANESS;
             break;
         }
-        
+
         if (ioctl (COM.spi.spiFD[i], SPI_IOC_WR_MAX_SPEED_HZ,&COM.spi.ClockSpeed[i]) < 0)
         {
             cout<< "SPI Write Mode speed failure" << COM.spi.spiChns[i] << endl;
@@ -126,10 +125,8 @@ spi_error device::Init_SPI(SPI_Frame spi)
         {
             cout<< "SPI Read Mode speed failure" << COM.spi.spiChns[i] << endl;
             result = E_SPI_SPEED;
-            break;
         }
     }
-
 
     return result;
 }

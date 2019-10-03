@@ -1,5 +1,5 @@
-#ifndef _JSON_INCLUDED_HPP_
-#define _JSON_INCLUDED_HPP_
+#ifndef _JSON_H_
+#define _JSON_H_
 
 #include <fstream>
 #include <sstream>
@@ -53,14 +53,14 @@ namespace json_herczig
         public:
             json(const char &p): jsonFile(&p) {
                 deviceNumber = 0;
-                devPattern.actuatorPattern(".*Actuat.*");
-                devPattern.sensorPattern(".*Sens.*");
-                devPattern.sensorActuatorPattern(".*sor_Actu.*");
-                comPattern.SPIPattern(".*SPI.*[a-zA-Z]");
-                comPattern.I2CPattern(".*I2C.*[a-zA-Z]");
-                comPattern.UARTPattern(".*UART.*[a-zA-Z]");
-                comPattern.PWMPattern(".*PWM.*[a-zA-Z]");
-                comPattern.BluetoothPattern(".*Bluetooth.*[a-zA-Z]");
+                devPattern.actuatorPattern = std::regex(".*Actuat.*");
+                devPattern.sensorPattern = std::regex(".*Sens.*");
+                devPattern.sensorActuatorPattern = std::regex(".*sor_Actu.*");
+                comPattern.SPIPattern = std::regex(".*SPI.*[a-zA-Z]");
+                comPattern.I2CPattern = std::regex(".*I2C.*[a-zA-Z]");
+                comPattern.UARTPattern = std::regex(".*UART.*[a-zA-Z]");
+                comPattern.PWMPattern = std::regex(".*PWM.*[a-zA-Z]");
+                comPattern.BluetoothPattern = std::regex(".*Bluetooth.*[a-zA-Z]");
             };
             void OpenPattern();
             void processPattern();
