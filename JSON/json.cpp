@@ -7,7 +7,7 @@
 #include <regex>
 #include <stdlib.h>
 #include "json.hpp"
-#include "./hdr/device.hpp"
+#include "../hdr/device.hpp"
 
 void json_herczig::json::OpenPattern()
 {
@@ -130,12 +130,12 @@ void json_herczig::json::processPattern()
 
 void json_herczig::json::FinishProcess()
 {
-    while(this->deviceNumber >= 0)
+    while(deviceNumber >= 0)
     {
-        std::cout << this->devicetype[this->deviceNumber] << std::endl;
-        std::cout << this->commtype[this->deviceNumber] << std::endl;
-        std::cout << this->name[this->deviceNumber] << std::endl;
-        std::cout << this->id[this->deviceNumber] << std::endl;
-        this->deviceNumber--;
+        std::cout << devicetype[deviceNumber] << std::endl;
+        std::cout << commtype[deviceNumber] << std::endl;
+        std::cout << name[deviceNumber] << std::endl;
+        std::cout << id[deviceNumber] << std::endl;
+        deviceNumber--;
     }
 }
