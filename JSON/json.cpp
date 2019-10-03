@@ -134,7 +134,7 @@ void json_herczig::json::FinishProcess()
     {
         std::cout << devicetype[deviceNumber] << std::endl;
         std::cout << commtype[deviceNumber] << std::endl;
-        std::cout << name[deviceNumber] << std::endl;
+        std::cout << (std::string)name[deviceNumber] << std::endl;
         std::cout << id[deviceNumber] << std::endl;
         deviceNumber--;
     }

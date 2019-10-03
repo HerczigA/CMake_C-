@@ -37,12 +37,12 @@ namespace json_herczig
     class json
     {
             std::fstream fileHand;
-            const string jsonFile;
-            devpatterns devPattern;
-            compatterns comPattern;
-            string lineFromFile;
-            vector<string> pattern;
-            std::vector <string > name;
+            std::const string jsonFile;
+            std::devpatterns devPattern;
+            std::compatterns comPattern;
+            std::string lineFromFile;
+            std::vector<string> pattern;
+            std::vector <std::string> name;
             std::vector <int> devicetype;
             std::vector <int> commtype;
             std::vector <int> id;
@@ -51,7 +51,7 @@ namespace json_herczig
             uint8_t regexmatcherForComType(std::string &temp);
                     
         public:
-            json(const char &p): jsonFile(&p) {
+            json(const char &p): jsonFile{&p} {
                 deviceNumber = 0;
                 devPattern.actuatorPattern = std::regex(".*Actuat.*");
                 devPattern.sensorPattern = std::regex(".*Sens.*");
