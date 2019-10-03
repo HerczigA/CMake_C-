@@ -87,45 +87,82 @@ void json_herczig::json::processPattern()
 
         if( tempEnd != std::find_if(temp.begin(),tempEnd,[] (char c)
             {  return (c == '{' || c == '}' ); }   ))
-            ;
+        ;
+
+
         else if( std::string::npos !=temp.find("Device" ))
-
-            this->deviceNumber++;
-
-        else if( std::string::npos !=temp.find("devtype"))
         {
-            size_t dev;
-            dev = regexmatcherForDevType(temp);
-            this->devicetype.push_back(dev);
-        }
+            pattern.erase(pattern.begin());
+            temp = pattern[0];
+            bool checkDevicetype = true;
 
-        else if( std::string::npos !=temp.find("commtype"))
-        {
-            size_t dev;
-            dev = regexmatcherForComType(temp);
-            this->commtype.push_back(dev);
-        }
-        else if( std::string::npos !=temp.find("name"))
-        {
+            for(; std::string::npos == temp.find("}" ); )
+            {
+                if(checkDevicetype)
+                {
+                    if(std::string::npos != temp.find("Sensor_Actuator"))
+                    {
+                        this->SensorsAndActuators++;
+                        devicetype.push_back(Sensor_Actuator);
+                        checkDevicetype = false;
+                    }
 
-            found = temp.find_last_of(":");
-            temp = temp.substr(found+1);
-            temp.erase(0,2);
-            temp.erase(temp.end()-2,temp.end()-0);
-            this->name.push_back(temp);
-        }
+                    else if(std::string::npos != temp.find("Sensor"))
+                    {
+                        this->Sensors++;
+                        devicetype.push_back(Sensor);
+                        checkDevicetype = false;
+                    }
 
-        else if( std::string::npos !=temp.find("ID"))
-        {
-            found = temp.find_last_of(":");
-            temp = temp.substr(found+1);
-            temp.erase(temp.begin()+1);
-            this->id.push_back(atoi(temp.c_str()));
+                    else if(std::string::npos != temp.find("Actuator"))
+                    {
+                        this->Actuators++;
+                        devicetype.push_back(Actuator);
+                        checkDevicetype = false;
+                    }
+
+
+                }
+                else
+                {
+                    if( std::string::npos !=temp.find("commtype"))
+                    {
+                        size_t dev;
+                        dev = regexmatcherForComType(temp);
+                        this->commtype.push_back(dev);
+                    }
+                    else if( std::string::npos !=temp.find("name"))
+                    {
+
+                        found = temp.find_last_of(":");
+                        temp = temp.substr(found+1);
+                        temp.erase(0,2);
+                        temp.erase(temp.end()-2,temp.end()-0);
+                        this->name.push_back(temp);
+                    }
+
+                    else if( std::string::npos !=temp.find("ID"))
+                    {
+                        found = temp.find_last_of(":");
+                        temp = temp.substr(found+1);
+                        temp.erase(temp.begin()+1);
+                        this->id.push_back(atoi(temp.c_str()));
+                        checkDevicetype = true;
+                    }
+                }
+                pattern.erase(pattern.begin());
+                temp=pattern[0];
+            }
+
+
         }
         pattern.erase(pattern.begin());
+
+
     }
 
-
+    this->deviceNumber = this->Actuators + this->Sensors + this->SensorsAndActuators;
+    std::cout << this->deviceNumber << "  " << this->Actuators << this->Sensors << "  " << this->SensorsAndActuators<< std::endl;
 }
 
 

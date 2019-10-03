@@ -49,6 +49,9 @@ namespace json_herczig
             std::vector <int> commtype;
             std::vector <int> id;
             uint8_t deviceNumber;
+            uint8_t Sensors = 0;
+            uint8_t Actuators = 0;
+            uint8_t SensorsAndActuators = 0;
             uint8_t regexmatcherForDevType(std::string &temp);
             uint8_t regexmatcherForComType(std::string &temp);
 

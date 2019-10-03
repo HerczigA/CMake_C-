@@ -1,0 +1,31 @@
+{
+    "Device1" :
+    {
+        "Sensor" :
+        {
+    	    "commtype" : "Unknown_communication",
+    	    "name" : "Button",
+    	    "ID" : "1"
+        }
+    }, 
+    
+    "Device2" :
+    {
+        "Actuator" :
+        {
+    	    "commtype" : "pwm",
+    	    "name" : "ServoMotor",
+    	    "ID" : "1"
+        }
+    }, 
+    
+    "Device3" :
+    {
+        "Sensor_Actuator" :
+        {
+    	    "commtype" : "I2C",
+    	    "name" : "MSP430",
+    	    "ID" : "1"
+        }
+    }     
+}

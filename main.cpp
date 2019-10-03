@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     }
 
     sensor Button("button",1,Actuator,Unknow_communication);
-    
+
     actuator Motor("MicroServo",2,2,Bluetooth);
     cout << Button.get_ID() << endl;
     cout << Button.get_Name() << endl;
@@ -41,15 +41,15 @@ int main(int argc, char *argv[])
 
     bool loop = true;
     cout<<" GPIO size = " << sizeof(GPIO) << endl;
-    
+
     while (loop)
     */
-    const char* JSONpath ="./JSON/pattern/template.json";
+    const char* JSONpath ="./template.json";
     json_herczig::json JSONobj(*JSONpath);
- 
+
         JSONobj.OpenPattern();
         JSONobj.processPattern();
-//        JSONobj.FinishProcess();
+        JSONobj.FinishProcess();
 
 
     return 0;
