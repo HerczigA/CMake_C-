@@ -1,5 +1,5 @@
-#ifndef _JSON_INCLUDED_HPP_
-#define _JSON_INCLUDED_HPP_
+#ifndef _JSON_H_
+#define _JSON_H_
 
 #include <fstream>
 #include <sstream>

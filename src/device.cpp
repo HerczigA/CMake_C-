@@ -112,8 +112,7 @@ spi_error device::Init_SPI(SPI_Frame spi)
             result = E_SPI_ENDIANESS;
             break;
         }
-    
-        
+
         if (ioctl (COM.spi.spiFD[i], SPI_IOC_WR_MAX_SPEED_HZ,&COM.spi.ClockSpeed[i]) < 0)
         {
             cout<< "SPI Write Mode speed failure" << COM.spi.spiChns[i] << endl;
@@ -233,6 +232,7 @@ int device::Init_CAN()
 int device::Init_Bluetooth()
 {
     return 0;
+}
 
 void device::Init_Communication()
 {
