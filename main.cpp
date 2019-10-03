@@ -44,12 +44,12 @@ int main(int argc, char *argv[])
     
     while (loop)
     */
-    const char* JSONpath ="JSON/pattern/template.json";
+    const char* JSONpath ="./JSON/pattern/template.json";
     json_herczig::json JSONobj(*JSONpath);
  
         JSONobj.OpenPattern();
         JSONobj.processPattern();
-        JSONobj.FinishProcess();
+//        JSONobj.FinishProcess();
 
 
     return 0;
