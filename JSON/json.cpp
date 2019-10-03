@@ -17,12 +17,11 @@ void json_herczig::json::OpenPattern()
     try
     {
         fileHand.open(jsonFile.c_str(), ios::in);
-
+        throw "can not open the file";
     }
-    catch(fstream::failure e)
+    catch(char const* msg)
     {
-        std::cerr << e.what() << '\n';
-        std::cout << e.what() << "Exception under opening" << endl;
+        std::cout << msg << "\nException under opening" << endl;
         return;
     }
     while(getline(fileHand,lineFromFile))
