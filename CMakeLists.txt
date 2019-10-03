@@ -17,11 +17,13 @@ endif()
 #endif()
     set(SOURCES Communication/i2c_module.cpp
 		src/device.cpp
+    JSON/json.cpp
 		main.cpp)
 
     set(HEADERS Communication/i2c_module.hpp
 		Communication/spi_module.hpp
 		Communication/uart_module.hpp
+    JSON/json.hpp
 		hdr/device.hpp)
 
     message(STATUS "These are the sources :" ${SOURCES})
