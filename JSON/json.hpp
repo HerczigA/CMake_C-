@@ -70,7 +70,7 @@ namespace json_herczig
             void OpenPattern();
             void processPattern();
             void FinishProcess();
-
+            ~json();
     };
 
 

@@ -121,7 +121,6 @@ void json_herczig::json::processPattern()
                         checkDevicetype = false;
                     }
 
-
                 }
                 else
                 {
@@ -176,4 +175,14 @@ void json_herczig::json::FinishProcess()
         std::cout << id[deviceNumber-1] << std::endl;
         deviceNumber--;
     }
+}
+
+
+json_herczig::json::~json()
+{
+    this->name.clear();
+    this->devicetype.clear();
+    this->commtype.clear();
+    this->id.clear();
+
 }
