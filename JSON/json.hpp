@@ -44,12 +44,11 @@ namespace json_herczig
             compatterns comPattern;
             std::string lineFromFile;
             std::vector <std::string> pattern;
-            
             std::vector <std::string> name;
             std::vector <int> devicetype;
             std::vector <int> commtype;
             std::vector <int> id;
-
+            uint8_t deviceNumber;
             uint8_t Sensors = 0;
             uint8_t Actuators = 0;
             uint8_t SensorsAndActuators = 0;
@@ -57,7 +56,6 @@ namespace json_herczig
             uint8_t regexmatcherForComType(std::string &temp);
 
         public:
-            uint8_t deviceNumber;
             json(const char &p): jsonFile{&p} {
                 deviceNumber = 0;
                 devPattern.actuatorPattern = std::regex(".*Actuat.*");
@@ -69,14 +67,13 @@ namespace json_herczig
                 comPattern.PWMPattern = std::regex("(pwm)|(PWM)");
                 comPattern.BluetoothPattern = std::regex("Bluetooth");
             };
-            string getName(int element){ return name[element]; }
-            Id_t getID(int element){ return id[element]; }
-            devType_t getDevType(int element) { return devicetype[element]; }
-            comm_t getCommType(int element) { return commtype[element]; }
-
             void OpenPattern();
             void processPattern();
             void FinishProcess();
+            Id_t getID(int element) { return id[0]; }
+            devType_t getDevType(int element) { return devicetype[0]; }
+            comm_t getComm(int element) { return commtype[0]; }
+            std::string getName(int element) { return name[0]; }
             ~json();
     };
 
