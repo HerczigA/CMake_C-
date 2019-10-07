@@ -10,22 +10,6 @@ using namespace std;
 int main(int argc, char *argv[])
 {
    
-    vector<unique_ptr<sensor>> Sensors;
-    vector<unique_ptr<actuator>> Actuators;
-    //vector<unique_ptr<actuator>> Actuators;
-    const char* JSONpath ="./JSON/pattern/template.json";
-    json_herczig::json JSONobj(*JSONpath);
-
-    if(!JSONobj.OpenPattern())
-        return E_JSON_OPEN;
-
-    JSONobj.bridgeGetSet(JSONobj.getSensorsNumber(),Sensors,Sensor);
-    JSONobj.bridgeGetSet(JSONobj.getActuatorsNumber(),Actuators,Actuator);
-    //JSONobj.bridgeGetSet(JSONobj.getSensorsNumber(),Se);
-
-#if DEBUG
-    cout << "\nSENSORS DETAILS " << endl; 
-    for(size_t i = 0; i < JSONobj.getSensorsNumber(); i++)
     {
         size_t j = 0;
         cout<< "ID: " << Sensors[i]->get_ID() << endl;
@@ -37,9 +21,6 @@ int main(int argc, char *argv[])
             cout<< "Pins: " <<(int) Sensors[i]->get_Pins(j) << endl;
             j++;
         }
-            
-    }
-    cout << "\nACTUATORS DETAILS " << endl;
     for(size_t i = 0; i < JSONobj.getActuatorsNumber(); i++)
     {
         size_t j = 0;
@@ -53,10 +34,18 @@ int main(int argc, char *argv[])
             j++;
         }
     }
-    
-#endif
+    vector<device*> Devices;
 
+    JSONobj.OpenPattern();
+    JSONobj.processPattern();
+    JSONobj.FinishProcess();
     
+    
+        unique_ptr<sensor> s1(new sensor);
+        s1->setName(JSONobj.getName(0));
+        s1->setID(JSONobj.getID(0));
+        s1->setdevType(JSONobj.getDevType(0));
+        s1->setcommType(JSONobj.getCommType(0));
     
     return 0;
 }

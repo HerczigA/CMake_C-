@@ -94,13 +94,13 @@ class device
         //int Init_Wifi();
 
     public:
-        device(string Name, Id_t ID, devType_t devtype,comm_t commtype): name{Name}
+        device(): device_Initialized (false);
+        device(string Name, Id_t ID, devType_t devtype,comm_t commtype): name{Name}, device_Initialized (false)
         {
             id =( !ID && id_counter != 1 ) ? id_counter : id_counter++;
             dev_Type = (devtype >= Sensor && devtype <= Sensor_Actuator) ? devtype : Unknow_device;
             commType = (commtype >= SPI && commtype <= Bluetooth) ? commtype : Unknow_communication;
             wiringPiSetup();
-            device_Initialized = false;
         }
         string get_Name();
         devType_t get_Dev_Type();
@@ -108,6 +108,10 @@ class device
         comm_t get_Comm_Type();
         uint8_t setPins(vector<uint8_t> pinNumbers,uint8_t directions[], uint8_t numberOfPorts);
         void Init_Communication();
+        virtual void setName(string &devName) = 0; 
+        virtual void setID(Id_t id) = 0; 
+        virtual void setdevType(devType_t dev) = 0; 
+        virtual void setcommType(comm_t com) = 0; 
 };
 
 class sensor : public device
@@ -117,8 +121,13 @@ class sensor : public device
         sensor(string Name, Id_t ID, devType_t devtype, comm_t commtype) : device(Name,ID,devtype,commtype) {
             buttonPushed = false;
         }
+        sensor() : device();
         void digital_Read(int pin);
         bool getButtonState();
+        void setName override (string &devName);
+        void setID override(Id_t id); 
+        void setdevType override(devType_t dev); 
+        void setcommType override(comm_t com); 
 
 };
 
@@ -132,6 +141,11 @@ class actuator : public device
             pwmRange = PWM_RANGE_MAX;
             initValue = 0;
         }
+        void setName override (string &devName);
+        void setID override(Id_t id); 
+        void setdevType override(devType_t dev); 
+        void setcommType override(comm_t com); 
+
         void pwm_Setup(int pinNumber);
         void pwm_ServoSetup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts);
         void digital_Write(vector<int> pinNumbers,vector<int> states);

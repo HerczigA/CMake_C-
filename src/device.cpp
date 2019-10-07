@@ -267,6 +267,47 @@ void device::Init_Communication()
 
 }
 
+void sensor::setName(string &devName)
+{
+    this->name = devName;
+}
+
+void sensor::setdevType(devType_t dev )
+{
+    this->dev_Type = dev;
+}
+
+void sensor::setID(Id_t id)
+{
+    this->id = id;
+}
+
+void sensor::setcommType(comm_t com)
+{
+    this->commType = com;
+}
+
+void actuator::setName(string &devName)
+{
+    this->name = devName;
+}
+
+void actuator::setdevType(devType_t dev )
+{
+    this->dev_Type = dev;
+}
+
+void actuator::setID(Id_t id)
+{
+    this->id = id;
+}
+
+void actuator::setcommType(comm_t com)
+{
+    this->commType = com;
+}
+
+
 void sensor::digital_Read(int pin)
 {
     if(pin >= MAX_PORTS_NUMBER)
