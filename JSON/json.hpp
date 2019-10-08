@@ -70,10 +70,15 @@ namespace json_herczig
             void OpenPattern();
             void processPattern();
             void FinishProcess();
+            
             Id_t getID(int element) { return id[0]; }
             devType_t getDevType(int element) { return devicetype[0]; }
             comm_t getComm(int element) { return commtype[0]; }
             std::string getName(int element) { return name[0]; }
+            
+            uint8_t getSensorsNumber() { return Sensors; }
+            uint8_t getActuatorsNumber() { return Actuators; }
+            uint8_t getSensorsActuatorsNumber() { return SensorsAndActuators; }
             ~json();
     };
 
