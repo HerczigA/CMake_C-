@@ -31,8 +31,6 @@ typedef unsigned int time_ms_t;
 
 using namespace std;
 
-static uint16_t id_counter =1;
-
 enum comm_type
 {
     SPI = 1,
@@ -94,24 +92,18 @@ class device
         //int Init_Wifi();
 
     public:
-        device(): device_Initialized{false} {};
-        device(string Name, Id_t ID, devType_t devtype,comm_t commtype): name{Name}, device_Initialized (false)
-        {
-            id =( !ID && id_counter != 1 ) ? id_counter : id_counter++;
-            dev_Type = (devtype >= Sensor && devtype <= Sensor_Actuator) ? devtype : Unknow_device;
-            commType = (commtype >= SPI && commtype <= Bluetooth) ? commtype : Unknow_communication;
-            wiringPiSetup();
-        }
-        string get_Name();
+        device(); 
+        device(string Name, Id_t ID, devType_t devtype,comm_t commtype);      
+        uint8_t setPins(vector<uint8_t> pinNumbers,uint8_t directions[], uint8_t numberOfPorts);
+        void Init_Communication();
+        string &get_Name();
         devType_t get_Dev_Type();
         Id_t get_ID();
         comm_t get_Comm_Type();
-        uint8_t setPins(vector<uint8_t> pinNumbers,uint8_t directions[], uint8_t numberOfPorts);
-        void Init_Communication();
-        virtual void setName(string &devName) = 0;
-        virtual void setID(Id_t id) = 0;
-        virtual void setdevType(devType_t dev) = 0;
-        virtual void setcommType(comm_t com) = 0;
+        void setName(string &devName);
+        void setID(Id_t id);
+        void setdevType(devType_t dev);
+        void setcommType(comm_t com);
 };
 
 class sensor : public device
@@ -124,11 +116,6 @@ class sensor : public device
         sensor() : device() {};
         void digital_Read(int pin);
         bool getButtonState();
-        void setName (string &devName) override ;
-        void setID(Id_t id) override;
-        void setdevType(devType_t dev) override;
-        void setcommType(comm_t com) override;
-
 };
 
 class actuator : public device
@@ -141,11 +128,7 @@ class actuator : public device
             pwmRange = PWM_RANGE_MAX;
             initValue = 0;
         }
-        void setName (string &devName)override ;
-        void setID (Id_t id) override ;
-        void setdevType (devType_t dev) override ;
-        void setcommType (comm_t com) override ;
-
+        
         void pwm_Setup(int pinNumber);
         void pwm_ServoSetup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts);
         void digital_Write(vector<int> pinNumbers,vector<int> states);

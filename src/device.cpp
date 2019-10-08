@@ -12,14 +12,31 @@
 #include <wiringPi.h>
 #include <softServo.h>
 #include <softPwm.h>
-
 using namespace std;
 
+static Id_t id_counter = 1;
 const static std::string chn0 = "/dev/spidev0.0";
 const static std::string chn1 = "/dev/spidev0.1";
 
+device::device(): device_Initialized{false} 
+{
+    id = 0;
+    //cout<< "device constructor : "<<id_counter  << endl;
+    dev_Type =  Unknow_device;
+    commType =  Unknow_communication;
+    wiringPiSetup();
+}
 
-string device::get_Name()
+device::device(string Name, Id_t ID, devType_t devtype,comm_t commtype): name{Name}, device_Initialized(false)
+{
+    id =( !ID && id_counter != 1 ) ? id_counter : id_counter++;
+    dev_Type = (devtype >= Sensor && devtype <= Sensor_Actuator) ? devtype : Unknow_device;
+    commType = (commtype >= SPI && commtype <= Bluetooth) ? commtype : Unknow_communication;
+    wiringPiSetup();
+}
+
+
+string &device::get_Name()
 {
     return name;
 }
@@ -267,46 +284,38 @@ void device::Init_Communication()
 
 }
 
-void sensor::setName(string &devName)
+void device::setName(string &devName)
 {
     this->name = devName;
 }
 
-void sensor::setdevType(devType_t dev )
+void device::setdevType(devType_t dev )
 {
     this->dev_Type = dev;
 }
 
-void sensor::setID(Id_t id)
+void device::setID(Id_t id)
 {
-    this->id = id;
+    if(!id || id < (id_counter-1) || id > id_counter)
+        {
+
+            this->id = id_counter;
+            //cout << "in if setid  " << id << " id_counter: " << id_counter<< " this->id: "<<this->id<< endl;
+            id_counter += 1;
+        }
+        
+    else
+        {
+            //cout << "in else setid  " << id << endl;
+            this->id = id;
+        }
+        
 }
 
-void sensor::setcommType(comm_t com)
-{
-    this->commType = com;
-}
-
-void actuator::setName(string &devName)
-{
-    this->name = devName;
-}
-
-void actuator::setdevType(devType_t dev )
-{
-    this->dev_Type = dev;
-}
-
-void actuator::setID(Id_t id)
-{
-    this->id = id;
-}
-
-void actuator::setcommType(comm_t com)
+void device::setcommType(comm_t com)
 {
     this->commType = com;
 }
-
 
 void sensor::digital_Read(int pin)
 {
