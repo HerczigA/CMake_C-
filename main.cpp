@@ -9,14 +9,6 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-   
-    {
-        size_t j = 0;
-        cout<< "ID: " << Sensors[i]->get_ID() << endl;
-        cout<< "Name: " << Sensors[i]->get_Name() << endl;
-        cout<< "DevType: "  << (int) Sensors[i]->get_Dev_Type() << endl;
-        cout<< "CommType: " <<(int) Sensors[i]->get_Comm_Type() << endl;
-        for(auto it = 0; it < Sensors[i]->get_PinNumbers(); it++)
         {
             cout<< "Pins: " <<(int) Sensors[i]->get_Pins(j) << endl;
             j++;
@@ -33,19 +25,25 @@ int main(int argc, char *argv[])
             cout<< "Pins: " <<(int) Actuators[i]->get_Pins(j) << endl;
             j++;
         }
-    }
-    vector<device*> Devices;
+   
+    vector<sensor> Sensors;   // vector<device*> Devices;
+    const char* JSONpath ="./JSON/pattern/template.json";
 
-    JSONobj.OpenPattern();
-    JSONobj.processPattern();
-    JSONobj.FinishProcess();
-    
-    
-        unique_ptr<sensor> s1(new sensor);
-        s1->setName(JSONobj.getName(0));
-        s1->setID(JSONobj.getID(0));
-        s1->setdevType(JSONobj.getDevType(0));
-        s1->setcommType(JSONobj.getCommType(0));
+    if(!JSONobj.OpenPattern())
+        return E_JSON_OPEN;
+
+    if(JSONobj.getSensorsNumber())
+    {
+        size_t i = JSONobj.getSensorsNumber();
+        for(;i > 0; --i)
+        Sensors.push_back
+
+    }
+        /*unique_ptr<sensor> s1(new sensor);
+        s1->setName(stringtempike);
+        s1->setID(tempike);
+        s1->setdevType(tempike);
+        s1->setcommType(tempike);*/
     
     return 0;
 }
