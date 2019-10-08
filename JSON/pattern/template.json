@@ -5,7 +5,7 @@
         {
     	    "commtype" : "Unknown_communication",
     	    "name" : "Button",
-    	    "ID" : "1"
+    	    "ID" : "0"
         }
     }, 
     
@@ -27,5 +27,15 @@
     	    "name" : "MSP430",
     	    "ID" : "1"
         }
-    }     
+    },
+
+    "Device4" :
+    {
+        "Sensor" :
+        {
+    	    "commtype" : "SPI",
+    	    "name" : "Button",
+    	    "ID" : "0"
+        }
+    }      
 }

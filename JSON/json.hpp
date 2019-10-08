@@ -9,7 +9,7 @@
 #include <regex>
 #include "../hdr/device.hpp"
 
-
+#define DEBUG 0
 enum jsonerror_t
 {
     E_JSON_OPEN = 51
@@ -65,11 +65,29 @@ namespace json_herczig
             Id_t getID(int element) { return id[0]; }
             devType_t getDevType(int element) { return devicetype[0]; }
             comm_t getComm(int element) { return commtype[0]; }
-            std::string getName(int element) { return name[0]; }
+            std::string &getName(int element) { return name[0]; }
             
             uint8_t getSensorsNumber() { return Sensors; }
             uint8_t getActuatorsNumber() { return Actuators; }
             uint8_t getSensorsActuatorsNumber() { return SensorsAndActuators; }
+            template<class x, class z, class y>
+            void bridgeGetSet(x a, z b , y& c)
+            {
+                if(a)
+                {
+                    for(size_t i = 0; i < a; i++)
+                    {
+                        unique_ptr<b> dev = make_unique<b>();
+                        dev->setID(getID(i));
+                        dev->setName(getName(i));
+                        dev->setdevType(getDevType(i));
+                        dev->setcommType(getComm(i));
+                        c.push_back(move(dev));
+                    }
+                    
+
+                }
+            }
             ~json();
     };
 

@@ -55,7 +55,9 @@ bool json_herczig::json::OpenPattern()
 
     fileHand.close();
     processPattern();
-    FinishProcess();
+    #if DEBUG
+        FinishProcess();
+    #endif
     return true;
 
 }
