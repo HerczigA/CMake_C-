@@ -12,7 +12,32 @@
 
 using namespace std;
 
-void json_herczig::json::OpenPattern()
+json_herczig::json::json(const char &p): jsonFile{&p}
+{
+                deviceNumber = 0;
+                devPattern.actuatorPattern = std::regex(".*Actuat.*");
+                devPattern.sensorPattern = std::regex(".*Sens.*");
+                devPattern.sensorActuatorPattern = std::regex(".*sor_Actu.*");
+                comPattern.SPIPattern = std::regex("(SPI)|(spi)]");
+                comPattern.I2CPattern = std::regex("(I2C)|(i2c)");
+                comPattern.UARTPattern = std::regex("(UART)|(uart)");
+                comPattern.PWMPattern = std::regex("(pwm)|(PWM)");
+                comPattern.BluetoothPattern = std::regex("Bluetooth");
+};
+
+json_herczig::json::json()
+{
+                deviceNumber = 0;
+                devPattern.actuatorPattern = std::regex(".*Actuat.*");
+                devPattern.sensorPattern = std::regex(".*Sens.*");
+                devPattern.sensorActuatorPattern = std::regex(".*sor_Actu.*");
+                comPattern.SPIPattern = std::regex("(SPI)|(spi)]");
+                comPattern.I2CPattern = std::regex("(I2C)|(i2c)");
+                comPattern.UARTPattern = std::regex("(UART)|(uart)");
+                comPattern.PWMPattern = std::regex("(pwm)|(PWM)");
+                comPattern.BluetoothPattern = std::regex("Bluetooth");
+};
+bool json_herczig::json::OpenPattern()
 {
     try
     {
@@ -23,12 +48,15 @@ void json_herczig::json::OpenPattern()
     catch(char const* msg)
     {
         std::cout << msg << "\nException under opening" << endl;
-        return;
+        return false;
     }
     while(getline(fileHand,lineFromFile))
         pattern.push_back(lineFromFile);
 
     fileHand.close();
+    processPattern();
+    FinishProcess();
+    return true;
 
 }
 

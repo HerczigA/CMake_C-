@@ -10,9 +10,9 @@
 #include "../hdr/device.hpp"
 
 
-enum json_objects
+enum jsonerror_t
 {
-
+    E_JSON_OPEN = 51
 };
 
 
@@ -39,7 +39,7 @@ namespace json_herczig
     class json
     {
             std::fstream fileHand;
-            std::string jsonFile;
+            std::string jsonFile = "./JSON/pattern/template.json";
             devpatterns devPattern;
             compatterns comPattern;
             std::string lineFromFile;
@@ -56,18 +56,9 @@ namespace json_herczig
             uint8_t regexmatcherForComType(std::string &temp);
 
         public:
-            json(const char &p): jsonFile{&p} {
-                deviceNumber = 0;
-                devPattern.actuatorPattern = std::regex(".*Actuat.*");
-                devPattern.sensorPattern = std::regex(".*Sens.*");
-                devPattern.sensorActuatorPattern = std::regex(".*sor_Actu.*");
-                comPattern.SPIPattern = std::regex("(SPI)|(spi)]");
-                comPattern.I2CPattern = std::regex("(I2C)|(i2c)");
-                comPattern.UARTPattern = std::regex("(UART)|(uart)");
-                comPattern.PWMPattern = std::regex("(pwm)|(PWM)");
-                comPattern.BluetoothPattern = std::regex("Bluetooth");
-            };
-            void OpenPattern();
+            json(const char &p);
+            json();
+            bool OpenPattern();
             void processPattern();
             void FinishProcess();
             
