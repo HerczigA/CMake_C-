@@ -27,36 +27,36 @@ int main(int argc, char *argv[])
         }
    
     vector<unique_ptr<sensor>> Sensors;
+    vector<unique_ptr<actuator>> Actuators;
     const char* JSONpath ="./JSON/pattern/template.json";
 
     if(!JSONobj.OpenPattern())
         return E_JSON_OPEN;
 
-    
-    if(JSONobj.getSensorsNumber())
-    {
-        for(size_t i = 0; i < JSONobj.getSensorsNumber(); i++)
-        {
-            unique_ptr<sensor> dev = make_unique<sensor>();
-            dev->setID(JSONobj.getID(i));
-            dev->setName(JSONobj.getName(i));
-            dev->setdevType(JSONobj.getDevType(i));
-            dev->setcommType(JSONobj.getComm(i));
-            Sensors.push_back(move(dev));
-        }
-        
+    JSONobj.bridgeGetSet(JSONobj.getSensorsNumber(),Sensors,Sensor);
+    JSONobj.bridgeGetSet(JSONobj.getActuatorsNumber(),Actuators,Actuator);
+    //JSONobj.bridgeGetSet(JSONobj.getSensorsNumber(),Sensors);
 
-    }
-#if !DEBUG
+#if DEBUG
+    cout << "\nSENSORS DETAILS " << endl; 
     for(size_t i = 0; i < JSONobj.getSensorsNumber(); i++)
     {
         cout<< "ID: " << Sensors[i]->get_ID() << endl;
         cout<< "Name: " << Sensors[i]->get_Name() << endl;
         cout<< "DevType: "  << (int) Sensors[i]->get_Dev_Type() << endl;
         cout<< "CommType: " <<(int) Sensors[i]->get_Comm_Type() << endl;
+    }
+    cout << "\nACTUATORS DETAILS " << endl;
+    for(size_t i = 0; i < JSONobj.getActuatorsNumber(); i++)
+    {
+        cout<< "ID: " << Actuators[i]->get_ID() << endl;
+        cout<< "Name: " << Actuators[i]->get_Name() << endl;
+        cout<< "DevType: "  << (int) Actuators[i]->get_Dev_Type() << endl;
+        cout<< "CommType: " <<(int) Actuators[i]->get_Comm_Type() << endl;
+    }
 #endif
 
-    }
+    
     
     return 0;
 }

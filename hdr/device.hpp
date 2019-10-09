@@ -34,12 +34,10 @@ using namespace std;
 enum comm_type
 {
     SPI = 1,
-    //CAN,
     UART,
     I2C,
     PWM,
     Bluetooth,
-    //Wifi,
     Unknow_communication,
     COMMTYPE
 
@@ -128,7 +126,7 @@ class actuator : public device
             pwmRange = PWM_RANGE_MAX;
             initValue = 0;
         }
-        
+        actuator() : device() {};
         void pwm_Setup(int pinNumber);
         void pwm_ServoSetup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts);
         void digital_Write(vector<int> pinNumbers,vector<int> states);
