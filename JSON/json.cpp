@@ -15,9 +15,9 @@ using namespace std;
 json_herczig::json::json(const char &p): jsonFile{&p}
 {
                 deviceNumber = 0;
-                devPattern.actuatorPattern = std::regex(".*Actuat.*");
+                /*devPattern.actuatorPattern = std::regex(".*Actuat.*");
                 devPattern.sensorPattern = std::regex(".*Sens.*");
-                devPattern.sensorActuatorPattern = std::regex(".*sor_Actu.*");
+                devPattern.sensorActuatorPattern = std::regex(".*sor_Actu.*");*/
                 comPattern.SPIPattern = std::regex("(SPI)|(spi)]");
                 comPattern.I2CPattern = std::regex("(I2C)|(i2c)");
                 comPattern.UARTPattern = std::regex("(UART)|(uart)");
@@ -26,11 +26,11 @@ json_herczig::json::json(const char &p): jsonFile{&p}
 };
 
 json_herczig::json::json()
-{
+{   
                 deviceNumber = 0;
-                devPattern.actuatorPattern = std::regex(".*Actuat.*");
+                /*devPattern.actuatorPattern = std::regex(".*Actuat.*");
                 devPattern.sensorPattern = std::regex(".*Sens.*");
-                devPattern.sensorActuatorPattern = std::regex(".*sor_Actu.*");
+                devPattern.sensorActuatorPattern = std::regex(".*sor_Actu.*");*/
                 comPattern.SPIPattern = std::regex("(SPI)|(spi)]");
                 comPattern.I2CPattern = std::regex("(I2C)|(i2c)");
                 comPattern.UARTPattern = std::regex("(UART)|(uart)");
@@ -61,7 +61,7 @@ bool json_herczig::json::OpenPattern()
     return true;
 
 }
-
+/*
 uint8_t json_herczig::json::regexmatcherForDevType(std::string& temp)
 {
     uint8_t result;
@@ -79,7 +79,7 @@ uint8_t json_herczig::json::regexmatcherForDevType(std::string& temp)
 
     return result;
 }
-
+*/
 uint8_t json_herczig::json::regexmatcherForComType(std::string& temp)
 {
     uint8_t result = 0;
@@ -135,6 +135,7 @@ void json_herczig::json::processPattern()
                         this->SensorsAndActuators++;
                         devicetype.push_back(Sensor_Actuator);
                         checkDevicetype = false;
+                        
                     }
 
                     else if(std::string::npos != temp.find("Sensor"))
@@ -150,6 +151,8 @@ void json_herczig::json::processPattern()
                         devicetype.push_back(Actuator);
                         checkDevicetype = false;
                     }
+                    //else
+                      //  devicetype.push_back(Unknow_device);
 
                 }
                 else
@@ -197,12 +200,15 @@ void json_herczig::json::processPattern()
 
 void json_herczig::json::FinishProcess()
 {
+    std::cout << "Details about devices after read" << std::endl;
     while(deviceNumber)
     {
-        std::cout << devicetype[deviceNumber-1] << std::endl;
-        std::cout << commtype[deviceNumber-1] << std::endl;
-        std::cout << (std::string)name[deviceNumber-1] << std::endl;
-        std::cout << id[deviceNumber-1] << std::endl;
+        std::cout << std::endl;
+        std::cout << "ID: " <<id[deviceNumber-1] << std::endl;
+        std::cout << "Name: " <<(std::string)name[deviceNumber-1] << std::endl;
+        std::cout << "Devicetype: " <<devicetype[deviceNumber-1] << std::endl;
+        std::cout << "CommType: " <<commtype[deviceNumber-1] << std::endl;
+        std::cout << std::endl;
         deviceNumber--;
     }
 }

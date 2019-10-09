@@ -34,8 +34,8 @@
         "Sensor" :
         {
     	    "commtype" : "SPI",
-    	    "name" : "Button",
+    	    "name" : "PIR",
     	    "ID" : "0"
         }
-    }      
+    }        
 }
