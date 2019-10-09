@@ -26,24 +26,37 @@ int main(int argc, char *argv[])
             j++;
         }
    
-    vector<sensor> Sensors;   // vector<device*> Devices;
+    vector<unique_ptr<sensor>> Sensors;
     const char* JSONpath ="./JSON/pattern/template.json";
 
     if(!JSONobj.OpenPattern())
         return E_JSON_OPEN;
 
+    
     if(JSONobj.getSensorsNumber())
     {
-        size_t i = JSONobj.getSensorsNumber();
-        for(;i > 0; --i)
-        Sensors.push_back
+        for(size_t i = 0; i < JSONobj.getSensorsNumber(); i++)
+        {
+            unique_ptr<sensor> dev = make_unique<sensor>();
+            dev->setID(JSONobj.getID(i));
+            dev->setName(JSONobj.getName(i));
+            dev->setdevType(JSONobj.getDevType(i));
+            dev->setcommType(JSONobj.getComm(i));
+            Sensors.push_back(move(dev));
+        }
+        
 
     }
-        /*unique_ptr<sensor> s1(new sensor);
-        s1->setName(stringtempike);
-        s1->setID(tempike);
-        s1->setdevType(tempike);
-        s1->setcommType(tempike);*/
+#if !DEBUG
+    for(size_t i = 0; i < JSONobj.getSensorsNumber(); i++)
+    {
+        cout<< "ID: " << Sensors[i]->get_ID() << endl;
+        cout<< "Name: " << Sensors[i]->get_Name() << endl;
+        cout<< "DevType: "  << (int) Sensors[i]->get_Dev_Type() << endl;
+        cout<< "CommType: " <<(int) Sensors[i]->get_Comm_Type() << endl;
+#endif
+
+    }
     
     return 0;
 }
