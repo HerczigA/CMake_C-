@@ -15,9 +15,6 @@ using namespace std;
 json_herczig::json::json(const char &p): jsonFile{&p}
 {
                 deviceNumber = 0;
-                /*devPattern.actuatorPattern = std::regex(".*Actuat.*");
-                devPattern.sensorPattern = std::regex(".*Sens.*");
-                devPattern.sensorActuatorPattern = std::regex(".*sor_Actu.*");*/
                 comPattern.SPIPattern = std::regex("(SPI)|(spi)]");
                 comPattern.I2CPattern = std::regex("(I2C)|(i2c)");
                 comPattern.UARTPattern = std::regex("(UART)|(uart)");
@@ -28,9 +25,6 @@ json_herczig::json::json(const char &p): jsonFile{&p}
 json_herczig::json::json()
 {   
                 deviceNumber = 0;
-                /*devPattern.actuatorPattern = std::regex(".*Actuat.*");
-                devPattern.sensorPattern = std::regex(".*Sens.*");
-                devPattern.sensorActuatorPattern = std::regex(".*sor_Actu.*");*/
                 comPattern.SPIPattern = std::regex("(SPI)|(spi)]");
                 comPattern.I2CPattern = std::regex("(I2C)|(i2c)");
                 comPattern.UARTPattern = std::regex("(UART)|(uart)");
@@ -62,24 +56,6 @@ bool json_herczig::json::OpenPattern()
 
 }
 /*
-uint8_t json_herczig::json::regexmatcherForDevType(std::string& temp)
-{
-    uint8_t result;
-    if(regex_match(temp, this->devPattern.sensorPattern))
-        result = Sensor;
-
-    else if(regex_match(temp, this->devPattern.actuatorPattern))
-        result = Actuator;
-
-    else if(regex_match(temp, this->devPattern.sensorActuatorPattern))
-        result = Sensor_Actuator;
-
-    else
-        result = Unknow_device;
-
-    return result;
-}
-*/
 uint8_t json_herczig::json::regexmatcherForComType(std::string& temp)
 {
     uint8_t result = 0;
@@ -192,24 +168,30 @@ void json_herczig::json::processPattern()
 
 
     }
-
+#if DEBUG
     this->deviceNumber = this->Actuators + this->Sensors + this->SensorsAndActuators;
-    std::cout << this->deviceNumber << "  " << this->Actuators << this->Sensors << "  " << this->SensorsAndActuators<< std::endl;
+    std::cout << "Device number: " <<(int) this->deviceNumber
+     << "\nActuator number:  " <<(int) this->Actuators
+     << "\nSensor number: " <<(int) this->Sensors
+     << "\nnSensor&Actuator number: " << (int)this->SensorsAndActuators<< std::endl;
+#endif    
 }
 
 
 void json_herczig::json::FinishProcess()
 {
     std::cout << "Details about devices after read" << std::endl;
-    while(deviceNumber)
+    size_t i = 0;
+    while(i < deviceNumber)
     {
+       
         std::cout << std::endl;
-        std::cout << "ID: " <<id[deviceNumber-1] << std::endl;
-        std::cout << "Name: " <<(std::string)name[deviceNumber-1] << std::endl;
-        std::cout << "Devicetype: " <<devicetype[deviceNumber-1] << std::endl;
-        std::cout << "CommType: " <<commtype[deviceNumber-1] << std::endl;
+        std::cout << "ID: " <<id[i] << std::endl;
+        std::cout << "Name: " <<(std::string)name[i] << std::endl;
+        std::cout << "Devicetype: " <<devicetype[i] << std::endl;
+        std::cout << "CommType: " <<commtype[i] << std::endl;
         std::cout << std::endl;
-        deviceNumber--;
+        i++;
     }
 }
 

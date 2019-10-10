@@ -22,13 +22,6 @@ enum jsonerror_t
 namespace json_herczig
 {
 
-        struct devpatterns
-    {
-        std::regex sensorPattern;
-        std::regex actuatorPattern;
-        std::regex sensorActuatorPattern;
-    };
-
     struct compatterns
     {
         std::regex SPIPattern;
@@ -43,7 +36,6 @@ namespace json_herczig
     {
             std::fstream fileHand;
             std::string jsonFile = "./JSON/pattern/template.json";
-            //devpatterns devPattern;
             compatterns comPattern;
             std::string lineFromFile;
             
@@ -57,7 +49,6 @@ namespace json_herczig
             uint8_t Sensors = 0;
             uint8_t Actuators = 0;
             uint8_t SensorsAndActuators = 0;
-           // uint8_t regexmatcherForDevType(std::string &temp);
             uint8_t regexmatcherForComType(std::string &temp);
 
         public:
@@ -81,7 +72,7 @@ namespace json_herczig
             {
                 if(a)
                 {
-                    const int all = deviceNumber;
+                    const int all = this->deviceNumber;
                     for(size_t i = 0; i < all; i++)
                     {
                         std::unique_ptr<VectorOfDevice> dev =std::make_unique<VectorOfDevice>();
@@ -94,8 +85,6 @@ namespace json_herczig
                             b.push_back(std::move(dev));
                         }   
                     }
-                    
-
                 }
             }
             ~json();
