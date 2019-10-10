@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 
     JSONobj.bridgeGetSet(JSONobj.getSensorsNumber(),Sensors,Sensor);
     JSONobj.bridgeGetSet(JSONobj.getActuatorsNumber(),Actuators,Actuator);
-    //JSONobj.bridgeGetSet(JSONobj.getSensorsNumber(),Sensors);
+    JSONobj.bridgeGetSet(JSONobj.getSensorsNumber(),Sensors);
 
 #if DEBUG
     cout << "\nSENSORS DETAILS " << endl; 
