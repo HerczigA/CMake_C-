@@ -43,8 +43,11 @@ namespace json_herczig
             std::vector <std::string> name;
             std::vector <int> devicetype;
             std::vector <int> commtype;
+            std::vector <int> pinNumbers;
             std::vector <int> id;
+            std::vector <int> pinOffset;
             
+
             uint8_t deviceNumber;
             uint8_t Sensors = 0;
             uint8_t Actuators = 0;
@@ -62,6 +65,7 @@ namespace json_herczig
             devType_t getDevType(int element) { return devicetype[element]; }
             comm_t getComm(int element) { return commtype[element]; }
             std::string &getName(int element) { return name[element]; }
+            uint8_t getPins(int element) { return pinNumbers[element]; }
             
             uint8_t getSensorsNumber() { return Sensors; }
             uint8_t getActuatorsNumber() { return Actuators; }
@@ -82,6 +86,14 @@ namespace json_herczig
                             dev->device::setName(getName(i));
                             dev->device::setdevType(getDevType(i));
                             dev->device::setcommType(getComm(i));
+                            if(pinOffset[i])
+                            {
+                                for(size_t j = 0; j < this->pinOffset[i]; j++)
+                                    dev->device::setPinNumbers(getPins(i+j));
+                            }
+                            else
+                                dev->device::setPinNumbers(getPins(i));
+
                             b.push_back(std::move(dev));
                         }   
                     }
