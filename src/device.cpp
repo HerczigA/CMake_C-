@@ -57,6 +57,54 @@ comm_t device::get_Comm_Type()
     return commType;
 }
 
+uint8_t device::get_PinNumbers()
+{
+    return pins.size();
+}
+
+uint8_t device::get_Pins(int i)
+{
+    return pins[i];
+}
+
+void device::setName(string &devName)
+{
+    this->name = devName;
+}
+
+void device::setdevType(devType_t dev )
+{
+    this->dev_Type = dev;
+}
+
+void device::setID(Id_t id)
+{
+    if(!id || id < (id_counter-1) || id > id_counter)
+        {
+
+            this->id = id_counter;
+            //cout << "in if setid  " << id << " id_counter: " << id_counter<< " this->id: "<<this->id<< endl;
+            id_counter += 1;
+        }
+        
+    else
+        {
+            //cout << "in else setid  " << id << endl;
+            this->id = id;
+        }
+        
+}
+
+void device::setcommType(comm_t com)
+{
+    this->commType = com;
+}
+
+void device::setPinNumbers(uint8_t pins)
+{
+    this->pins.push_back(pins);
+}
+
 spi_error device::Init_SPI(SPI_Frame spi)
 {
     (void) spi;
@@ -242,12 +290,28 @@ int device::Init_UART()
 
 
 }
-/*
-int device::Init_CAN()
+
+pwm_t actuator::Init_PWM(int pwm, vector<uint8_t> pinNumbers, uint8_t numberOfPorts)
 {
-    return 0;
+
+    pwm_t result = E_INIT_NOK;
+    switch (pwm)
+    {
+            case simplePWM:
+                result = pwm_Setup(pinNumbers);
+                break;
+            
+            case ServoPWM:
+                result = pwm_ServoSetup(pinNumbers,numberOfPorts);
+                break;
+            default:
+                result = E_UNKNOW;
+                break;
+    }
+
+    return result;
 }
-*/
+
 int device::Init_Bluetooth()
 {
     return 0;
@@ -266,8 +330,8 @@ void device::Init_Communication()
             Init_I2C(COM.i2c);
             break;
 
-       /* case CAN:
-            Init_CAN();
+       /* case PWM:
+            Init_PWM();
             break;*/
 
         case UART:
@@ -275,7 +339,7 @@ void device::Init_Communication()
             break;
 
         case Bluetooth:
-            Init_Bluetooth();
+            //Init_Bluetooth();
             break;
 
         default:
@@ -316,6 +380,7 @@ void device::setcommType(comm_t com)
 {
     this->commType = com;
 }
+
 
 void sensor::digital_Read(int pin)
 {
@@ -379,16 +444,14 @@ uint8_t device::setPins(vector<uint8_t> pinNumbers, uint8_t directions[], uint8_
     return result;
 
 }
-void actuator::pwm_ServoSetup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts)
+pwm_t actuator::pwm_ServoSetup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts)
 {
 
     int servoOut[] = {-1,-1,-1,-1,-1,-1,-1,-1};
-
+    pwm_t result = E_INIT_NOK;
      if(pinNumbers.empty() || numberOfPorts >= MAX_SERVO_PORTS )
-    {
          cout << "Nullpointer for pinNumbers or too much number for ports bastard!? " << endl;
-        return;
-    }
+
     else
     {
         int8_t i  = 0;
@@ -397,28 +460,39 @@ void actuator::pwm_ServoSetup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts
             ++i;
 
         if(i != numberOfPorts)
-          {
+        {
 
             cout<< " not equal the given port numbers = "
             <<(int) i << " and the gpio numbers = "
             <<(int) numberOfPorts << endl;
-            return ;
-          }
-
-        for(auto j = 0; i >= 0; ++j)
-        {
-            servoOut[j] = pinNumbers[j];
-            i--;
+            result = E_INIT_NOK;
         }
+        else
+        {
+            for(auto j = 0; i >= 0; ++j)
+            {
+                servoOut[j] = pinNumbers[j];
+                i--;
+            }
+            result = E_INIT_OK;
+        }
+        
         softServoSetup(servoOut[0],servoOut[1],servoOut[2],servoOut[3],servoOut[4],servoOut[5],servoOut[6],servoOut[7]);
         device_Initialized = true;
-    }
 
+    }
+    return result;
 }
-void actuator::pwm_Setup(int pinNumber)
+pwm_t actuator::pwm_Setup(vector<uint8_t> pinNumber)
 {
-    if( !softPwmCreate(pinNumber,this->initValue, this->pwmRange))
-        device_Initialized = true;
+    pwm_t result = E_INIT_NOK;
+    int pin = pinNumber[0];
+    if( !softPwmCreate(pin,this->initValue, this->pwmRange))
+        {
+            device_Initialized = true;
+            result = E_INIT_OK;
+        }
+    return result;
 }
 
 void actuator::pwm_Write(uint8_t pinNumber, int DC, time_ms_t lengthOfDelay)

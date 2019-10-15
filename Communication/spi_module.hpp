@@ -38,6 +38,7 @@ struct SPI_Frame
     uint8_t endianess[MAX_SPI_CHANNELS];    //0 MSB other LSB
     char Packet[SPI_PACKET_LENGTH];
     int spiFD[MAX_SPI_CHANNELS];
+    spi_ioc_transfer buffer;
 
 };
 

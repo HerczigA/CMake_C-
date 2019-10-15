@@ -42,6 +42,23 @@ enum comm_type
     COMMTYPE
 
 };
+typedef uint8_t pwm_t;
+
+enum pwm_type
+{
+    simplePWM = 0,
+    ServoPWM,
+    UnknowPWM,
+    PWMTYPE
+};
+
+enum pwm_err_t
+{
+    E_INIT_OK = 0,
+    E_INIT_NOK,
+    E_UNKNOW
+
+};
 
 enum dev_type
 {
@@ -78,7 +95,7 @@ class device
         comm_t commType;
         string name;
         devType_t dev_Type;
-
+        vector<int> pins;
 
         bool device_Initialized;
         bool communication_Initialized;
@@ -86,7 +103,7 @@ class device
         i2c_error_t Init_I2C(I2C_Frame i2c);
         int Init_Bluetooth();
         int Init_UART();
-        //int Init_CAN();
+        //pwm_t Init_PWM(int pwm, vector<uint8_t> pinNumbers, uint8_t numberOfPorts);
         //int Init_Wifi();
 
     public:
@@ -98,10 +115,13 @@ class device
         devType_t get_Dev_Type();
         Id_t get_ID();
         comm_t get_Comm_Type();
+        uint8_t get_PinNumbers();
+        uint8_t get_Pins(int i);
         void setName(string &devName);
         void setID(Id_t id);
         void setdevType(devType_t dev);
         void setcommType(comm_t com);
+        void setPinNumbers(uint8_t pin);
 };
 
 class sensor : public device
@@ -127,8 +147,9 @@ class actuator : public device
             initValue = 0;
         }
         actuator() : device() {};
-        void pwm_Setup(int pinNumber);
-        void pwm_ServoSetup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts);
+        pwm_t pwm_Setup(vector<uint8_t> pinNumber);
+        pwm_t pwm_ServoSetup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts);
+        pwm_t Init_PWM(int pwm, vector<uint8_t> pinNumbers, uint8_t numberOfPorts);
         void digital_Write(vector<int> pinNumbers,vector<int> states);
         void pwm_Write(uint8_t pinNumber, int DC, time_ms_t  lengthOfDelay);
         void pwm_Write_Breathing(uint8_t pinNumber, time_ms_t  lengthOfDelay);
