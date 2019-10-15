@@ -53,9 +53,18 @@ int main(int argc, char *argv[])
             j++;
         }
     }
-    
-#endif
 
+#endif
+    uint8_t dir[] = {OUTPUT};
+    uint8_t gpioNum = 1;
+    if(Actuators[0]->get_Name() == "ServoMotor")
+    {
+        vector<uint8_t> pinek;
+        pinek.push_back(Actuators[0]->get_Pins(0));
+        Actuators[0]->setPins(pinek, dir, gpioNum);
+        Actuators[0]->pwm_ServoSetup(pinek, gpioNum);
+        Actuators[0]->pwm_Servo_Full_Limit(pinek[0],500);
+    }
     
     
     return 0;

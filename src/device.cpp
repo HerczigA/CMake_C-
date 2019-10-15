@@ -348,39 +348,6 @@ void device::Init_Communication()
 
 }
 
-void device::setName(string &devName)
-{
-    this->name = devName;
-}
-
-void device::setdevType(devType_t dev )
-{
-    this->dev_Type = dev;
-}
-
-void device::setID(Id_t id)
-{
-    if(!id || id < (id_counter-1) || id > id_counter)
-        {
-
-            this->id = id_counter;
-            //cout << "in if setid  " << id << " id_counter: " << id_counter<< " this->id: "<<this->id<< endl;
-            id_counter += 1;
-        }
-        
-    else
-        {
-            //cout << "in else setid  " << id << endl;
-            this->id = id;
-        }
-        
-}
-
-void device::setcommType(comm_t com)
-{
-    this->commType = com;
-}
-
 
 void sensor::digital_Read(int pin)
 {
