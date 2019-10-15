@@ -55,7 +55,7 @@ bool json_herczig::json::OpenPattern()
     return true;
 
 }
-/*
+
 uint8_t json_herczig::json::regexmatcherForComType(std::string& temp)
 {
     uint8_t result = 0;
@@ -148,7 +148,34 @@ void json_herczig::json::processPattern()
                         temp.erase(temp.end()-2,temp.end()-0);
                         this->name.push_back(temp);
                     }
+                    else if( std::string::npos !=temp.find("pin(s)"))
+                    {
+                        int pinoffset = 0;
+                        found = temp.find_last_of(":");
+                        temp = temp.substr(found+1);
+                        if( temp.end() != std::find_if(temp.begin(),temp.end(),[] (char c)
+                            {  return (c == '[' ); }   ))
+                        {
+                            temp.erase(temp.begin());
+                            for(const char* p = temp.c_str(); *p ; p++)
+                            {
+                                if(*p >='0' && *p <= '9')
+                                {
+                                    this->pinNumbers.push_back(atoi(p));
+                                    pinoffset++;
+                                    
+                                }
+                            }
+                        }
+                        else
+                        {
+                            temp.erase(temp.begin()+1);
+                            this->pinNumbers.push_back(atoi(temp.c_str()));
+                        }
+                            
 
+                        pinOffset.push_back(pinoffset);
+                    }
                     else if( std::string::npos !=temp.find("ID"))
                     {
                         found = temp.find_last_of(":");
@@ -186,10 +213,20 @@ void json_herczig::json::FinishProcess()
     {
        
         std::cout << std::endl;
-        std::cout << "ID: " <<id[i] << std::endl;
-        std::cout << "Name: " <<(std::string)name[i] << std::endl;
-        std::cout << "Devicetype: " <<devicetype[i] << std::endl;
-        std::cout << "CommType: " <<commtype[i] << std::endl;
+        std::cout << "ID: " << id[i] << std::endl;
+        std::cout << "Name: " << (std::string)name[i] << std::endl;
+        std::cout << "Devicetype: " << devicetype[i] << std::endl;
+        std::cout << "CommType: " << commtype[i] << std::endl;
+        if(pinOffset[i])
+        {
+            for(size_t j = 0; j < pinOffset[i]; j++)
+            {
+                std::cout << "Pins: " << pinNumbers[i+j] << std::endl;
+            }
+        }
+        else   
+            std::cout << "Pins: " << pinNumbers[i] << std::endl;
+        
         std::cout << std::endl;
         i++;
     }
