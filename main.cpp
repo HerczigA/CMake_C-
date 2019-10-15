@@ -3,54 +3,60 @@
 #include "JSON/json.hpp"
 #include <wiringPi.h>
 #include <stdlib.h>
+#include <memory>
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
-    /*if(argc > 1)
-    {
-        filehandler fh(*argv[1]);
-        fh.getPatternFileName();
-        fh.getInfoFromPattern();
-        fh.getLinesFromVector();
-        fh.processPattern();
-        fh.FinishProcess();
-    }
-
-    sensor Button("button",1,Actuator,Unknow_communication);
-
-    actuator Motor("MicroServo",2,2,Bluetooth);
-    cout << Button.get_ID() << endl;
-    cout << Button.get_Name() << endl;
-
-    cout << Motor.get_ID() << endl;
-    cout << Motor.get_Name() << endl;
-
-    vector<uint8_t> GPIO ={5};
-    vector<uint8_t> inputpins = {4};
-    uint8_t dir[] = {OUTPUT};
-    uint8_t gpioNum = 1;
-    int16_t DC = (argc > 1) ? atoi(argv[1]) : 0;
-    time_ms_t waiting = (argv[2]) ? atoi(argv[2]) : DEF_SERVO_TIME;
-    int buttonka = inputpins[0];
-
-    cout << "start setpins()" << endl;
-    if(!Button.setPins(inputpins,dir,gpioNum))
-        cout << "yolo" << endl;
-
-    bool loop = true;
-    cout<<" GPIO size = " << sizeof(GPIO) << endl;
-
-    while (loop)
-    */
-    const char* JSONpath ="./template.json";
+   
+    vector<unique_ptr<sensor>> Sensors;
+    vector<unique_ptr<actuator>> Actuators;
+    //vector<unique_ptr<actuator>> Actuators;
+    const char* JSONpath ="./JSON/pattern/template.json";
     json_herczig::json JSONobj(*JSONpath);
 
-        JSONobj.OpenPattern();
-        JSONobj.processPattern();
-        JSONobj.FinishProcess();
+    if(!JSONobj.OpenPattern())
+        return E_JSON_OPEN;
 
+    JSONobj.bridgeGetSet(JSONobj.getSensorsNumber(),Sensors,Sensor);
+    JSONobj.bridgeGetSet(JSONobj.getActuatorsNumber(),Actuators,Actuator);
+    //JSONobj.bridgeGetSet(JSONobj.getSensorsNumber(),Se);
 
+#if DEBUG
+    cout << "\nSENSORS DETAILS " << endl; 
+    for(size_t i = 0; i < JSONobj.getSensorsNumber(); i++)
+    {
+        size_t j = 0;
+        cout<< "ID: " << Sensors[i]->get_ID() << endl;
+        cout<< "Name: " << Sensors[i]->get_Name() << endl;
+        cout<< "DevType: "  << (int) Sensors[i]->get_Dev_Type() << endl;
+        cout<< "CommType: " <<(int) Sensors[i]->get_Comm_Type() << endl;
+        for(auto it = 0; it < Sensors[i]->get_PinNumbers(); it++)
+        {
+            cout<< "Pins: " <<(int) Sensors[i]->get_Pins(j) << endl;
+            j++;
+        }
+            
+    }
+    cout << "\nACTUATORS DETAILS " << endl;
+    for(size_t i = 0; i < JSONobj.getActuatorsNumber(); i++)
+    {
+        size_t j = 0;
+        cout<< "ID: " << Actuators[i]->get_ID() << endl;
+        cout<< "Name: " << Actuators[i]->get_Name() << endl;
+        cout<< "DevType: "  << (int) Actuators[i]->get_Dev_Type() << endl;
+        cout<< "CommType: " <<(int) Actuators[i]->get_Comm_Type() << endl;
+        for(auto it = 0; it < Actuators[i]->get_PinNumbers(); it++)
+        {
+            cout<< "Pins: " <<(int) Actuators[i]->get_Pins(j) << endl;
+            j++;
+        }
+    }
+    
+#endif
+
+    
+    
     return 0;
 }
