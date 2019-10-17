@@ -31,6 +31,7 @@ json_herczig::json::json()
                 comPattern.PWMPattern = std::regex("(pwm)|(PWM)");
                 comPattern.BluetoothPattern = std::regex("Bluetooth");
 };
+
 bool json_herczig::json::OpenPattern()
 {
     try
@@ -195,8 +196,9 @@ void json_herczig::json::processPattern()
 
 
     }
-#if DEBUG
+
     this->deviceNumber = this->Actuators + this->Sensors + this->SensorsAndActuators;
+#if DEBUG
     std::cout << "Device number: " <<(int) this->deviceNumber
      << "\nActuator number:  " <<(int) this->Actuators
      << "\nSensor number: " <<(int) this->Sensors

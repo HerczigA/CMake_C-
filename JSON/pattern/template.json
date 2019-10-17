@@ -5,7 +5,7 @@
         {
     	    "commtype" : "Unknown_communication",
     	    "name" : "Button",
-            "pin(s)": "2",
+            "pin(s)": "4",
             "ID" : "0"
         }
     }, 
@@ -16,7 +16,7 @@
         {
     	    "commtype" : "pwm",
             "name" : "ServoMotor",
-            "pin(s)": "3",
+            "pin(s)": "5",
     	    "ID" : "1"
         }
     }, 
@@ -27,7 +27,7 @@
         {
     	    "commtype" : "I2C",
             "name" : "MSP430",
-            "pin(s)": "4",
+            "pin(s)": "9",
     	    "ID" : "1"
         }
     },
@@ -38,7 +38,7 @@
         {
     	    "commtype" : "SPI",
     	    "name" : "PIR",
-            "pin(s)": ["2,5"],
+            "pin(s)": ["2,6"],
             "ID" : "0"
         }
     }        
