@@ -10,7 +10,7 @@
 #include <memory>
 #include "../hdr/device.hpp"
 
-#define DEBUG 1
+#define DEBUG 0
 #define MAX_DEV_TYPE 3
 
 enum jsonerror_t
