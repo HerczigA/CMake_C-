@@ -14,15 +14,18 @@
 #include <fcntl.h>
 
 #define MAX_PORTS_NUMBER 21
-#define MAX_SERVO_PORTS 8
 #define MAX_DC 1024
+#define PWM_RANGE_MAX 100
+
+#define MAX_SERVO_PORTS 8
 #define SERVO_STEP 200
 #define SERVO_HIGH_LIMIT 1050
 #define SERVO_LOW_LIMIT -150
 #define MIN_SERVO_DELAY_TIME 100
 #define DEF_SERVO_TIME 200
 #define DEF_SERVO_POSITION 500
-#define PWM_RANGE_MAX 100
+
+#define BUTTON_READ_TIME 50
 
 typedef uint8_t devType_t;
 typedef uint16_t Id_t;
@@ -127,13 +130,18 @@ class device
 class sensor : public device
 {
     bool buttonPushed;
+    bool prevButtonState;
+    bool buttonState;
     public:
         sensor(string Name, Id_t ID, devType_t devtype, comm_t commtype) : device(Name,ID,devtype,commtype) {
             buttonPushed = false;
+            buttonState = LOW;
+            prevButtonState = LOW;
         }
         sensor() : device() {};
         void digital_Read(int pin);
         bool getButtonState();
+        bool buttonStateChanged();
 };
 
 class actuator : public device
@@ -155,6 +163,7 @@ class actuator : public device
         void pwm_Write_Breathing(uint8_t pinNumber, time_ms_t  lengthOfDelay);
         void pwm_Servo_Write_In_Loop(uint8_t pinNumber, int16_t DC, time_ms_t lengthOfDelay, bool loop);
         void pwm_Servo_Full_Limit(uint8_t pinNumber,time_ms_t t_length);
+        void pwm_Servo_Full_Limit(uint8_t pinNumber, time_ms_t t_length, bool button);
 
 };
 

@@ -353,16 +353,50 @@ void sensor::digital_Read(int pin)
 {
     if(pin >= MAX_PORTS_NUMBER)
         return;
+        //should thrown exception
     
-    buttonPushed = digitalRead(pin) ?  true : false;
-    
+        if(digitalRead(pin))
+        {
+            delay(BUTTON_READ_TIME);
+            buttonPushed = digitalRead(pin) ? true : false;
+        }
+        
+
+        if(buttonPushed)
+        {
+#if !DEBUG
+            cout<< "button pushed" << endl;
+#endif
+            prevButtonState = buttonState;
+            buttonState = !buttonState;
+            
+        }
+        buttonPushed = false;
+
 }
 
 bool sensor::getButtonState()
 {
-    return buttonPushed;
+    return buttonState;
 }
 
+bool sensor::buttonStateChanged()
+{
+    //return (buttonState != prevButtonState) ? true : false;
+    bool result = false;
+    if(prevButtonState  != buttonState)
+    {
+        result = true;
+        prevButtonState = buttonState;
+        cout << "prevButtonState  != buttonState" << endl;
+    }
+    else
+    {
+        result = false;
+    }
+
+    return result;
+}
 
 uint8_t device::setPins(vector<uint8_t> pinNumbers, uint8_t directions[], uint8_t numberOfPorts)
 {
@@ -382,7 +416,7 @@ uint8_t device::setPins(vector<uint8_t> pinNumbers, uint8_t directions[], uint8_
         for(auto it = pinNumbers.begin(); it != pinEnd; ++it)
             ++i;
         if(i != numberOfPorts)
-            result= 3;
+            result= 2;
 
         i=0;
 
@@ -391,23 +425,18 @@ uint8_t device::setPins(vector<uint8_t> pinNumbers, uint8_t directions[], uint8_
         {
             if((this->dev_Type == Actuator && directions[i] == INPUT) || (this->dev_Type == Sensor && directions[i] == OUTPUT)) 
             {
-                result=4;   //can not be actuator input and vice versa
+                result=3;   //can not be actuator input and vice versa
                 break;
             }
-            if(pinNumbers[i] && directions[i])
-            {
-	        pinMode(pinNumbers[i],directions[i]);
-		    i++;
-	    }
-            else
-            {
-                cout<< " nullptr got" << endl;
-                result = 2;
-                break;
-            }
+            //TODO: check the same size of pinnumbers and directions
+	            pinMode(pinNumbers[i],directions[i]);
+		        i++;
+	        
         }
     }
+#if DEBUG
     cout << "result = "<< result << endl;
+#endif
     return result;
 
 }
@@ -545,6 +574,34 @@ void actuator::pwm_Servo_Full_Limit(uint8_t pinNumber, time_ms_t t_length)
         delay(delaytime);
         softServoWrite(pinNumber,SERVO_LOW_LIMIT);
         delay(delaytime);
+    }
+
+}
+
+void actuator::pwm_Servo_Full_Limit(uint8_t pinNumber, time_ms_t t_length, bool button)
+{
+    if(!device_Initialized)
+        return;
+    time_ms_t delaytime = t_length;
+    
+    if(delaytime <= MIN_SERVO_DELAY_TIME)
+        delaytime = DEF_SERVO_TIME;
+
+    static bool stateTop  = true; 
+    
+    if(button && stateTop)
+    {
+        cout<< "servo high" << endl;
+        softServoWrite(pinNumber,SERVO_HIGH_LIMIT);
+        delay(delaytime);    
+        stateTop = false;
+    }            
+    else if(!button && !stateTop)
+    {
+        cout<< "servo low" << endl;
+        softServoWrite(pinNumber,SERVO_LOW_LIMIT);
+        delay(delaytime);
+        stateTop = true;
     }
 
 }
