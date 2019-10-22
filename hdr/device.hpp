@@ -13,6 +13,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+#define DEBUG_DEVICE 0 
+
 #define MAX_PORTS_NUMBER 21
 #define MAX_DC 1024
 #define PWM_RANGE_MAX 100
@@ -80,15 +82,6 @@ struct Communications
     term serialport;
 };
 
-class foo
-{
-    public:
-    int i;
-    foo() : i{10} {}
-    foo(int const i_) : i{i_} {}
-    auto getFooInt(){ return i;}
-};
-
 
 class device
 {
@@ -99,6 +92,9 @@ class device
         string name;
         devType_t dev_Type;
         vector<int> pins;
+
+        //std::unique_ptr<uint8_t> directions;
+        uint8_t *directions;
 
         bool device_Initialized;
         bool communication_Initialized;
@@ -111,8 +107,9 @@ class device
 
     public:
         device(); 
-        device(string Name, Id_t ID, devType_t devtype,comm_t commtype);      
-        uint8_t setPins(vector<uint8_t> pinNumbers,uint8_t directions[], uint8_t numberOfPorts);
+        device(string Name, Id_t ID, devType_t devtype,comm_t commtype);
+        ~device();      
+        uint8_t setPins(vector<uint8_t> pinNumbers, uint8_t numberOfPorts);
         void Init_Communication();
         string &get_Name();
         devType_t get_Dev_Type();
@@ -139,6 +136,7 @@ class sensor : public device
             prevButtonState = LOW;
         }
         sensor() : device() {};
+       //~sensor() : ~device() {};
         void digital_Read(int pin);
         bool getButtonState();
         bool buttonStateChanged();
@@ -155,6 +153,7 @@ class actuator : public device
             initValue = 0;
         }
         actuator() : device() {};
+        //~actuator() : ~device() {};
         pwm_t pwm_Setup(vector<uint8_t> pinNumber);
         pwm_t pwm_ServoSetup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts);
         pwm_t Init_PWM(int pwm, vector<uint8_t> pinNumbers, uint8_t numberOfPorts);

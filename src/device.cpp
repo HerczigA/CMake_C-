@@ -21,7 +21,7 @@ const static std::string chn1 = "/dev/spidev0.1";
 device::device(): device_Initialized{false} 
 {
     id = 0;
-    //cout<< "device constructor : "<<id_counter  << endl;
+    directions = nullptr;
     dev_Type =  Unknow_device;
     commType =  Unknow_communication;
     wiringPiSetup();
@@ -29,12 +29,18 @@ device::device(): device_Initialized{false}
 
 device::device(string Name, Id_t ID, devType_t devtype,comm_t commtype): name{Name}, device_Initialized(false)
 {
+    directions = nullptr;
     id =( !ID && id_counter != 1 ) ? id_counter : id_counter++;
     dev_Type = (devtype >= Sensor && devtype <= Sensor_Actuator) ? devtype : Unknow_device;
     commType = (commtype >= SPI && commtype <= Bluetooth) ? commtype : Unknow_communication;
     wiringPiSetup();
 }
 
+device::~device()
+{
+    if(directions)
+        delete[] directions;
+}
 
 string &device::get_Name()
 {
@@ -83,14 +89,19 @@ void device::setID(Id_t id)
         {
 
             this->id = id_counter;
-            //cout << "in if setid  " << id << " id_counter: " << id_counter<< " this->id: "<<this->id<< endl;
             id_counter += 1;
+
+            #if DEBUG_DEVICE            
+            cout << "in if setid  " << id << " id_counter: " << id_counter<< " this->id: "<<this->id<< endl;
+            #endif
         }
         
     else
         {
-            //cout << "in else setid  " << id << endl;
             this->id = id;
+            #if DEBUG_DEVICE            
+            cout << "in else setid  " << id << endl;
+            #endif
         }
         
 }
@@ -364,7 +375,7 @@ void sensor::digital_Read(int pin)
 
         if(buttonPushed)
         {
-#if !DEBUG
+#if DEBUG_DEVICE
             cout<< "button pushed" << endl;
 #endif
             prevButtonState = buttonState;
@@ -398,7 +409,7 @@ bool sensor::buttonStateChanged()
     return result;
 }
 
-uint8_t device::setPins(vector<uint8_t> pinNumbers, uint8_t directions[], uint8_t numberOfPorts)
+uint8_t device::setPins(vector<uint8_t> pinNumbers, uint8_t numberOfPorts)
 {
     int result = 0;
 
@@ -428,13 +439,50 @@ uint8_t device::setPins(vector<uint8_t> pinNumbers, uint8_t directions[], uint8_
                 result=3;   //can not be actuator input and vice versa
                 break;
             }
+            int j;
+            switch (this->dev_Type)
+                case Sensor:
+                    this->directions = new uint8_t[this->pins.size()];
+                    if(!this->directions)
+                    {
+                        cout<< "no memory for alloc directions " << endl;
+                        result = 4;
+                        break;
+                    }
+                    j = 0;
+                    while(j < this->pins.size())
+                    {
+                        this->directions[j] = INPUT;
+                        j++;
+                    }
+                    break;
+                
+                case Actuator:
+                    this->directions = new uint8_t[this->pins.size()];
+                    if(!this->directions)
+                    {
+                        cout<< "no memory for alloc directions " << endl;
+                        result = 4;
+                        break;
+                    }
+                    j = 0;
+                    while(j < this->pins.size())
+                    {
+                        this->directions[j] = OUTPUT;
+                        j++;
+                    }
+                    break;
+                    default : 
+                        cout<< "default branch in setpins " << endl;
+                        break;
+            }
             //TODO: check the same size of pinnumbers and directions
 	            pinMode(pinNumbers[i],directions[i]);
 		        i++;
 	        
         }
     }
-#if DEBUG
+#if DEBUG_DEVICE
     cout << "result = "<< result << endl;
 #endif
     return result;
