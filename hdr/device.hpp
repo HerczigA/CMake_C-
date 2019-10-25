@@ -5,24 +5,26 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "../Communication/spi_module.hpp"
-#include "../Communication/i2c_module.hpp"
-#include "../Communication/uart_module.hpp"
+#include "../Communication/communication.hpp"
 #include <wiringPi.h>
-#include <sys/ioctl.h>
 #include <unistd.h>
 #include <fcntl.h>
 
+#define DEBUG_DEVICE 0 
+
 #define MAX_PORTS_NUMBER 21
-#define MAX_SERVO_PORTS 8
 #define MAX_DC 1024
+#define PWM_RANGE_MAX 100
+
+#define MAX_SERVO_PORTS 8
 #define SERVO_STEP 200
 #define SERVO_HIGH_LIMIT 1050
 #define SERVO_LOW_LIMIT -150
 #define MIN_SERVO_DELAY_TIME 100
 #define DEF_SERVO_TIME 200
 #define DEF_SERVO_POSITION 500
-#define PWM_RANGE_MAX 100
+
+#define BUTTON_READ_TIME 50
 
 typedef uint8_t devType_t;
 typedef uint16_t Id_t;
@@ -70,46 +72,29 @@ enum dev_type
 };
 
 
-struct Communications
-{
-    SPI_Frame spi;
-    I2C_Frame i2c;
-    term serialport;
-};
-
-class foo
-{
-    public:
-    int i;
-    foo() : i{10} {}
-    foo(int const i_) : i{i_} {}
-    auto getFooInt(){ return i;}
-};
-
-
 class device
 {
     protected:
-        Communications COM;
         Id_t id;
         comm_t commType;
         string name;
         devType_t dev_Type;
         vector<int> pins;
 
+        //std::unique_ptr<uint8_t> directions;
+        uint8_t *directions;
+
         bool device_Initialized;
         bool communication_Initialized;
-        spi_error Init_SPI(SPI_Frame spi);
-        i2c_error_t Init_I2C(I2C_Frame i2c);
-        int Init_Bluetooth();
-        int Init_UART();
+        Communication_c com;
         //pwm_t Init_PWM(int pwm, vector<uint8_t> pinNumbers, uint8_t numberOfPorts);
         //int Init_Wifi();
 
     public:
         device(); 
-        device(string Name, Id_t ID, devType_t devtype,comm_t commtype);      
-        uint8_t setPins(vector<uint8_t> pinNumbers,uint8_t directions[], uint8_t numberOfPorts);
+        device(string Name, Id_t ID, devType_t devtype,comm_t commtype);
+        ~device();      
+        uint8_t setPins(vector<uint8_t> pinNumbers, uint8_t numberOfPorts);
         void Init_Communication();
         string &get_Name();
         devType_t get_Dev_Type();
@@ -127,13 +112,19 @@ class device
 class sensor : public device
 {
     bool buttonPushed;
+    bool prevButtonState;
+    bool buttonState;
     public:
         sensor(string Name, Id_t ID, devType_t devtype, comm_t commtype) : device(Name,ID,devtype,commtype) {
             buttonPushed = false;
+            buttonState = LOW;
+            prevButtonState = LOW;
         }
         sensor() : device() {};
+       //~sensor() : ~device() {};
         void digital_Read(int pin);
         bool getButtonState();
+        bool buttonStateChanged();
 };
 
 class actuator : public device
@@ -147,6 +138,7 @@ class actuator : public device
             initValue = 0;
         }
         actuator() : device() {};
+        //~actuator() : ~device() {};
         pwm_t pwm_Setup(vector<uint8_t> pinNumber);
         pwm_t pwm_ServoSetup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts);
         pwm_t Init_PWM(int pwm, vector<uint8_t> pinNumbers, uint8_t numberOfPorts);
@@ -155,6 +147,7 @@ class actuator : public device
         void pwm_Write_Breathing(uint8_t pinNumber, time_ms_t  lengthOfDelay);
         void pwm_Servo_Write_In_Loop(uint8_t pinNumber, int16_t DC, time_ms_t lengthOfDelay, bool loop);
         void pwm_Servo_Full_Limit(uint8_t pinNumber,time_ms_t t_length);
+        void pwm_Servo_Full_Limit(uint8_t pinNumber, time_ms_t t_length, bool button);
 
 };
 
