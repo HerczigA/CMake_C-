@@ -60,19 +60,19 @@ bool json_herczig::json::OpenPattern()
 uint8_t json_herczig::json::regexmatcherForComType(std::string& temp)
 {
     uint8_t result = 0;
-    if(regex_search(temp, this->comPattern.SPIPattern))
+    if(regex_search(temp, comPattern.SPIPattern))
         result = SPI;
 
-    else if(regex_search(temp, this->comPattern.I2CPattern))
+    else if(regex_search(temp, comPattern.I2CPattern))
         result = I2C;
 
-    else if(regex_search(temp, this->comPattern.UARTPattern))
+    else if(regex_search(temp, comPattern.UARTPattern))
         result = UART;
 
-    else if(regex_search(temp, this->comPattern.PWMPattern))
+    else if(regex_search(temp, comPattern.PWMPattern))
         result = PWM;
 
-    else if(regex_search(temp, this->comPattern.BluetoothPattern))
+    else if(regex_search(temp, comPattern.BluetoothPattern))
         result = Bluetooth;
 
     else
@@ -109,7 +109,7 @@ void json_herczig::json::processPattern()
                 {
                     if(std::string::npos != temp.find("Sensor_Actuator"))
                     {
-                        this->SensorsAndActuators++;
+                        SensorsAndActuators++;
                         devicetype.push_back(Sensor_Actuator);
                         checkDevicetype = false;
                         
@@ -117,14 +117,14 @@ void json_herczig::json::processPattern()
 
                     else if(std::string::npos != temp.find("Sensor"))
                     {
-                        this->Sensors++;
+                        Sensors++;
                         devicetype.push_back(Sensor);
                         checkDevicetype = false;
                     }
 
                     else if(std::string::npos != temp.find("Actuator"))
                     {
-                        this->Actuators++;
+                        Actuators++;
                         devicetype.push_back(Actuator);
                         checkDevicetype = false;
                     }
@@ -138,7 +138,7 @@ void json_herczig::json::processPattern()
                     {
                         size_t dev;
                         dev = regexmatcherForComType(temp);
-                        this->commtype.push_back(dev);
+                        commtype.push_back(dev);
                     }
                     else if( std::string::npos !=temp.find("name"))
                     {
@@ -147,21 +147,21 @@ void json_herczig::json::processPattern()
                         temp = temp.substr(found+1);
                         temp.erase(0,2);
                         temp.erase(temp.end()-2,temp.end()-0);
-                        this->name.push_back(temp);
+                        name.push_back(temp);
                     }
                     else if( std::string::npos !=temp.find("pin(s)"))
                     {
-                        int pinoffset = 0;
+                        int pinoffset = 1;
                         found = temp.find_last_of(":");
                         temp = temp.substr(found+1);
                         if( temp.end() != std::find_if(temp.begin(),temp.end(),[] (char c)
                             {  return (c == '[' ); }   ))
                         {
                             temp.erase(temp.begin());
+                            bool twoDigit = true;
+                            pinoffset = 0;
                             for(const char* p = temp.c_str(); *p ; p++)
                             {
-                                if(*p >='0' && *p <= '9')
-                                {
                                     this->pinNumbers.push_back(atoi(p));
                                     pinoffset++;
                                     
@@ -173,8 +173,29 @@ void json_herczig::json::processPattern()
                             temp.erase(temp.begin()+1);
                             this->pinNumbers.push_back(atoi(temp.c_str()));
                         }
-                            
+                                
+                                if(*p >='0' && *p <= '9' && twoDigit)
+                                {
+                                    pinNumbers.push_back(atoi(p));
+                                    pinoffset++;
+                                    p++;
+                                    if(*p >= '0' && *p <= '9')
+                                    {
+                                        twoDigit = false;
+                                        p -= 1;    
+                                    }
 
+                                }
+                                else
+                                    twoDigit = true;
+                            }
+                        }
+                        else
+                        {
+                            
+                            temp.erase(temp.begin()+1);
+                            pinNumbers.push_back(atoi(temp.c_str()));
+                        }
                         pinOffset.push_back(pinoffset);
                     }
                     else if( std::string::npos !=temp.find("ID"))
@@ -182,7 +203,7 @@ void json_herczig::json::processPattern()
                         found = temp.find_last_of(":");
                         temp = temp.substr(found+1);
                         temp.erase(temp.begin()+1);
-                        this->id.push_back(atoi(temp.c_str()));
+                        id.push_back(atoi(temp.c_str()));
                         checkDevicetype = true;
                     }
                 }
@@ -193,16 +214,19 @@ void json_herczig::json::processPattern()
 
         }
         pattern.erase(pattern.begin());
-
-
     }
 
-    this->deviceNumber = this->Actuators + this->Sensors + this->SensorsAndActuators;
+    deviceNumber = Actuators + Sensors + SensorsAndActuators;
+    
 #if DEBUG
-    std::cout << "Device number: " <<(int) this->deviceNumber
-     << "\nActuator number:  " <<(int) this->Actuators
-     << "\nSensor number: " <<(int) this->Sensors
-     << "\nnSensor&Actuator number: " << (int)this->SensorsAndActuators<< std::endl;
+    std::cout << "Device number: " <<(int) deviceNumber
+     << "\nActuator number:  " <<(int) Actuators
+     << "\nSensor number: " <<(int) Sensors
+     << "\nnSensor&Actuator number: " << (int)SensorsAndActuators<< std::endl;
+     for(auto it = pinNumbers.begin(); it != pinNumbers.end(); ++it)
+    {
+        std::cout << "pinNumbers: " <<*it << std::endl;
+    }
 #endif    
 }
 
@@ -221,10 +245,27 @@ void json_herczig::json::FinishProcess()
         std::cout << "CommType: " << commtype[i] << std::endl;
         if(pinOffset[i])
         {
+            std::cout << "pinOffset[i]: " << pinOffset[i] << std::endl;
             for(size_t j = 0; j < pinOffset[i]; j++)
             {
                 std::cout << "Pins: " << pinNumbers[i+j] << std::endl;
+        }
+        else   
+            std::cout << "Pins: " << pinNumbers[i] << std::endl;
+        
+        std::cout << std::endl;
+        i++;
+    }
             }
+
+
+json_herczig::json::~json()
+{
+    this->name.clear();
+    this->devicetype.clear();
+    this->commtype.clear();
+    this->id.clear();
+
         }
         else   
             std::cout << "Pins: " << pinNumbers[i] << std::endl;
@@ -237,9 +278,9 @@ void json_herczig::json::FinishProcess()
 
 json_herczig::json::~json()
 {
-    this->name.clear();
-    this->devicetype.clear();
-    this->commtype.clear();
-    this->id.clear();
+    name.clear();
+    devicetype.clear();
+    commtype.clear();
+    id.clear();
 
 }
