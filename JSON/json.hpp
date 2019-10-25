@@ -74,9 +74,10 @@ namespace json_herczig
             template<typename getdevicesNumber, typename VectorOfDevice, typename type>
             void bridgeGetSet(getdevicesNumber a, std::vector<std::unique_ptr<VectorOfDevice>>& b, type c)
             {
+                int pinOffsetElement = 0;
                 if(a)
                 {
-                    const int all = this->deviceNumber;
+                    const int all = deviceNumber;
                     for(size_t i = 0; i < all; i++)
                     {
                         std::unique_ptr<VectorOfDevice> dev =std::make_unique<VectorOfDevice>();
@@ -86,18 +87,17 @@ namespace json_herczig
                             dev->device::setName(getName(i));
                             dev->device::setdevType(getDevType(i));
                             dev->device::setcommType(getComm(i));
-                            if(pinOffset[i])
-                            {
-                                for(size_t j = 0; j < this->pinOffset[i]; j++)
-                                    dev->device::setPinNumbers(getPins(i+j));
-                            }
-                            else
-                                dev->device::setPinNumbers(getPins(i));
+                            for(size_t j = 0; j < pinOffset[i]; j++)
+                                dev->device::setPinNumbers(getPins(pinOffsetElement+j));
 
                             b.push_back(std::move(dev));
-                        }   
+                            
+                        }
+                        pinOffsetElement += pinOffset[i];   
                     }
                 }
+            }
+            ~json();
             }
             ~json();
     };
