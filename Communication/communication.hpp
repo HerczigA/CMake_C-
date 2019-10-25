@@ -1,17 +1,21 @@
-#ifndef _SPI_MODULE_H
-#define _SPI_MODULE_H
+#pragma once 
 
-#define SPI_PACKET_LENGTH 8
-#define MAX_CLK 500000 //MAX speed 500kHz
+#ifndef _COMMUNICATION_MODULE_H
+#define _COMMUNICATION_MODULE_H
 
 #include <stdint.h>
+#include <sys/ioctl.h>
+#include <fcntl.h>
+#include <linux/i2c-dev.h>
 #include <linux/spi/spidev.h>
 #include <string>
-#include <string>
-#include <vector>
+#include <fstream>
 #include <iostream>
-
-#define MAX_SPI_CHANNELS 2
+#include <vector>
+#include <string.h>
+#include <wiringPi.h>
+#include <termios.h>
+#include <unistd.h>
 
 /*
     BCM2835_SPI_CLOCK_DIVIDER_65536 = 0,       ///< 65536 = 262.144us = 3.814697260kHz (total H+L clock period) 
@@ -35,6 +39,28 @@
     
 */
 
+
+#define I2C_PACKET_LENGTH 16
+#define SPI_PACKET_LENGTH 8
+#define MAX_CLK 500000 //MAX speed 500kHz
+
+#define MAX_SPI_CHANNELS 2
+
+typedef uint8_t i2c_error_t;
+typedef uint8_t spi_error;
+
+enum I2C_error
+{
+    E_I2C_OK,
+    E_I2C_OPEN,
+    E_I2C_SELECT,
+    E_I2C_SPEED_SET,
+    E_I2C_FILE_OPEN,
+    E_I2C_ADDRESS,
+    E_I2C_UNKOW,
+    E_I2C_ALL
+};
+
 enum errorSPI
 {
     E_SPI_OK,
@@ -45,7 +71,22 @@ enum errorSPI
     E_SPI_UNKNOW,
     E_SPI_ALL
 };
-typedef uint8_t spi_error;
+
+struct I2C_Frame
+{
+    uint32_t ClockSpeed;
+    char Packet[I2C_PACKET_LENGTH];
+    uint8_t address;
+    int i2CFD;
+};
+
+struct term
+{
+    termios old;
+    termios term;
+    int BAUD;
+    int uartFD;
+};
 
 struct SPI_Frame
 {
@@ -62,6 +103,25 @@ struct SPI_Frame
     int spiFD[MAX_SPI_CHANNELS];
     spi_ioc_transfer buffer;
 
+};
+
+struct serialcomm_t
+{
+    SPI_Frame spi;
+    I2C_Frame i2c;
+    term serialport;
+};
+
+class Communication_c
+{
+    public:
+        spi_error Init_SPI(SPI_Frame spi);
+        i2c_error_t Init_I2C(I2C_Frame i2c);
+        //int Init_Bluetooth();
+        serialcomm_t SerialCom; 
+        int get_I2C_Address();
+        int Init_UART();
+    
 };
 
 

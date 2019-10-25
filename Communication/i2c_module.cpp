@@ -8,9 +8,11 @@
 #include <vector>
 #include <string.h>
 #include <wiringPi.h>
-#include "i2c_module.hpp"
+#include "communication.hpp"
 
-int getAddress()
+using namespace std;
+
+int Communication_c::get_I2C_Address()
 {
     std::string resultI2CAddress ="i2c_address.txt";
     std::ifstream ifile;
@@ -102,5 +104,40 @@ int getAddress()
 
     }
     std::cout << "I2C slave address : " << result << std::endl;
+    return result;
+}
+
+i2c_error_t Communication_c::Init_I2C(I2C_Frame i2c)
+{
+    /*system(char* ) find i2c dev address!*/
+    
+    (void) i2c;
+    i2c_error_t result  = E_I2C_OK;
+    const string Path_I2C = "/dev/i2c-1";
+    SerialCom.i2c.i2CFD = open (Path_I2C.c_str(),O_RDWR );
+    if(SerialCom.i2c.i2CFD >= 0)
+    {
+        int temp = get_I2C_Address();
+        if(temp) 
+        {
+            SerialCom.i2c.address = temp;   
+            if(ioctl(SerialCom.i2c.i2CFD, I2C_SLAVE, SerialCom.i2c.address) < 0)
+            {
+                cout << "Unable to select I2C device " << strerror(errno) << endl;
+                result = E_I2C_SELECT;    
+            }
+        }
+        else
+        {
+            cout << "address is 0"  << endl;
+            result = E_I2C_ADDRESS;
+        }
+    }
+    else
+    {
+        cout<< "can not open I2C.Try with sudo or check the path, wiring!" << endl;
+        result = E_I2C_OPEN;
+    }
+    
     return result;
 }
