@@ -5,11 +5,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "../Communication/spi_module.hpp"
-#include "../Communication/i2c_module.hpp"
-#include "../Communication/uart_module.hpp"
+#include "../Communication/communication.hpp"
 #include <wiringPi.h>
-#include <sys/ioctl.h>
 #include <unistd.h>
 #include <fcntl.h>
 
@@ -75,18 +72,9 @@ enum dev_type
 };
 
 
-struct Communications
-{
-    SPI_Frame spi;
-    I2C_Frame i2c;
-    term serialport;
-};
-
-
 class device
 {
     protected:
-        Communications COM;
         Id_t id;
         comm_t commType;
         string name;
@@ -98,10 +86,7 @@ class device
 
         bool device_Initialized;
         bool communication_Initialized;
-        spi_error Init_SPI(SPI_Frame spi);
-        i2c_error_t Init_I2C(I2C_Frame i2c);
-        int Init_Bluetooth();
-        int Init_UART();
+        Communication_c com;
         //pwm_t Init_PWM(int pwm, vector<uint8_t> pinNumbers, uint8_t numberOfPorts);
         //int Init_Wifi();
 

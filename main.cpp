@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
     JSONobj.bridgeGetSet(JSONobj.getActuatorsNumber(),Actuators,Actuator);
     //JSONobj.bridgeGetSet(JSONobj.getSensorsNumber(),Se);
 
-#if DEBUG
+#if TRUE
     cout << "\nSENSORS DETAILS " << endl; 
     for(size_t i = 0; i < JSONobj.getSensorsNumber(); i++)
     {
@@ -55,39 +55,13 @@ int main(int argc, char *argv[])
     }
 
 #endif
-    uint8_t dir[] = {OUTPUT};
-    uint8_t dir2[] = {INPUT};
-    uint8_t gpioNum = 1;
-    if(Actuators[0]->get_Name() == "ServoMotor")
-    {
-        vector<uint8_t> pinek;
-        vector<uint8_t> senspinek;
-        pinek.push_back(Actuators[0]->get_Pins(0));
-        senspinek.push_back(Sensors[0]->get_Pins(0));
-        Actuators[0]->setPins(pinek, dir, gpioNum);
-        Sensors[0]->setPins(senspinek, dir2, gpioNum);
-        
-        Actuators[0]->pwm_ServoSetup(pinek, gpioNum);
-        //Actuators[0]->pwm_Servo_Full_Limit(pinek[0],500);
-
-        while(true)
-        {
-            Sensors[0]->digital_Read(Sensors[0]->get_Pins(0));
-            if(Sensors[0]->buttonStateChanged())
-            {
-                
-                Actuators[0]->pwm_Servo_Full_Limit(pinek[0], 500, Sensors[0]->getButtonState());
-            }
-                
-        }
-    }
     
     uint8_t gpioNum = 1;
     if(Actuators[0]->get_Name() == "ServoMotor")
     {
         vector<uint8_t> pinek;
         vector<uint8_t> senspinek;
-        /*pinek.push_back(Actuators[0]->get_Pins(0));
+        pinek.push_back(Actuators[0]->get_Pins(0));
         senspinek.push_back(Sensors[0]->get_Pins(0));
         Actuators[0]->setPins(pinek,  gpioNum);
         Sensors[0]->setPins(senspinek, gpioNum);
@@ -103,7 +77,7 @@ int main(int argc, char *argv[])
                 Actuators[0]->pwm_Servo_Full_Limit(pinek[0], 500, Sensors[0]->getButtonState());
             }
                 
-        }*/
+        }
     }
     
     

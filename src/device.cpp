@@ -15,8 +15,6 @@
 using namespace std;
 
 static Id_t id_counter = 1;
-const static std::string chn0 = "/dev/spidev0.0";
-const static std::string chn1 = "/dev/spidev0.1";
 
 device::device(): device_Initialized{false} 
 {
@@ -38,8 +36,7 @@ device::device(string Name, Id_t ID, devType_t devtype,comm_t commtype): name{Na
 
 device::~device()
 {
-    if(directions)
-        delete[] directions;
+    delete[] directions;
 }
 
 string &device::get_Name()
@@ -75,12 +72,12 @@ uint8_t device::get_Pins(int i)
 
 void device::setName(string &devName)
 {
-    this->name = devName;
+    name = devName;
 }
 
 void device::setdevType(devType_t dev )
 {
-    this->dev_Type = dev;
+    dev_Type = dev;
 }
 
 void device::setID(Id_t id)
@@ -92,7 +89,7 @@ void device::setID(Id_t id)
             id_counter += 1;
 
             #if DEBUG_DEVICE            
-            cout << "in if setid  " << id << " id_counter: " << id_counter<< " this->id: "<<this->id<< endl;
+                cout << "in if setid  " << id << " id_counter: " << id_counter<< " id: "<<id<< endl;
             #endif
         }
         
@@ -100,7 +97,7 @@ void device::setID(Id_t id)
         {
             this->id = id;
             #if DEBUG_DEVICE            
-            cout << "in else setid  " << id << endl;
+                cout << "in else setid  " << id << endl;
             #endif
         }
         
@@ -108,198 +105,12 @@ void device::setID(Id_t id)
 
 void device::setcommType(comm_t com)
 {
-    this->commType = com;
+    commType = com;
 }
 
 void device::setPinNumbers(uint8_t pins)
 {
     this->pins.push_back(pins);
-}
-
-spi_error device::Init_SPI(SPI_Frame spi)
-{
-    (void) spi;
-    spi_error result =E_SPI_OK;
-    size_t cnt = 0;
-    size_t channel = 0;
-    size_t i = 0;
-    size_t limit = 0;
-    this->COM.spi.spiChns.push_back(chn0);
-    
-    this->COM.spi.spiChns.push_back(chn1);
-    
-    for(; i < MAX_SPI_CHANNELS; i++)
-    {   string temp = COM.spi.spiChns[i];
-        if(COM.spi.spiFD[i] = open(temp.c_str(), O_RDWR) < 0)
-           {
-               cnt++;
-               if(cnt == 1 && i == 1)
-                    channel++;
-               if(cnt == MAX_SPI_CHANNELS)
-                    result = E_SPI_FD_OPEN;
-           }        
-    }
-    if(cnt)
-    {
-        if(channel)
-        {
-            i = 0;
-            limit = 1;
-        }
-        else
-        {
-            i = 1;
-            limit = MAX_SPI_CHANNELS;
-        }
-
-    }
-    else
-    {
-        i = 0;
-        limit = MAX_SPI_CHANNELS;
-    }
-     
-
-    for(; i < limit; i++ )
-    {
-        if (ioctl (COM.spi.spiFD[i], SPI_IOC_WR_MODE, &COM.spi.clk_Pol_Pha[i])< 0)
-        {
-            cout<< "SPI Write Mode POL & Pha failure" << (string) COM.spi.spiChns[i] << endl;
-            result = E_SPI_PHA_POL;
-            break;
-        }
-
-        if (ioctl (COM.spi.spiFD[i], SPI_IOC_RD_MODE, &COM.spi.clk_Pol_Pha[i])< 0)
-        {
-            cout<< "SPI Read Mode POL & Pha failure" << COM.spi.spiChns[i] << endl;
-            result = E_SPI_PHA_POL;
-            break;
-        }
-         
-        if (ioctl (COM.spi.spiFD[i], SPI_IOC_RD_LSB_FIRST, &COM.spi.endianess[i]) < 0)
-        {
-            cout<< "SPI Read Mode LSB/MSB failure" << COM.spi.spiChns[i] << endl;
-            result = E_SPI_ENDIANESS;
-            break;
-        }
-
-        if (ioctl (COM.spi.spiFD[i], SPI_IOC_WR_LSB_FIRST, &COM.spi.endianess[i]) < 0)
-        {
-            cout<< "SPI Write Mode LSB/MSB failure" << COM.spi.spiChns[i] << endl;
-            result = E_SPI_ENDIANESS;
-            break;
-        }
-
-        if (ioctl (COM.spi.spiFD[i], SPI_IOC_WR_MAX_SPEED_HZ,&COM.spi.ClockSpeed[i]) < 0)
-        {
-            cout<< "SPI Write Mode speed failure" << COM.spi.spiChns[i] << endl;
-            result = E_SPI_SPEED;
-            break;
-        }
-
-        if (ioctl (COM.spi.spiFD[i], SPI_IOC_RD_MAX_SPEED_HZ,&COM.spi.ClockSpeed[i]) < 0)
-        {
-            cout<< "SPI Read Mode speed failure" << COM.spi.spiChns[i] << endl;
-            result = E_SPI_SPEED;
-        }
-    }
-
-    return result;
-}
-
-i2c_error_t device::Init_I2C(I2C_Frame i2c)
-{
-    /*system(char* ) find i2c dev address!*/
-    
-    (void) i2c;
-    i2c_error_t result  = E_I2C_OK;
-    const string Path_I2C = "/dev/i2c-1";
-    this->COM.i2c.i2CFD = open (Path_I2C.c_str(),O_RDWR );
-    if(COM.i2c.i2CFD >= 0)
-    {
-        int temp = getAddress();
-        if(temp) 
-        {
-            COM.i2c.address = temp;   
-            if(ioctl(COM.i2c.i2CFD, I2C_SLAVE, COM.i2c.address) < 0)
-            {
-                cout << "Unable to select I2C device " << strerror(errno) << endl;
-                result = E_I2C_SELECT;    
-            }
-        }
-        else
-        {
-            cout << "address is 0"  << endl;
-            result = E_I2C_ADDRESS;
-        }
-    }
-    else
-    {
-        cout<< "can not open I2C.Try with sudo or check the path, wiring!" << endl;
-        result = E_I2C_OPEN;
-    }
-    
-    return result;
-}
-
-int device::Init_UART()
-{
-    vector<string> serial;
-    serial.push_back("/dev/ttyUSB0");
-    serial.push_back("/dev/ttyAMA0");
-    serial.push_back("/dev/ttyS0");
-    serial.push_back("/dev/ttyS1");
-
-    /*if(!( init->numbOfDev ))
-        return -1;
-    */
-    auto endOfDev = serial.end();
-    for(auto it = serial.begin(); it != endOfDev; ++it)
-    {
-        const string temp = *it;
-        COM.serialport.uartFD = open(temp.c_str(),O_RDWR | O_NOCTTY | O_NDELAY );    /* code */
-        if(COM.serialport.uartFD > 0)   
-            break;
-    }
-    
-    if(COM.serialport.uartFD < 0)
-        {
-            cout <<"Invalid Filedescriptor\n" \
-                   "maybe don't connect any wire or privilage not proper?" \
-                   "Try with sudo"<<endl;
-    //        syslog(LOG_ERR,"%s",strerror(errno));
-            return -1;
-        }
-    fcntl(COM.serialport.uartFD,F_SETFL,O_RDWR);
-    
-    tcgetattr(COM.serialport.uartFD,&COM.serialport.old);
-    COM.serialport.term.c_cflag = CS8 | CLOCAL | CREAD ;
-    COM.serialport.term.c_iflag = IGNPAR;
-    COM.serialport.term.c_lflag &= ~( ICANON | ECHO | ISIG);
-    COM.serialport.term.c_oflag =0;
-    COM.serialport.term.c_cc[VTIME]=0;
-    COM.serialport.term.c_cc[VMIN]=0;
-    cfsetispeed(&COM.serialport.term,(speed_t)&COM.serialport.BAUD);
-    cfsetospeed(&COM.serialport.term,(speed_t)&COM.serialport.BAUD);
-
-    tcflush(COM.serialport.uartFD, TCIOFLUSH);
-    if(!tcsetattr(COM.serialport.uartFD,TCSANOW,&COM.serialport.term))
-        {
-          
-            cout <<"Serial port has succesfully initialized" << endl;
-            //syslog(LOG_INFO,"Serial port OK");
-            return 0;
-        }
-    else
-        {
-            //closeOnFAIL(init);
-            
-            //syslog(LOG_ERR,"%s %d",strerror(errno),COM.serialport.uartFD);
-            close(COM.serialport.uartFD);
-            return -1;
-        }
-
-
 }
 
 pwm_t actuator::Init_PWM(int pwm, vector<uint8_t> pinNumbers, uint8_t numberOfPorts)
@@ -323,22 +134,17 @@ pwm_t actuator::Init_PWM(int pwm, vector<uint8_t> pinNumbers, uint8_t numberOfPo
     return result;
 }
 
-int device::Init_Bluetooth()
-{
-    return 0;
-}
-
 void device::Init_Communication()
 {
 
     switch(commType)
     {
         case SPI:
-            Init_SPI(COM.spi);
+            com.Init_SPI(com.SerialCom.spi);
             break;
 
         case I2C:
-            Init_I2C(COM.i2c);
+            com.Init_I2C(com.SerialCom.i2c);
             break;
 
        /* case PWM:
@@ -346,7 +152,7 @@ void device::Init_Communication()
             break;*/
 
         case UART:
-            Init_UART();
+            com.Init_UART();
             break;
 
         case Bluetooth:
@@ -358,7 +164,6 @@ void device::Init_Communication()
     }
 
 }
-
 
 void sensor::digital_Read(int pin)
 {
@@ -393,7 +198,6 @@ bool sensor::getButtonState()
 
 bool sensor::buttonStateChanged()
 {
-    //return (buttonState != prevButtonState) ? true : false;
     bool result = false;
     if(prevButtonState  != buttonState)
     {
@@ -431,45 +235,50 @@ uint8_t device::setPins(vector<uint8_t> pinNumbers, uint8_t numberOfPorts)
 
         i=0;
 
-
         while(i < numberOfPorts)
         {
-            if((this->dev_Type == Actuator && directions[i] == INPUT) || (this->dev_Type == Sensor && directions[i] == OUTPUT)) 
+            //TODO: if pins added from JSON then have to use this!
+            /*if((dev_Type == Actuator && directions[i] == INPUT) || (dev_Type == Sensor && directions[i] == OUTPUT)) 
             {
                 result=3;   //can not be actuator input and vice versa
                 break;
-            }
+            }*/
             int j;
-            switch (this->dev_Type)
+            
+            switch (dev_Type)
+            {
                 case Sensor:
-                    this->directions = new uint8_t[this->pins.size()];
-                    if(!this->directions)
+                     directions = new uint8_t[ pins.size()];
+                    if(! directions)
                     {
                         cout<< "no memory for alloc directions " << endl;
                         result = 4;
                         break;
                     }
                     j = 0;
-                    while(j < this->pins.size())
+                    
+                    while(j <  pins.size())
                     {
-                        this->directions[j] = INPUT;
+                         directions[j] = INPUT;
                         j++;
                     }
                     break;
                 
                 case Actuator:
-                    this->directions = new uint8_t[this->pins.size()];
-                    if(!this->directions)
+                    directions = new uint8_t[pins.size()];
+                    if(!directions)
                     {
                         cout<< "no memory for alloc directions " << endl;
                         result = 4;
                         break;
                     }
                     j = 0;
-                    while(j < this->pins.size())
+                    
+                    while(j < pins.size())
                     {
-                        this->directions[j] = OUTPUT;
+                        directions[j] = OUTPUT;
                         j++;
+                        
                     }
                     break;
                     default : 
@@ -531,7 +340,7 @@ pwm_t actuator::pwm_Setup(vector<uint8_t> pinNumber)
 {
     pwm_t result = E_INIT_NOK;
     int pin = pinNumber[0];
-    if( !softPwmCreate(pin,this->initValue, this->pwmRange))
+    if( !softPwmCreate(pin, initValue,  pwmRange))
         {
             device_Initialized = true;
             result = E_INIT_OK;
