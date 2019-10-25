@@ -16,13 +16,14 @@ endif()
 #    set(CMAKE_C_FLAGS "-Wall -g")
 #endif()
     set(SOURCES Communication/i2c_module.cpp
+    Communication/spi_module.cpp
+    Communication/uart_module.cpp
 		src/device.cpp
     JSON/json.cpp
 		main.cpp)
 
-    set(HEADERS Communication/i2c_module.hpp
-		Communication/spi_module.hpp
-		Communication/uart_module.hpp
+    set(HEADERS Communication/communication.hpp
+		
     JSON/json.hpp
 		hdr/device.hpp)
 
