@@ -79,7 +79,8 @@ class device
         comm_t commType;
         string name;
         devType_t dev_Type;
-        vector<int> pins;
+        vector<uint8_t> pins;
+        vector<uint8_t> dirs;
 
         //std::unique_ptr<uint8_t> directions;
         uint8_t *directions;
@@ -88,25 +89,25 @@ class device
         bool communication_Initialized;
         Communication_c com;
         //pwm_t Init_PWM(int pwm, vector<uint8_t> pinNumbers, uint8_t numberOfPorts);
-        //int Init_Wifi();
 
     public:
         device(); 
         device(string Name, Id_t ID, devType_t devtype,comm_t commtype);
         ~device();      
         uint8_t setPins(vector<uint8_t> pinNumbers, uint8_t numberOfPorts);
-        void Init_Communication();
         string &get_Name();
         devType_t get_Dev_Type();
         Id_t get_ID();
         comm_t get_Comm_Type();
         uint8_t get_PinNumbers();
         uint8_t get_Pins(int i);
+        uint8_t get_Dirs(int i);
         void setName(string &devName);
         void setID(Id_t id);
         void setdevType(devType_t dev);
-        void setcommType(comm_t com);
-        void setPinNumbers(uint8_t pin);
+        void setcommType(comm_t commType);
+        void setPinNumbers(uint8_t pins);
+        void setPinsForuC(uint8_t pins, uint8_t dirs);
 };
 
 class sensor : public device
@@ -121,7 +122,6 @@ class sensor : public device
             prevButtonState = LOW;
         }
         sensor() : device() {};
-       //~sensor() : ~device() {};
         void digital_Read(int pin);
         bool getButtonState();
         bool buttonStateChanged();
@@ -138,7 +138,6 @@ class actuator : public device
             initValue = 0;
         }
         actuator() : device() {};
-        //~actuator() : ~device() {};
         pwm_t pwm_Setup(vector<uint8_t> pinNumber);
         pwm_t pwm_ServoSetup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts);
         pwm_t Init_PWM(int pwm, vector<uint8_t> pinNumbers, uint8_t numberOfPorts);
