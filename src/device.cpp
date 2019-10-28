@@ -16,13 +16,14 @@ using namespace std;
 
 static Id_t id_counter = 1;
 
-device::device(): device_Initialized{false} 
+device::device(): device_Initialized{false}
 {
     id = 0;
     directions = nullptr;
     dev_Type =  Unknow_device;
     commType =  Unknow_communication;
     wiringPiSetup();
+    /*setpins....*/
 }
 
 device::device(string Name, Id_t ID, devType_t devtype,comm_t commtype): name{Name}, device_Initialized(false)
@@ -32,6 +33,7 @@ device::device(string Name, Id_t ID, devType_t devtype,comm_t commtype): name{Na
     dev_Type = (devtype >= Sensor && devtype <= Sensor_Actuator) ? devtype : Unknow_device;
     commType = (commtype >= SPI && commtype <= Bluetooth) ? commtype : Unknow_communication;
     wiringPiSetup();
+    /*setpins....*/
 }
 
 device::~device()
@@ -46,7 +48,6 @@ string &device::get_Name()
 
 devType_t device::get_Dev_Type()
 {
-
     return dev_Type;
 }
 
@@ -65,9 +66,19 @@ uint8_t device::get_PinNumbers()
     return pins.size();
 }
 
-uint8_t device::get_Pins(int i)
+uint8_t device::get_Pin(int i)
 {
     return pins[i];
+}
+
+vector<uint8_t> &device::get_Pins()
+{
+    return pins;
+}
+
+uint8_t device::get_Dirs(int i)
+{
+    return directions[i];
 }
 
 void device::setName(string &devName)
@@ -80,6 +91,17 @@ void device::setdevType(devType_t dev )
     dev_Type = dev;
 }
 
+void device::setPinNumbers(uint8_t pins)
+{
+    this->pins.push_back(pins);
+}
+
+void device::setPinsForuC(uint8_t pins, uint8_t dirs)
+{
+    this->pins.push_back(pins);
+    this->dirs.push_back(dirs);
+}
+
 void device::setID(Id_t id)
 {
     if(!id || id < (id_counter-1) || id > id_counter)
@@ -88,55 +110,24 @@ void device::setID(Id_t id)
             this->id = id_counter;
             id_counter += 1;
 
-            #if DEBUG_DEVICE            
+            #if DEBUG_DEVICE
                 cout << "in if setid  " << id << " id_counter: " << id_counter<< " id: "<<id<< endl;
             #endif
         }
-        
+
     else
         {
             this->id = id;
-            #if DEBUG_DEVICE            
+            #if DEBUG_DEVICE
                 cout << "in else setid  " << id << endl;
             #endif
         }
-        
+
 }
 
-void device::setcommType(comm_t com)
+void device::setcommType(comm_t commType)
 {
-    commType = com;
-}
-
-void device::setPinNumbers(uint8_t pins)
-{
-    this->pins.push_back(pins);
-}
-
-pwm_t actuator::Init_PWM(int pwm, vector<uint8_t> pinNumbers, uint8_t numberOfPorts)
-{
-
-    pwm_t result = E_INIT_NOK;
-    switch (pwm)
-    {
-            case simplePWM:
-                result = pwm_Setup(pinNumbers);
-                break;
-            
-            case ServoPWM:
-                result = pwm_ServoSetup(pinNumbers,numberOfPorts);
-                break;
-            default:
-                result = E_UNKNOW;
-                break;
-    }
-
-    return result;
-}
-
-void device::Init_Communication()
-{
-
+    this->commType = commType;
     switch(commType)
     {
         case SPI:
@@ -162,21 +153,72 @@ void device::Init_Communication()
         default:
             break;
     }
-
 }
 
+pwm_t actuator::Init_PWM(int pwm, vector<uint8_t> pinNumbers, uint8_t numberOfPorts)
+{
+
+    pwm_t result = E_INIT_NOK;
+    switch (pwm)
+    {
+            case simplePWM:
+                result = pwm_Setup(pinNumbers);
+                break;
+
+            case ServoPWM:
+                result = pwm_ServoSetup(pinNumbers,numberOfPorts);
+                break;
+            default:
+                result = E_UNKNOW;
+                break;
+    }
+
+    return result;
+}
+/*
+void device::Init_Communication()
+{
+
+    switch(commType)
+    {
+        case SPI:
+            com.Init_SPI(com.SerialCom.spi);
+            break;
+
+        case I2C:
+            com.Init_I2C(com.SerialCom.i2c);
+            break;
+
+        case PWM:
+            Init_PWM();
+            break;
+
+        case UART:
+            com.Init_UART();
+            break;
+
+        case Bluetooth:
+            //Init_Bluetooth();
+            break;
+
+        default:
+            break;
+    }
+
+}
+*/
 void sensor::digital_Read(int pin)
 {
     if(pin >= MAX_PORTS_NUMBER)
         return;
         //should thrown exception
-    
+
         if(digitalRead(pin))
         {
             delay(BUTTON_READ_TIME);
             buttonPushed = digitalRead(pin) ? true : false;
         }
-        
+
 
         if(buttonPushed)
         {
@@ -185,7 +227,7 @@ void sensor::digital_Read(int pin)
 #endif
             prevButtonState = buttonState;
             buttonState = !buttonState;
-            
+
         }
         buttonPushed = false;
 
@@ -213,12 +255,10 @@ bool sensor::buttonStateChanged()
     return result;
 }
 
-uint8_t device::setPins(vector<uint8_t> pinNumbers, uint8_t numberOfPorts)
+uint8_t device::setPins(vector<uint8_t> pinNumbers)
 {
     int result = 0;
-
-    
-    if(pinNumbers.empty() || numberOfPorts >= MAX_PORTS_NUMBER )
+    if(pinNumbers.empty() || pinNumbers.size() >= MAX_PORTS_NUMBER )
     {
          cout << "Nullpointer for pinNumbers or too much number for ports bastard!? " << endl;
          result = 1;
@@ -226,44 +266,28 @@ uint8_t device::setPins(vector<uint8_t> pinNumbers, uint8_t numberOfPorts)
     else
     {
         uint8_t i = 0;
-        auto pinEnd = pinNumbers.end();
-
-        for(auto it = pinNumbers.begin(); it != pinEnd; ++it)
-            ++i;
-        if(i != numberOfPorts)
-            result= 2;
-
-        i=0;
-
-        while(i < numberOfPorts)
+        const size_t pinSize = pinNumbers.size();
+        while(i < pinSize)
         {
-            //TODO: if pins added from JSON then have to use this!
-            /*if((dev_Type == Actuator && directions[i] == INPUT) || (dev_Type == Sensor && directions[i] == OUTPUT)) 
-            {
-                result=3;   //can not be actuator input and vice versa
-                break;
-            }*/
-            int j;
-            
+
+            int j = 0 ;
             switch (dev_Type)
             {
                 case Sensor:
-                     directions = new uint8_t[ pins.size()];
-                    if(! directions)
+                    directions = new uint8_t[ pins.size()];
+                    if(!directions)
                     {
                         cout<< "no memory for alloc directions " << endl;
                         result = 4;
                         break;
                     }
-                    j = 0;
-                    
                     while(j <  pins.size())
                     {
-                         directions[j] = INPUT;
+                        directions[j] = INPUT;
                         j++;
                     }
                     break;
-                
+
                 case Actuator:
                     directions = new uint8_t[pins.size()];
                     if(!directions)
@@ -273,22 +297,41 @@ uint8_t device::setPins(vector<uint8_t> pinNumbers, uint8_t numberOfPorts)
                         break;
                     }
                     j = 0;
-                    
+
                     while(j < pins.size())
                     {
                         directions[j] = OUTPUT;
                         j++;
-                        
+
                     }
                     break;
-                    default : 
-                        cout<< "default branch in setpins " << endl;
+                case Sensor_Actuator:
+                    directions = new uint8_t[pins.size()];
+                    if(!directions)
+                    {
+                        cout<< "no memory for alloc directions " << endl;
+                        result = 4;
                         break;
+                    }
+                    j = 0;
+                    while(j < pins.size())
+                    {
+
+                        directions[j] = dirs[j] ? OUTPUT : INPUT;
+                         cout<< "And Directions: " <<(int)directions[j]<< endl;
+                        j++;
+
+                    }
+                    break;
+
+                default :
+                    cout<< "default branch in setpins " << endl;
+                    break;
             }
             //TODO: check the same size of pinnumbers and directions
 	            pinMode(pinNumbers[i],directions[i]);
 		        i++;
-	        
+
         }
     }
 #if DEBUG_DEVICE
@@ -329,7 +372,7 @@ pwm_t actuator::pwm_ServoSetup(vector<uint8_t> pinNumbers,  uint8_t numberOfPort
             }
             result = E_INIT_OK;
         }
-        
+
         softServoSetup(servoOut[0],servoOut[1],servoOut[2],servoOut[3],servoOut[4],servoOut[5],servoOut[6],servoOut[7]);
         device_Initialized = true;
 
@@ -362,10 +405,10 @@ void actuator::pwm_Write_Breathing(uint8_t pinNumber,time_ms_t lengthOfDelay)
 {
     if(!device_Initialized)
         return;
-    
+
     if(lengthOfDelay > 200)
         lengthOfDelay = 200;
-    
+
     bool increase = true;
     for(auto i =0 ; ; )
     {
@@ -373,7 +416,7 @@ void actuator::pwm_Write_Breathing(uint8_t pinNumber,time_ms_t lengthOfDelay)
 
         pwmWrite(pinNumber,i);
         delay(lengthOfDelay);
-        
+
         if(i == MAX_DC )
             increase = false;
         else if(i == 0)
@@ -388,7 +431,7 @@ void actuator::pwm_Servo_Write_In_Loop(uint8_t pinNumber, int16_t DC,time_ms_t l
         return;
     cout << "Start servo in Loop" << endl;
     time_ms_t delaytime = lengthOfDelay;
-    
+
     if(delaytime <= MIN_SERVO_DELAY_TIME)
         delaytime = DEF_SERVO_TIME;
 
@@ -418,7 +461,7 @@ void actuator::pwm_Servo_Full_Limit(uint8_t pinNumber, time_ms_t t_length)
         return;
     cout << "Start servo FULL Limit" << endl;
     time_ms_t delaytime = t_length;
-    
+
     if(delaytime <= MIN_SERVO_DELAY_TIME)
         delaytime = DEF_SERVO_TIME;
 
@@ -440,19 +483,19 @@ void actuator::pwm_Servo_Full_Limit(uint8_t pinNumber, time_ms_t t_length, bool 
     if(!device_Initialized)
         return;
     time_ms_t delaytime = t_length;
-    
+
     if(delaytime <= MIN_SERVO_DELAY_TIME)
         delaytime = DEF_SERVO_TIME;
 
-    static bool stateTop  = true; 
-    
+    static bool stateTop  = true;
+
     if(button && stateTop)
     {
         cout<< "servo high" << endl;
         softServoWrite(pinNumber,SERVO_HIGH_LIMIT);
-        delay(delaytime);    
+        delay(delaytime);
         stateTop = false;
-    }            
+    }
     else if(!button && !stateTop)
     {
         cout<< "servo low" << endl;
