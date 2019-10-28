@@ -23,6 +23,7 @@ device::device(): device_Initialized{false}
     dev_Type =  Unknow_device;
     commType =  Unknow_communication;
     wiringPiSetup();
+    /*setpins....*/
 }
 
 device::device(string Name, Id_t ID, devType_t devtype,comm_t commtype): name{Name}, device_Initialized(false)
@@ -32,6 +33,7 @@ device::device(string Name, Id_t ID, devType_t devtype,comm_t commtype): name{Na
     dev_Type = (devtype >= Sensor && devtype <= Sensor_Actuator) ? devtype : Unknow_device;
     commType = (commtype >= SPI && commtype <= Bluetooth) ? commtype : Unknow_communication;
     wiringPiSetup();
+    /*setpins....*/
 }
 
 device::~device()
@@ -46,7 +48,6 @@ string &device::get_Name()
 
 devType_t device::get_Dev_Type()
 {
-
     return dev_Type;
 }
 
@@ -70,6 +71,11 @@ uint8_t device::get_Pins(int i)
     return pins[i];
 }
 
+uint8_t device::get_Dirs(int i)
+{
+    return directions[i];
+}
+
 void device::setName(string &devName)
 {
     name = devName;
@@ -78,6 +84,17 @@ void device::setName(string &devName)
 void device::setdevType(devType_t dev )
 {
     dev_Type = dev;
+}
+
+void device::setPinNumbers(uint8_t pins)
+{
+    this->pins.push_back(pins);
+}
+
+void device::setPinsForuC(uint8_t pins, uint8_t dirs)
+{
+    this->pins.push_back(pins);
+    this->dirs.push_back(dirs);
 }
 
 void device::setID(Id_t id)
@@ -103,40 +120,9 @@ void device::setID(Id_t id)
         
 }
 
-void device::setcommType(comm_t com)
+void device::setcommType(comm_t commType)
 {
-    commType = com;
-}
-
-void device::setPinNumbers(uint8_t pins)
-{
-    this->pins.push_back(pins);
-}
-
-pwm_t actuator::Init_PWM(int pwm, vector<uint8_t> pinNumbers, uint8_t numberOfPorts)
-{
-
-    pwm_t result = E_INIT_NOK;
-    switch (pwm)
-    {
-            case simplePWM:
-                result = pwm_Setup(pinNumbers);
-                break;
-            
-            case ServoPWM:
-                result = pwm_ServoSetup(pinNumbers,numberOfPorts);
-                break;
-            default:
-                result = E_UNKNOW;
-                break;
-    }
-
-    return result;
-}
-
-void device::Init_Communication()
-{
-
+    this->commType = commType;
     switch(commType)
     {
         case SPI:
@@ -162,9 +148,60 @@ void device::Init_Communication()
         default:
             break;
     }
-
 }
 
+pwm_t actuator::Init_PWM(int pwm, vector<uint8_t> pinNumbers, uint8_t numberOfPorts)
+{
+
+    pwm_t result = E_INIT_NOK;
+    switch (pwm)
+    {
+            case simplePWM:
+                result = pwm_Setup(pinNumbers);
+                break;
+            
+            case ServoPWM:
+                result = pwm_ServoSetup(pinNumbers,numberOfPorts);
+                break;
+            default:
+                result = E_UNKNOW;
+                break;
+    }
+
+    return result;
+}
+/*
+void device::Init_Communication()
+{
+
+    switch(commType)
+    {
+        case SPI:
+            com.Init_SPI(com.SerialCom.spi);
+            break;
+
+        case I2C:
+            com.Init_I2C(com.SerialCom.i2c);
+            break;
+
+        case PWM:
+            Init_PWM();
+            break;
+
+        case UART:
+            com.Init_UART();
+            break;
+
+        case Bluetooth:
+            //Init_Bluetooth();
+            break;
+
+        default:
+            break;
+    }
+
+}
+*/
 void sensor::digital_Read(int pin)
 {
     if(pin >= MAX_PORTS_NUMBER)
@@ -216,8 +253,6 @@ bool sensor::buttonStateChanged()
 uint8_t device::setPins(vector<uint8_t> pinNumbers, uint8_t numberOfPorts)
 {
     int result = 0;
-
-    
     if(pinNumbers.empty() || numberOfPorts >= MAX_PORTS_NUMBER )
     {
          cout << "Nullpointer for pinNumbers or too much number for ports bastard!? " << endl;
@@ -226,40 +261,27 @@ uint8_t device::setPins(vector<uint8_t> pinNumbers, uint8_t numberOfPorts)
     else
     {
         uint8_t i = 0;
-        auto pinEnd = pinNumbers.end();
-
-        for(auto it = pinNumbers.begin(); it != pinEnd; ++it)
-            ++i;
-        if(i != numberOfPorts)
+               
+        if(pinNumbers.size() != numberOfPorts)
             result= 2;
-
-        i=0;
 
         while(i < numberOfPorts)
         {
-            //TODO: if pins added from JSON then have to use this!
-            /*if((dev_Type == Actuator && directions[i] == INPUT) || (dev_Type == Sensor && directions[i] == OUTPUT)) 
-            {
-                result=3;   //can not be actuator input and vice versa
-                break;
-            }*/
-            int j;
-            
+        
+            int j = 0 ;    
             switch (dev_Type)
             {
                 case Sensor:
-                     directions = new uint8_t[ pins.size()];
-                    if(! directions)
+                    directions = new uint8_t[ pins.size()];
+                    if(!directions)
                     {
                         cout<< "no memory for alloc directions " << endl;
                         result = 4;
                         break;
-                    }
-                    j = 0;
-                    
+                    }                    
                     while(j <  pins.size())
                     {
-                         directions[j] = INPUT;
+                        directions[j] = INPUT;
                         j++;
                     }
                     break;
@@ -281,9 +303,28 @@ uint8_t device::setPins(vector<uint8_t> pinNumbers, uint8_t numberOfPorts)
                         
                     }
                     break;
-                    default : 
-                        cout<< "default branch in setpins " << endl;
+                case Sensor_Actuator:
+                    directions = new uint8_t[pins.size()];
+                    if(!directions)
+                    {
+                        cout<< "no memory for alloc directions " << endl;
+                        result = 4;
                         break;
+                    }
+                    j = 0;
+                    while(j < pins.size())
+                    {
+                        
+                        directions[j] = dirs[j] ? OUTPUT : INPUT;
+                         cout<< "And Directions: " <<(int)directions[j]<< endl;
+                        j++;
+                        
+                    }
+                    break;
+                
+                default : 
+                    cout<< "default branch in setpins " << endl;
+                    break;
             }
             //TODO: check the same size of pinnumbers and directions
 	            pinMode(pinNumbers[i],directions[i]);
