@@ -38,7 +38,7 @@ namespace json_herczig
             std::string jsonFile = "./JSON/pattern/template.json";
             compatterns comPattern;
             std::string lineFromFile;
-            
+
             std::vector <std::string> pattern;
             std::vector <std::string> name;
             std::vector <std::string> DIRS;
@@ -49,7 +49,7 @@ namespace json_herczig
             std::vector <int> pinOffset;
             std::vector <int> directions;
             std::vector <int> directions_Offset;
-            
+
 
             uint8_t deviceNumber;
             uint8_t Sensors = 0;
@@ -65,7 +65,7 @@ namespace json_herczig
             uint8_t getPins(int element) { return pinNumbers[element]; }
             uint8_t getDirs(int element) { return directions[element]; }
 //            std::vector <int>  getDirs() { return directions_Offset; }
-            
+
 
         public:
             json(const char &p);
@@ -78,16 +78,16 @@ namespace json_herczig
             uint8_t getSensorsNumber() const { return Sensors; }
             uint8_t getActuatorsNumber() const { return Actuators; }
             uint8_t getSensorsActuatorsNumber() const { return SensorsAndActuators; }
-           
+
             template<typename getdevicesNumber, typename VectorOfDevice, typename type>
-            void bridgeGetSet(getdevicesNumber a, std::vector<std::unique_ptr<VectorOfDevice>>& b, type c)
+            void Make_Device(getdevicesNumber a, std::vector<std::unique_ptr<VectorOfDevice>>& b, type c)
             {
                 int pin_Offset_Element = 0;
                 int direction_Offset_Element = 0;
                 if(a)
                 {
-                    const int all = deviceNumber;
-                    for(size_t i = 0; i < all; i++)
+                    const uint8_t all = deviceNumber;
+                    for(uint8_t i = 0; i < all; i++)
                     {
                         std::unique_ptr<VectorOfDevice> dev =std::make_unique<VectorOfDevice>();
                         if(devicetype[i] == c)
@@ -96,24 +96,25 @@ namespace json_herczig
                             dev->device::setName(getName(i));
                             dev->device::setdevType(getDevType(i));
                             dev->device::setcommType(getComm(i));
-                            
+
                             if(devicetype[i] == Sensor_Actuator)
                             {
-                                for(size_t j = 0; j < pinOffset[i]; j++)
+                                for(uint8_t j = 0; j < pinOffset[i]; j++)
                                 {
                                     dev->device::setPinsForuC(getPins(pin_Offset_Element+j),getDirs(direction_Offset_Element+j));
                                 }
-                                direction_Offset_Element += directions_Offset[i];     
+                                direction_Offset_Element += directions_Offset[i];
+                                dev->device::setPins(dev->device::get_Pins());
                             }
                             else
                             {
-                                for(size_t j = 0; j < pinOffset[i]; j++)
+                                for(uint8_t j = 0; j < pinOffset[i]; j++)
                                     dev->device::setPinNumbers(getPins(pin_Offset_Element+j));
                             }
-                            
+
                             b.push_back(std::move(dev));
                         }
-                        
+
                         pin_Offset_Element += pinOffset[i];
                     }
                 }
