@@ -22,11 +22,11 @@ json_herczig::json::json(const char &p): jsonFile{&p}
                 comPattern.BluetoothPattern = std::regex("Bluetooth");
                 DIRS.push_back("IN");
                 DIRS.push_back("OUT");
-                
+
 };
 
 json_herczig::json::json()
-{   
+{
                 deviceNumber = 0;
                 comPattern.SPIPattern = std::regex("(SPI)|(spi)]");
                 comPattern.I2CPattern = std::regex("(I2C)|(i2c)");
@@ -35,7 +35,7 @@ json_herczig::json::json()
                 comPattern.BluetoothPattern = std::regex("Bluetooth");
                 DIRS.push_back("IN");
                 DIRS.push_back("OUT");
-                
+
 };
 
 bool json_herczig::json::OpenPattern()
@@ -64,7 +64,7 @@ bool json_herczig::json::OpenPattern()
 }
 void json_herczig::json::checkIO(std::string &text)
 {
-    
+
     int dircnt = 0;
     size_t found = text.find_last_of(":");
     text = text.substr(found+1);
@@ -76,10 +76,10 @@ void json_herczig::json::checkIO(std::string &text)
         for(auto it = text.begin();it != tEnd; ++it)
         {
             //INPUT
-            found = text.find(DIRS[0]); 
+            found = text.find(DIRS[0]);
             if(std::string::npos != found)
             {
-                directions.push_back(1);
+                directions.push_back(INPUT);
                 text = text.substr(found + DIRS[0].length());
                 it = text.begin();
                 dircnt++;
@@ -88,7 +88,7 @@ void json_herczig::json::checkIO(std::string &text)
             found = text.find(DIRS[1]);
             if(std::string::npos != found)
             {
-                directions.push_back(0);
+                directions.push_back(OUTPUT);
                 text = text.substr(found + DIRS[1].length());
                 it = text.begin();
                 dircnt++;
@@ -113,7 +113,7 @@ int json_herczig::json::calculatePinNumbers(std::string &text)
     int pins = 0;
     for(const char* p = text.c_str(); *p ; p++)
     {
-        
+
         if(*p >='0' && *p <= '9' && twoDigit)
         {
             pinNumbers.push_back(atoi(p));
@@ -122,7 +122,7 @@ int json_herczig::json::calculatePinNumbers(std::string &text)
             if(*p >= '0' && *p <= '9')
             {
                 twoDigit = false;
-                p -= 1;    
+                p -= 1;
             }
 
         }
@@ -201,13 +201,13 @@ void json_herczig::json::processPattern()
                     else if( tempEnd != std::find_if(temp.begin(),tempEnd,[] (char c)
                     {  return (c == '{') || (c =='}') ; }   ))
                         ;
-                        
+
                     else
                     {
                         std::cout << temp << std::endl;
                         devicetype.push_back(Unknow_device);
                     }
-                        
+
 
                 }
                 else
@@ -237,7 +237,7 @@ void json_herczig::json::processPattern()
                         {
                             pins = calculatePinNumbers(temp);
                         }
-                        
+
                         else
                         {
                             temp.erase(temp.begin()+1);
@@ -269,7 +269,7 @@ void json_herczig::json::processPattern()
     }
 
     deviceNumber = Actuators + Sensors + SensorsAndActuators;
-    
+
 #if DEBUG
     std::cout << "Device number: " <<(int) deviceNumber
      << "\nActuator number:  " <<(int) Actuators
@@ -279,7 +279,7 @@ void json_herczig::json::processPattern()
     {
         std::cout << "pinNumbers: " <<*it << std::endl;
     }
-#endif    
+#endif
 }
 
 void json_herczig::json::FinishProcess()
@@ -288,7 +288,7 @@ void json_herczig::json::FinishProcess()
     size_t i = 0;
     while(i < deviceNumber)
     {
-       
+
         std::cout << std::endl;
         std::cout << "ID: " << id[i] << std::endl;
         std::cout << "Name: " << (std::string)name[i] << std::endl;
@@ -302,9 +302,9 @@ void json_herczig::json::FinishProcess()
                 std::cout << "Pins: " << pinNumbers[i+j] << std::endl;
             }
         }
-        else   
+        else
             std::cout << "Pins: " << pinNumbers[i] << std::endl;
-        
+
         std::cout << std::endl;
         i++;
     }
