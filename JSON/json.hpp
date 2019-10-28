@@ -41,11 +41,14 @@ namespace json_herczig
             
             std::vector <std::string> pattern;
             std::vector <std::string> name;
+            std::vector <std::string> DIRS;
             std::vector <int> devicetype;
             std::vector <int> commtype;
             std::vector <int> pinNumbers;
             std::vector <int> id;
             std::vector <int> pinOffset;
+            std::vector <int> directions;
+            std::vector <int> directions_Offset;
             
 
             uint8_t deviceNumber;
@@ -54,27 +57,33 @@ namespace json_herczig
             uint8_t SensorsAndActuators = 0;
             uint8_t regexmatcherForComType(std::string &temp);
 
+
+            Id_t getID(int element) { return id[element]; }
+            devType_t getDevType(int element) { return devicetype[element]; }
+            comm_t getComm(int element) { return commtype[element]; }
+            std::string &getName(int element) { return name[element]; }
+            uint8_t getPins(int element) { return pinNumbers[element]; }
+            uint8_t getDirs(int element) { return directions[element]; }
+//            std::vector <int>  getDirs() { return directions_Offset; }
+            
+
         public:
             json(const char &p);
             json();
             bool OpenPattern();
             void processPattern();
             void FinishProcess();
-            
-            Id_t getID(int element) { return id[element]; }
-            devType_t getDevType(int element) { return devicetype[element]; }
-            comm_t getComm(int element) { return commtype[element]; }
-            std::string &getName(int element) { return name[element]; }
-            uint8_t getPins(int element) { return pinNumbers[element]; }
-            
-            uint8_t getSensorsNumber() { return Sensors; }
-            uint8_t getActuatorsNumber() { return Actuators; }
-            uint8_t getSensorsActuatorsNumber() { return SensorsAndActuators; }
+            int calculatePinNumbers(std::string &text);
+            void checkIO(std::string &text);
+            uint8_t getSensorsNumber() const { return Sensors; }
+            uint8_t getActuatorsNumber() const { return Actuators; }
+            uint8_t getSensorsActuatorsNumber() const { return SensorsAndActuators; }
            
             template<typename getdevicesNumber, typename VectorOfDevice, typename type>
             void bridgeGetSet(getdevicesNumber a, std::vector<std::unique_ptr<VectorOfDevice>>& b, type c)
             {
-                int pinOffsetElement = 0;
+                int pin_Offset_Element = 0;
+                int direction_Offset_Element = 0;
                 if(a)
                 {
                     const int all = deviceNumber;
@@ -87,17 +96,27 @@ namespace json_herczig
                             dev->device::setName(getName(i));
                             dev->device::setdevType(getDevType(i));
                             dev->device::setcommType(getComm(i));
-                            for(size_t j = 0; j < pinOffset[i]; j++)
-                                dev->device::setPinNumbers(getPins(pinOffsetElement+j));
-
-                            b.push_back(std::move(dev));
                             
+                            if(devicetype[i] == Sensor_Actuator)
+                            {
+                                for(size_t j = 0; j < pinOffset[i]; j++)
+                                {
+                                    dev->device::setPinsForuC(getPins(pin_Offset_Element+j),getDirs(direction_Offset_Element+j));
+                                }
+                                direction_Offset_Element += directions_Offset[i];     
+                            }
+                            else
+                            {
+                                for(size_t j = 0; j < pinOffset[i]; j++)
+                                    dev->device::setPinNumbers(getPins(pin_Offset_Element+j));
+                            }
+                            
+                            b.push_back(std::move(dev));
                         }
-                        pinOffsetElement += pinOffset[i];   
+                        
+                        pin_Offset_Element += pinOffset[i];
                     }
                 }
-            }
-            ~json();
             }
             ~json();
     };

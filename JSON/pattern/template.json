@@ -25,9 +25,10 @@
     {
         "Sensor_Actuator" :
         {
-    	    "commtype" : "I2C",
+    	    "commtype" : "SPI",
             "name" : "MSP430",
             "pin(s)": ["9,10,8"],
+            "dir" : ["IN,OUT,OUT"],
     	    "ID" : "1"
         }
     },
@@ -36,7 +37,7 @@
     {
         "Sensor" :
         {
-    	    "commtype" : "SPI",
+    	    "commtype" : "I2C",
     	    "name" : "PIR",
             "pin(s)": ["2,6"],
             "ID" : "0"
