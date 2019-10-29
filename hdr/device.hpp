@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#define DEBUG_DEVICE 0 
+#define DEBUG_DEVICE 0
 
 #define MAX_PORTS_NUMBER 21
 #define MAX_DC 1024
@@ -81,26 +81,24 @@ class device
         devType_t dev_Type;
         vector<uint8_t> pins;
         vector<uint8_t> dirs;
-
-        //std::unique_ptr<uint8_t> directions;
         uint8_t *directions;
 
         bool device_Initialized;
         bool communication_Initialized;
         Communication_c com;
-        //pwm_t Init_PWM(int pwm, vector<uint8_t> pinNumbers, uint8_t numberOfPorts);
 
     public:
-        device(); 
+        device();
         device(string Name, Id_t ID, devType_t devtype,comm_t commtype);
-        ~device();      
-        uint8_t setPins(vector<uint8_t> pinNumbers, uint8_t numberOfPorts);
+        ~device();
+        uint8_t setPins(vector<uint8_t> pinNumbers);
         string &get_Name();
         devType_t get_Dev_Type();
         Id_t get_ID();
         comm_t get_Comm_Type();
         uint8_t get_PinNumbers();
-        uint8_t get_Pins(int i);
+        uint8_t get_Pin(int i);
+        vector<uint8_t> &get_Pins();
         uint8_t get_Dirs(int i);
         void setName(string &devName);
         void setID(Id_t id);
@@ -108,6 +106,7 @@ class device
         void setcommType(comm_t commType);
         void setPinNumbers(uint8_t pins);
         void setPinsForuC(uint8_t pins, uint8_t dirs);
+        int InitDevice();
 };
 
 class sensor : public device
