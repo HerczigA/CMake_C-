@@ -1,0 +1,27 @@
+#include "main_Init.hpp"
+#include "../hdr/device.hpp"
+#define DEBUG_LOG 1 
+
+
+<<<<<<< HEAD
+vector<unique_ptr<sensor>> Vec_Sensors;
+vector<unique_ptr<actuator>> Vec_Actuators;
+vector<unique_ptr<actuator>> Vec_SensActuators;
+=======
+vector<unique_ptr<sensor>> Sensors;
+vector<unique_ptr<actuator>> Actuators;
+vector<unique_ptr<actuator>> SensActuators;
+>>>>>>> INIT: added logging and moved devices from main.cpp
+
+void InitBase()
+{
+
+    int logopt  = LOG_PID;
+    const char* name ="RPI_IOT";
+    #if DEBUG_LOG
+        logopt  |= LOG_CONS | LOG_DEBUG /*| LOG_PERROR*/;
+    #endif
+
+    openlog(NULL,  logopt, LOG_LOCAL1);
+
+}

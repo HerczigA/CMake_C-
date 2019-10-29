@@ -1,0 +1,21 @@
+#ifndef _MAIN_INIT_HPP_
+#define _MAIN_INIT_HPP_
+#include <syslog.h>
+#include <vector>
+#include <memory>
+#include "../hdr/device.hpp"
+
+<<<<<<< HEAD
+extern vector<unique_ptr<sensor>> Vec_Sensors;
+extern vector<unique_ptr<actuator>> Vec_Actuators;
+extern vector<unique_ptr<actuator>> Vec_SensActuators;
+=======
+extern vector<unique_ptr<sensor>> Sensors;
+extern vector<unique_ptr<actuator>> Actuators;
+extern vector<unique_ptr<actuator>> SensActuators;
+>>>>>>> INIT: added logging and moved devices from main.cpp
+
+
+void InitBase();
+
+#endif
