@@ -11,24 +11,25 @@ if(NOT CMAKE_CXX_COMPILER)
 
 endif()
 
-#    file(GLOB SUBFILES src/*.cpp hdr/*.hpp main.cpp Communication/*.cpp Communication/*.hpp)
-#if(__DEBUG)
-#    set(CMAKE_C_FLAGS "-Wall -g")
-#endif()
-    set(SOURCES Communication/i2c_module.cpp
-    Communication/spi_module.cpp
-    Communication/uart_module.cpp
-		src/device.cpp
-    JSON/json.cpp
-		main.cpp)
+include(main_Init)
 
-    set(HEADERS Communication/communication.hpp
-		
-    JSON/json.hpp
-		hdr/device.hpp)
 
-    message(STATUS "These are the sources :" ${SOURCES})
-    message(STATUS "And headers: " ${HEADERS})
+set(SOURCES Communication/i2c_module.cpp
+Communication/spi_module.cpp
+Communication/uart_module.cpp
+src/device.cpp
+#main_Init/main_Init.cpp
+JSON/json.cpp
+main.cpp)
+
+set(HEADERS Communication/communication.hpp
+
+#main_Init/main_Init.hpp
+JSON/json.hpp
+hdr/device.hpp)
+
+message(STATUS "These are the sources :" ${SOURCES})
+message(STATUS "And headers: " ${HEADERS})
 
 find_library(wiringPi_LIB wiringPi)
 
