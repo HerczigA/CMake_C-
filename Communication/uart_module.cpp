@@ -13,9 +13,7 @@ int Communication_c::Init_UART()
     serial.push_back("/dev/ttyS0");
     serial.push_back("/dev/ttyS1");
 
-    /*if(!( init->numbOfDev ))
-        return -1;
-    */
+    
     auto endOfDev = serial.end();
     for(auto it = serial.begin(); it != endOfDev; ++it)
     {
@@ -30,7 +28,7 @@ int Communication_c::Init_UART()
             cout <<"Invalid Filedescriptor\n" \
                    "maybe don't connect any wire or privilage not proper?" \
                    "Try with sudo"<<endl;
-    //        syslog(LOG_ERR,"%s",strerror(errno));
+            syslog(LOG_ERR,"%s",strerror(errno));
             return -1;
         }
     fcntl(SerialCom.serialport.uartFD,F_SETFL,O_RDWR);
