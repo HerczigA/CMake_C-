@@ -35,11 +35,11 @@
 
     "Device4" :
     {
-        "Sensor" :
+        "Actuator" :
         {
-    	    "commtype" : "I2C",
-    	    "name" : "PIR",
-            "pin(s)": ["2,6"],
+    	    "commtype" : "SPI",
+    	    "name" : "Display",
+            "pin(s)": ["15,16"],
             "ID" : "0"
         }
     }        
