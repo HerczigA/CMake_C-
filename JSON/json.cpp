@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <bits/stdc++.h>
 #include "json.hpp"
+#include "../main_Init/main_Init.hpp"
 #include <string>
 
 using namespace std;
@@ -56,9 +57,8 @@ bool json_herczig::json::OpenPattern()
 
     fileHand.close();
     processPattern();
-    #if DEBUG
-        FinishProcess();
-    #endif
+    FinishProcess();
+    
     return true;
 
 }
@@ -98,7 +98,6 @@ void json_herczig::json::checkIO(std::string &text)
                 break;
         }
     }
-    std::cout <<dircnt << std::endl;
     if(dircnt)
         directions_Offset.push_back(dircnt);
     else
@@ -179,22 +178,22 @@ void json_herczig::json::processPattern()
                 {
                     if(std::string::npos != temp.find("Sensor_Actuator"))
                     {
-                        SensorsAndActuators++;
-                        devicetype.push_back(Sensor_Actuator);
+                        this->SensorsAndActuators++;
+                        devicetype.push_back(SENSOR_ACTUATOR);
                         checkDevicetype = false;
                     }
 
                     else if(std::string::npos != temp.find("Sensor"))
                     {
-                        Sensors++;
-                        devicetype.push_back(Sensor);
+                        this->Sensors++;
+                        devicetype.push_back(SENSOR);
                         checkDevicetype = false;
                     }
 
                     else if(std::string::npos != temp.find("Actuator"))
                     {
-                        Actuators++;
-                        devicetype.push_back(Actuator);
+                        this->Actuators++;
+                        devicetype.push_back(ACTUATOR);
                         checkDevicetype = false;
                     }
 
@@ -204,7 +203,6 @@ void json_herczig::json::processPattern()
 
                     else
                     {
-                        std::cout << temp << std::endl;
                         devicetype.push_back(Unknow_device);
                     }
 
@@ -268,13 +266,13 @@ void json_herczig::json::processPattern()
         pattern.erase(pattern.begin());
     }
 
-    deviceNumber = Actuators + Sensors + SensorsAndActuators;
+    this->deviceNumber = this->Actuators + this->Sensors + this->SensorsAndActuators;
 
 #if DEBUG
-    std::cout << "Device number: " <<(int) deviceNumber
-     << "\nActuator number:  " <<(int) Actuators
-     << "\nSensor number: " <<(int) Sensors
-     << "\nnSensor&Actuator number: " << (int)SensorsAndActuators<< std::endl;
+    std::cout << "Device number: " <<(int) this->deviceNumber
+     << "\nActuator number:  " <<(int) this->Actuators
+     << "\nSensor number: " <<(int) this->Sensors
+     << "\nnSensor&Actuator number: " << this->(int)SensorsAndActuators<< std::endl;
      for(auto it = pinNumbers.begin(); it != pinNumbers.end(); ++it)
     {
         std::cout << "pinNumbers: " <<*it << std::endl;
@@ -284,6 +282,12 @@ void json_herczig::json::processPattern()
 
 void json_herczig::json::FinishProcess()
 {
+    
+    Make_Device(getSensorsNumber(),Vec_Sensors, SENSOR);
+    Make_Device(getActuatorsNumber(),Vec_Actuators, ACTUATOR);
+    Make_Device(getSensorsActuatorsNumber(),Vec_SensActuators, SENSOR_ACTUATOR);
+
+#if DEBUG
     std::cout << "Details about devices after read" << std::endl;
     size_t i = 0;
     while(i < deviceNumber)
@@ -308,6 +312,7 @@ void json_herczig::json::FinishProcess()
         std::cout << std::endl;
         i++;
     }
+#endif
 }
 
 json_herczig::json::~json()

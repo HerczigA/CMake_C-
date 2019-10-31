@@ -9,7 +9,7 @@
 #include <regex>
 #include <memory>
 #include "../hdr/device.hpp"
-
+#include "../main_Init/main_Init.hpp"
 #define DEBUG 0
 #define MAX_DEV_TYPE 3
 
@@ -64,7 +64,7 @@ namespace json_herczig
             std::string &getName(int element) { return name[element]; }
             uint8_t getPins(int element) { return pinNumbers[element]; }
             uint8_t getDirs(int element) { return directions[element]; }
-//            std::vector <int>  getDirs() { return directions_Offset; }
+            
 
 
         public:
@@ -97,7 +97,7 @@ namespace json_herczig
                             dev->device::setdevType(getDevType(i));
                             dev->device::setcommType(getComm(i));
 
-                            if(devicetype[i] == Sensor_Actuator)
+                            if(devicetype[i] == SENSOR_ACTUATOR)
                             {
                                 for(uint8_t j = 0; j < pinOffset[i]; j++)
                                 {
