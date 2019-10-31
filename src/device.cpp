@@ -23,17 +23,15 @@ device::device(): device_Initialized{false}
     dev_Type =  Unknow_device;
     commType =  Unknow_communication;
     wiringPiSetup();
-    /*setpins....*/
 }
 
 device::device(string Name, Id_t ID, devType_t devtype,comm_t commtype): name{Name}, device_Initialized(false)
 {
     directions = nullptr;
     id =( !ID && id_counter != 1 ) ? id_counter : id_counter++;
-    dev_Type = (devtype >= Sensor && devtype <= Sensor_Actuator) ? devtype : Unknow_device;
+    dev_Type = (devtype >= SENSOR && devtype <= SENSOR_ACTUATOR) ? devtype : Unknow_device;
     commType = (commtype >= SPI && commtype <= Bluetooth) ? commtype : Unknow_communication;
     wiringPiSetup();
-    /*setpins....*/
 }
 
 device::~device()
@@ -128,14 +126,19 @@ void device::setID(Id_t id)
 void device::setcommType(comm_t commType)
 {
     this->commType = commType;
+    int result = 0;
     switch(commType)
     {
         case SPI:
-            com.Init_SPI(com.SerialCom.spi);
+            result = com.Init_SPI(com.SerialCom.spi);
+            if(result)
+                syslog(LOG_ERR, " SPI setup : %d ", result);
             break;
 
         case I2C:
-            com.Init_I2C(com.SerialCom.i2c);
+            result = com.Init_I2C(com.SerialCom.i2c);
+            if(result)
+                syslog(LOG_ERR, " I2C setup : %d ", result);
             break;
 
        /* case PWM:
@@ -143,7 +146,9 @@ void device::setcommType(comm_t commType)
             break;*/
 
         case UART:
-            com.Init_UART();
+            result = com.Init_UART();
+            if(result)
+                syslog(LOG_ERR, " UART setup : %d ", result);
             break;
 
         case Bluetooth:
@@ -273,7 +278,7 @@ uint8_t device::setPins(vector<uint8_t> pinNumbers)
             int j = 0 ;
             switch (dev_Type)
             {
-                case Sensor:
+                case SENSOR:
                     directions = new uint8_t[ pins.size()];
                     if(!directions)
                     {
@@ -288,7 +293,7 @@ uint8_t device::setPins(vector<uint8_t> pinNumbers)
                     }
                     break;
 
-                case Actuator:
+                case ACTUATOR:
                     directions = new uint8_t[pins.size()];
                     if(!directions)
                     {
@@ -305,7 +310,7 @@ uint8_t device::setPins(vector<uint8_t> pinNumbers)
 
                     }
                     break;
-                case Sensor_Actuator:
+                case SENSOR_ACTUATOR:
                     directions = new uint8_t[pins.size()];
                     if(!directions)
                     {
@@ -318,7 +323,6 @@ uint8_t device::setPins(vector<uint8_t> pinNumbers)
                     {
 
                         directions[j] = dirs[j] ? OUTPUT : INPUT;
-                         cout<< "And Directions: " <<(int)directions[j]<< endl;
                         j++;
 
                     }

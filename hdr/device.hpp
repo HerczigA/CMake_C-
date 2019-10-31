@@ -64,9 +64,9 @@ enum pwm_err_t
 
 enum dev_type
 {
-    Sensor = 1,
-    Actuator,
-    Sensor_Actuator,
+    SENSOR = 1,
+    ACTUATOR,
+    SENSOR_ACTUATOR,
     Unknow_device,
     DEVTYPE
 };

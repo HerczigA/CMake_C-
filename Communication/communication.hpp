@@ -16,7 +16,8 @@
 #include <wiringPi.h>
 #include <termios.h>
 #include <unistd.h>
-
+#include <syslog.h>
+#include <errno.h>
 /*
     BCM2835_SPI_CLOCK_DIVIDER_65536 = 0,       ///< 65536 = 262.144us = 3.814697260kHz (total H+L clock period) 
 		BCM2835_SPI_CLOCK_DIVIDER_32768 = 32768,   ///< 32768 = 131.072us = 7.629394531kHz
@@ -42,7 +43,7 @@
 
 #define I2C_PACKET_LENGTH 16
 #define SPI_PACKET_LENGTH 8
-#define MAX_CLK 500000 //MAX speed 500kHz
+#define MAX_SPI_CLK 1000000 //MAX speed 1MHz
 
 #define MAX_SPI_CHANNELS 2
 
@@ -63,7 +64,8 @@ enum I2C_error
 
 enum errorSPI
 {
-    E_SPI_OK,
+    E_BAD_FD = -1,
+    E_SPI_OK = 0,
     E_SPI_SPEED,
     E_SPI_PHA_POL,
     E_SPI_FD_OPEN,
@@ -94,7 +96,36 @@ struct SPI_Frame
       Full duplex communication needs:
       Cross-compile with cross-gcc -I/path/to/cross-kernel/include
       if you don't work on the fixed hardware.
-      For half duplex, read or write but just one at time read/write()... */
+      For half duplex, read or write but just one at time read/write()... 
+
+      Is the phase zero (CPHA = 0), then data is sampled at rising edge with CPOL=0
+      and falling edge with CPOL=1. This behaviour switches with CPHA=1, then data is sampled at falling edge with CPOL=0 and rising edge with CPOL=1.
+      MODE     CPOL    CPHA
+        0   	0 	    0
+        1 	    0 	    1
+        2 	    1 	    0
+        3 	    1 	    1
+      */
+    SPI_Frame()
+    {
+        for(size_t i = 0; i < MAX_SPI_CHANNELS ; i++)
+        {
+            this->endianess[i] =  0;
+            this->clk_Pol_Pha[i] = SPI_MODE_0;
+            this->ClockSpeed[i] = MAX_SPI_CLK;
+        }
+        
+    }
+    SPI_Frame(uint8_t endianess, int clk_Pol_Pha, uint32_t ClockSpeed)
+    {
+        for(size_t i = 0; i < MAX_SPI_CHANNELS ; i++)
+        {
+            this->endianess[i] =  endianess;
+            this->clk_Pol_Pha[i] = clk_Pol_Pha;
+            this->ClockSpeed[i] = ClockSpeed;
+        }
+        
+    }
     uint32_t ClockSpeed[MAX_SPI_CHANNELS];
     std::vector<std::string> spiChns;
     int clk_Pol_Pha[MAX_SPI_CHANNELS];
@@ -115,6 +146,7 @@ struct serialcomm_t
 class Communication_c
 {
     public:
+        
         spi_error Init_SPI(SPI_Frame spi);
         i2c_error_t Init_I2C(I2C_Frame i2c);
         //int Init_Bluetooth();

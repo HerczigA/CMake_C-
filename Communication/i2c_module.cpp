@@ -28,7 +28,7 @@ int Communication_c::get_I2C_Address()
     }
     catch(const std::string msg)
     {
-        std::cerr << msg << std::endl;
+        syslog(LOG_ERR,"%s",strerror(errno));
         std::cout << msg << std::endl;
         return E_I2C_FILE_OPEN;
     }
@@ -104,13 +104,12 @@ int Communication_c::get_I2C_Address()
 
     }
     std::cout << "I2C slave address : " << result << std::endl;
+    syslog(LOG_INFO,"I2C slave address :%d ", (int)result);
     return result;
 }
 
 i2c_error_t Communication_c::Init_I2C(I2C_Frame i2c)
 {
-    /*system(char* ) find i2c dev address!*/
-    
     (void) i2c;
     i2c_error_t result  = E_I2C_OK;
     const string Path_I2C = "/dev/i2c-1";
@@ -124,12 +123,14 @@ i2c_error_t Communication_c::Init_I2C(I2C_Frame i2c)
             if(ioctl(SerialCom.i2c.i2CFD, I2C_SLAVE, SerialCom.i2c.address) < 0)
             {
                 cout << "Unable to select I2C device " << strerror(errno) << endl;
+                syslog(LOG_ERR,"%s",strerror(errno));
                 result = E_I2C_SELECT;    
             }
         }
         else
         {
             cout << "address is 0"  << endl;
+            syslog(LOG_ERR,"%s",strerror(errno));
             result = E_I2C_ADDRESS;
         }
     }
@@ -137,6 +138,7 @@ i2c_error_t Communication_c::Init_I2C(I2C_Frame i2c)
     {
         cout<< "can not open I2C.Try with sudo or check the path, wiring!" << endl;
         result = E_I2C_OPEN;
+        syslog(LOG_ERR,"%s",strerror(errno));
     }
     
     return result;
