@@ -8,13 +8,14 @@ import  dirhandling
 argNum = len(sys.argv)
 cnt = 1
 cmd =  "cmake -GNinja ."
+debug = "-DCMAKE_BUILD_TYPE=Debug ."
 ninja ="ninja"
 make = "make"
 isbuild = False
 cleaning = False
 iscompile = False
 dirName = "build"
-target = " mv RPI_tutorial build/"
+target = " mv RPI_IOT build/"
 rm = "rm -rf CMakeFiles *.ninja *.cmake *Cache* build/RPI_tutorial .ninja*"
 rm_withoutBinary = "rm -rf CMakeFiles *.ninja *.cmake *Cache* .ninja*"
 
@@ -70,8 +71,12 @@ if argNum > 1:
 	elif temp == "-x" or temp == "--purge":
 	    cleaning = True
 
-	elif temp == "-r " or temp == "--Rb":
+	elif temp == "-r" or temp == "--Rb":
 	    os.system(rm_withoutBinary)
+
+	elif temp == "-d" or temp == "--Debug":
+	    cmd[-1]
+	    cmd = cmd + debug
 
         cnt = cnt +1
 	if (argNum-1) >= cnt:
