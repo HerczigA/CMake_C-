@@ -24,7 +24,7 @@ json_herczig::json::json(const char &p): jsonFile{&p}
                 DIRS.push_back("IN");
                 DIRS.push_back("OUT");
 
-};
+}
 
 json_herczig::json::json()
 {
@@ -37,7 +37,7 @@ json_herczig::json::json()
                 DIRS.push_back("IN");
                 DIRS.push_back("OUT");
 
-};
+}
 
 bool json_herczig::json::OpenPattern()
 {
@@ -49,7 +49,7 @@ bool json_herczig::json::OpenPattern()
     }
     catch(char const* msg)
     {
-        std::cout << msg << "\nException under opening" << endl;
+        std::cout << msg << "\nException under opening" << std::endl;
         return false;
     }
     while(getline(fileHand,lineFromFile))
