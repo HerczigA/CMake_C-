@@ -62,6 +62,7 @@ bool json_herczig::json::OpenPattern()
     return true;
 
 }
+
 void json_herczig::json::checkIO(std::string &text)
 {
 
@@ -101,8 +102,8 @@ void json_herczig::json::checkIO(std::string &text)
     if(dircnt)
         directions_Offset.push_back(dircnt);
     else
-        ;//TODO: LOG
-
+        //TODO: LOG
+        syslog(LOG_INFO,"There was not given any direction when checkIO is proceed.");
 }
 
 int json_herczig::json::calculatePinNumbers(std::string &text)
@@ -110,6 +111,7 @@ int json_herczig::json::calculatePinNumbers(std::string &text)
     text.erase(text.begin());
     bool twoDigit = true;
     int pins = 0;
+    //const char * ???? is it working? 
     for(const char* p = text.c_str(); *p ; p++)
     {
 
@@ -125,6 +127,7 @@ int json_herczig::json::calculatePinNumbers(std::string &text)
             }
 
         }
+        // does it need here? 
         else
             twoDigit = true;
     }
@@ -205,8 +208,6 @@ void json_herczig::json::processPattern()
                     {
                         devicetype.push_back(Unknow_device);
                     }
-
-
                 }
                 else
                 {

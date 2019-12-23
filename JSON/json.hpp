@@ -82,10 +82,11 @@ namespace json_herczig
             template<typename getdevicesNumber, typename VectorOfDevice, typename type>
             void Make_Device(getdevicesNumber a, std::vector<std::unique_ptr<VectorOfDevice>>& b, type c)
             {
-                int pin_Offset_Element = 0;
-                int direction_Offset_Element = 0;
+                
                 if(a)
                 {
+                    int pin_Offset_Element = 0;
+                    int direction_Offset_Element = 0;
                     const uint8_t all = deviceNumber;
                     for(uint8_t i = 0; i < all; i++)
                     {
