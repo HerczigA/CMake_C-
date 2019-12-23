@@ -19,7 +19,31 @@ int Communication_c::get_I2C_Address()
     std::string line;
     int result =0;
     system("sudo i2cdetect -y 1 > i2c_address.txt");
-    delay(10);
+    //maybe delay does not need system blocking function call... 
+    /*Blocking and non-blocking are just logical names to describe the behaviour
+    of the functions. As the name implies, a blocking function blocks the calling
+    function. This means the caller does not do anything until the blocking 
+    function returns control to it. You can consider this synchronous behaviour, 
+    because the interactions are "synchronized" in that the calling function must 
+    wait until the called blocking function is finished before continuing.
+
+    Conversely, non-blocking functions, of course, do the opposite: they do not 
+    require the caller to wait until they are finished. They simply call the 
+    function and immediately carry on to the next instruction to execute. 
+    This could be thought of as "asynchronous" interaction.
+
+    You could think of a personal, informal in-person conversation with someone
+    as asynchronous. Each person doesn't necessarily wait until the other is 
+    finished their sentence. In a professional, formal conversation with your 
+    boss, its probably best to communicate synchronously: you do not want to 
+    interrupt while your boss is talking. You wait for him/her to finish talking, 
+    then you talk. (Aside: though your direction of communication with them is 
+    probably synchronous, they may communicate with you asynchronously, 
+    interrupting at will).
+
+    N.B.: Note that there are technical and programming-specific keywords for 
+    "synchronous", etc, so do not misuse these.
+    delay(10);*/
     try
     {
         ifile.open(resultI2CAddress.c_str(), std::ifstream::in);
