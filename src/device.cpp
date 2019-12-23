@@ -365,7 +365,6 @@ pwm_t actuator::pwm_ServoSetup(vector<uint8_t> pinNumbers,  uint8_t numberOfPort
             cout<< " not equal the given port numbers = "
             <<(int) i << " and the gpio numbers = "
             <<(int) numberOfPorts << endl;
-            result = E_INIT_NOK;
         }
         else
         {
