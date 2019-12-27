@@ -18,6 +18,7 @@
 
 #define BUTTON_READ_TIME 50
 
+#define RPI_VERSION 0
 
 typedef uint8_t devType_t;
 typedef uint16_t Id_t;

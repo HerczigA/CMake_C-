@@ -4,7 +4,9 @@
 
 #include <vector>
 #include <hdr/parameters.hpp> 
-#include <wiringPi.h>
+#ifdef RPI_VERSION
+    #include <wiringPi.h>
+#endif
 class PWM 
 {
         std::unique_ptr<pwm_t> pwm_Type;

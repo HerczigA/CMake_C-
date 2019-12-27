@@ -7,7 +7,9 @@
 #include <iostream>
 #include <vector>
 #include <string.h>
-#include <wiringPi.h>
+#ifdef RPI_VERSION
+    #include <wiringPi.h>
+#endif
 #include "communication.hpp"
 
 using namespace std;

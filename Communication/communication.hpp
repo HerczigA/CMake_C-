@@ -13,7 +13,9 @@
 #include <iostream>
 #include <vector>
 #include <string.h>
-#include <wiringPi.h>
+#ifdef RPI_VERSION
+    #include <wiringPi.h>
+#endif
 #include <termios.h>
 #include <unistd.h>
 #include <syslog.h>

@@ -1,7 +1,9 @@
 #include <iostream>
 #include "hdr/device.hpp"
 #include "JSON/json.hpp"
-#include <wiringPi.h>
+#ifdef RPI_VERSION
+    #include <wiringPi.h>
+#endif
 #include <stdlib.h>
 #include <memory>
 #include "main_Init/main_Init.hpp"
