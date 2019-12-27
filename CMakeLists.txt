@@ -25,13 +25,15 @@ set(SOURCES Communication/i2c_module.cpp
     src/device.cpp
     main_Init/main_Init.cpp
     JSON/json.cpp
+    pwm/pwm.cpp
     main.cpp)
 
 set(HEADERS Communication/communication.hpp
   main_Init/main_Init.hpp
   JSON/json.hpp
   hdr/device.hpp
-  hdr/parameters.hpp)
+  hdr/parameters.hpp
+  pwm/pwm.hpp)
 
 message(STATUS "These are the sources :" ${SOURCES})
 message(STATUS "And headers: " ${HEADERS})
