@@ -3,7 +3,7 @@
 
 
 #include <vector>
-#include <hdr/parameters.hpp> 
+#include "../hdr/parameters.hpp"
 #ifdef RPI_VERSION
     #include <wiringPi.h>
 #endif
