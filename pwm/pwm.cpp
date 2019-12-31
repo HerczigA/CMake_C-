@@ -1,6 +1,18 @@
 #include "pwm.hpp"
+#include <wiringPi.h>
+#include <iostream>
+#include <unistd.h>
+#include <stdint.h>
+using namespace std;
 
-pwm_t PWM::Init_PWM(int pwm, vector<uint8_t> pinNumbers, uint8_t numberOfPorts)
+
+void PWMclass::set_pwm_Type(pwm_t &type)
+{
+    if(pwm_Type)
+        pwm_Type.reset(&type);
+}
+
+pwm_t PWMclass::Init_PWM(int pwm, vector<uint8_t> pinNumbers, uint8_t numberOfPorts)
 {
 
     pwm_t result = E_INIT_NOK;
@@ -21,7 +33,7 @@ pwm_t PWM::Init_PWM(int pwm, vector<uint8_t> pinNumbers, uint8_t numberOfPorts)
     return result;
 }
 
-pwm_t PWM::pwm_ServoSetup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts)
+pwm_t PWMclass::pwm_ServoSetup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts)
 {
 
     int servoOut[] = {-1,-1,-1,-1,-1,-1,-1,-1};
@@ -57,31 +69,27 @@ pwm_t PWM::pwm_ServoSetup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts)
     }
     return result;
 }
-pwm_t PWM::pwm_Setup(vector<uint8_t> pinNumber)
+
+pwm_t PWMclass::pwm_Setup(vector<uint8_t> pinNumber)
 {
     pwm_t result = E_INIT_NOK;
     int pin = pinNumber[0];
-    if( !softPwmCreate(pin, initValue,  pwmRange))
+    if( softPwmCreate(pin, initValue,  pwmRange) > E_INIT_NOK)
         result = E_INIT_OK;
         
     return result;
 }
 
-void PWM::pwm_Write(uint8_t pinNumber, int DC, time_ms_t lengthOfDelay)
+void PWMclass::pwm_Write(uint8_t pinNumber, int DC, time_ms_t lengthOfDelay)
 {
-    if(!device_Initialized)
-        return;
 
     pwmWrite(pinNumber,DC);
     delay(lengthOfDelay);
 
 }
 
-void PWM::pwm_Write_Breathing(uint8_t pinNumber,time_ms_t lengthOfDelay)
+void PWMclass::pwm_Write_Breathing(uint8_t pinNumber,time_ms_t lengthOfDelay)
 {
-    if(!device_Initialized)
-        return;
-
     if(lengthOfDelay > 200)
         lengthOfDelay = 200;
 
@@ -101,10 +109,8 @@ void PWM::pwm_Write_Breathing(uint8_t pinNumber,time_ms_t lengthOfDelay)
     }
 }
 
-void PWM::pwm_Servo_Write_In_Loop(uint8_t pinNumber, int16_t DC,time_ms_t lengthOfDelay, bool loop)
+void PWMclass::pwm_Servo_Write_In_Loop(uint8_t pinNumber, int16_t DC,time_ms_t lengthOfDelay, bool loop)
 {
-    if(!device_Initialized)
-        return;
     cout << "Start servo in Loop" << endl;
     time_ms_t delaytime = lengthOfDelay;
 
@@ -131,10 +137,8 @@ void PWM::pwm_Servo_Write_In_Loop(uint8_t pinNumber, int16_t DC,time_ms_t length
 
 }
 
-void PWM::pwm_Servo_Full_Limit(uint8_t pinNumber, time_ms_t t_length)
+void PWMclass::pwm_Servo_Full_Limit(uint8_t pinNumber, time_ms_t t_length)
 {
-    if(!device_Initialized)
-        return;
     cout << "Start servo FULL Limit" << endl;
     time_ms_t delaytime = t_length;
 
@@ -154,10 +158,8 @@ void PWM::pwm_Servo_Full_Limit(uint8_t pinNumber, time_ms_t t_length)
 
 }
 
-void PWM::pwm_Servo_Full_Limit(uint8_t pinNumber, time_ms_t t_length, bool button)
+void PWMclass::pwm_Servo_Full_Limit(uint8_t pinNumber, time_ms_t t_length, bool button)
 {
-    if(!device_Initialized)
-        return;
     time_ms_t delaytime = t_length;
 
     if(delaytime <= MIN_SERVO_DELAY_TIME)
