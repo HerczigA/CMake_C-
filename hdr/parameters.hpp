@@ -1,6 +1,9 @@
 #ifndef _PARAMETERS_HPP_
 #define _PARAMETERS_HPP_
 
+#include <stdint.h>
+#include <memory>
+#include <unistd.h>
 
 #define DEBUG_DEVICE 0
 
@@ -18,7 +21,7 @@
 
 #define BUTTON_READ_TIME 50
 
-#define RPI_VERSION 0
+#define RPI_VERSION 1
 
 typedef uint8_t devType_t;
 typedef uint16_t Id_t;
@@ -50,8 +53,8 @@ enum pwm_type
 
 enum pwm_err_t
 {
+    E_INIT_NOK= -1,
     E_INIT_OK = 0,
-    E_INIT_NOK,
     E_DC_OFLOW,
     E_DC_UFLOW,
     E_FREQ,

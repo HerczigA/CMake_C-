@@ -80,23 +80,21 @@ class sensor : public device
 
 class actuator : public device
 {
-    std::unique_ptr<PWM> pwmObj;
+    std::unique_ptr<PWMclass> pwmObj;
 
       public:
         actuator(string Name, Id_t ID, devType_t devtype, comm_t commtype, pwm_t *pwmtype) : device(Name,ID,devtype,commtype)
         {
             if(*pwmtype)
-                try
-                {
-                    pwmObj = std::make_unique<PWM>();
-                    throw "can not make pwmObj" ;
-                }    
-            
-
-            if(commType == PWM && pwm_Type == ServoPWM)
             {
-                pwmObj->pwmRange = PWM_RANGE_MAX;
-                pwmObj->initValue = 0;
+                pwmObj = std::make_unique<PWMclass>();
+                pwmObj->set_pwm_Type(*pwmtype);
+                
+                /*if(commType == PWM && pwmObj->pwm_Type == ServoPWM)
+                {
+                    pwmObj->pwmRange = PWM_RANGE_MAX;
+                    pwmObj->initValue = 0;
+                }*/
             }
             
         }
@@ -111,10 +109,9 @@ class display : public device
     display_Type_t displayType;
 
     public:
-        display() : device()  {};
-        display() : device()  {};
+        display() : device()  {}
     
 
-}
+};
 
 #endif
