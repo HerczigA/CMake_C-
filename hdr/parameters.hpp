@@ -4,6 +4,9 @@
 #include <stdint.h>
 #include <memory>
 #include <unistd.h>
+#include <algorithm>
+#include <iterator>
+#include <bits/stdc++.h>
 
 #define DEBUG_DEVICE 0
 
@@ -66,7 +69,7 @@ enum dev_type
 {
     SENSOR = 1,
     ACTUATOR,
-    SENSOR_ACTUATOR,
+    uC,
     DISPLAY,
     Unknow_device,
     DEVTYPE
@@ -81,7 +84,7 @@ enum sensor_type
     IRDA_Reciver,
     UNKNOW_SENSOR,
     SENSOR_TYPE
-}
+};
 
 enum display_type
 {
@@ -92,7 +95,7 @@ enum display_type
     _7_segments,
     Unknow_display,
     DISPLAY_TYPE
-}
+};
 
 
 #endif
