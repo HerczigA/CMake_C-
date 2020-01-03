@@ -21,6 +21,10 @@ json_herczig::json::json(const char &p): jsonFile{&p}
                 comPattern.UARTPattern = std::regex("(UART)|(uart)");
                 comPattern.PWMPattern = std::regex("(pwm)|(PWM)");
                 comPattern.BluetoothPattern = std::regex("Bluetooth");
+                DisplayPatterns.LCD = std::regex("(LCD)|(lcd)");
+                DisplayPatterns.TFT = std::regex("(TFT)|(tft)");
+                DisplayPatterns.DotMatrix = std::regex("(DOTMATRIX)|(dotmatrix)");
+                DisplayPatterns._7_segments = std::regex("(7_segments)|(7_SEGMENTS)");
                 DIRS.push_back("IN");
                 DIRS.push_back("OUT");
 
@@ -34,6 +38,10 @@ json_herczig::json::json()
                 comPattern.UARTPattern = std::regex("(UART)|(uart)");
                 comPattern.PWMPattern = std::regex("(pwm)|(PWM)");
                 comPattern.BluetoothPattern = std::regex("Bluetooth");
+                DisplayPatterns.LCD = std::regex("(LCD)|(lcd)");
+                DisplayPatterns.TFT = std::regex("(TFT)|(tft)");
+                DisplayPatterns.DotMatrix = std::regex("(DOTMATRIX)|(dotmatrix)");
+                DisplayPatterns._7_segments = std::regex("(7_segments)|(7_SEGMENTS)");
                 DIRS.push_back("IN");
                 DIRS.push_back("OUT");
 
@@ -134,9 +142,9 @@ int json_herczig::json::calculatePinNumbers(std::string &text)
     return pins;
 
 }
-uint8_t json_herczig::json::regexmatcherForComType(std::string& temp)
+comm_t json_herczig::json::regexmatcherForComType(std::string& temp)
 {
-    uint8_t result = 0;
+    comm_t result = Unknow_communication;
     if(regex_search(temp, comPattern.SPIPattern))
         result = SPI;
 
@@ -152,11 +160,28 @@ uint8_t json_herczig::json::regexmatcherForComType(std::string& temp)
     else if(regex_search(temp, comPattern.BluetoothPattern))
         result = Bluetooth;
 
-    else
-        result = Unknow_communication;
+    return result;
+}
+
+display_Type_t json_herczig::json::displayType(std::string display)
+{
+    uint8_t result = Unknow_display;
+
+    if(regex_search(display, DisplayPatterns.LCD))
+        result = LCD;
+
+    else if(regex_search(display, DisplayPatterns.TFT))
+        result = TFT_ST7735;
+
+    else if(regex_search(display, DisplayPatterns.DotMatrix))
+        result = DotMatrix;
+
+    else if(regex_search(display, DisplayPatterns._7_segments))
+        result = _7_segments;    
 
     return result;
 }
+
 
 void json_herczig::json::processPattern()
 {
@@ -182,7 +207,7 @@ void json_herczig::json::processPattern()
                     if(std::string::npos != temp.find("Sensor_Actuator"))
                     {
                         this->SensorsAndActuators++;
-                        devicetype.push_back(SENSOR_ACTUATOR);
+                        devicetype.push_back(uC);
                         checkDevicetype = false;
                     }
 
@@ -225,6 +250,10 @@ void json_herczig::json::processPattern()
                         temp.erase(0,2);
                         temp.erase(temp.end()-2,temp.end()-0);
                         name.push_back(temp);
+                        if(std::string::npos !=temp.find("display"))
+                        {
+                            display = displayType(temp);
+                        }
                     }
                     else if( std::string::npos !=temp.find("pin(s)"))
                     {
@@ -286,7 +315,7 @@ void json_herczig::json::FinishProcess()
     
     Make_Device(getSensorsNumber(),Vec_Sensors, SENSOR);
     Make_Device(getActuatorsNumber(),Vec_Actuators, ACTUATOR);
-    Make_Device(getSensorsActuatorsNumber(),Vec_SensActuators, SENSOR_ACTUATOR);
+    Make_Device(getSensorsActuatorsNumber(),Vec_SensActuators, uC);
 
 #if DEBUG
     std::cout << "Details about devices after read" << std::endl;

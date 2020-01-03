@@ -15,7 +15,8 @@
 
 enum jsonerror_t
 {
-    E_JSON_OPEN = 51
+    E_JSON_OPEN = 51,
+    E_JSON_REXP_MATCH
 };
 
 
@@ -32,11 +33,20 @@ namespace json_herczig
 
     };
 
+    struct displaypatterns
+    {
+        std::regex LCD;
+        std::regex TFT;
+        std::regex DotMatrix;
+        std::regex  _7_segments;
+    };
+
     class json
     {
             std::fstream fileHand;
             std::string jsonFile = "./JSON/pattern/template.json";
             compatterns comPattern;
+            displaypatterns DisplayPatterns;
             std::string lineFromFile;
 
             std::vector <std::string> pattern;
@@ -50,12 +60,12 @@ namespace json_herczig
             std::vector <int> directions;
             std::vector <int> directions_Offset;
 
-
+            uint8_t display = Unknow_display;
             uint8_t deviceNumber;
             uint8_t Sensors = 0;
             uint8_t Actuators = 0;
             uint8_t SensorsAndActuators = 0;
-            uint8_t regexmatcherForComType(std::string &temp);
+            comm_t regexmatcherForComType(std::string &temp);
 
 
             Id_t getID(int element) { return id[element]; }
@@ -64,7 +74,7 @@ namespace json_herczig
             std::string &getName(int element) { return name[element]; }
             uint8_t getPins(int element) { return pinNumbers[element]; }
             uint8_t getDirs(int element) { return directions[element]; }
-            
+            display_Type_t displayType(std::string display);
 
 
         public:
@@ -98,7 +108,7 @@ namespace json_herczig
                             dev->device::setdevType(getDevType(i));
                             dev->device::setcommType(getComm(i));
 
-                            if(devicetype[i] == SENSOR_ACTUATOR)
+                            if(devicetype[i] == uC)
                             {
                                 for(uint8_t j = 0; j < pinOffset[i]; j++)
                                 {
