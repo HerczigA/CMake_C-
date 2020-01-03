@@ -1,8 +1,6 @@
 #include "pwm.hpp"
-#include <wiringPi.h>
 #include <iostream>
-#include <unistd.h>
-#include <stdint.h>
+
 using namespace std;
 
 

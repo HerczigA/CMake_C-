@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
             if(Vec_Sensors[0]->buttonStateChanged())
             {
 
-                Vec_Actuators[0]->pwm_Servo_Full_Limit(Vec_Actuators[0]->get_Pin(0), 500, Vec_Sensors[0]->getButtonState());
+                Vec_Actuators[0]->pwmObj->pwm_Servo_Full_Limit(Vec_Actuators[0]->get_Pin(0), 500, Vec_Sensors[0]->getButtonState());
             }
 
         }

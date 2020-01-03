@@ -28,7 +28,7 @@ device::device(string Name, Id_t ID, devType_t devtype,comm_t commtype): name{Na
 {
     directions = nullptr;
     id =( !ID && id_counter != 1 ) ? id_counter : id_counter++;
-    dev_Type = (devtype >= SENSOR && devtype <= SENSOR_ACTUATOR) ? devtype : Unknow_device;
+    dev_Type = (devtype >= SENSOR && devtype <= uC) ? devtype : Unknow_device;
     commType = (commtype >= SPI && commtype <= Bluetooth) ? commtype : Unknow_communication;
     wiringPiSetup();
 }
@@ -140,12 +140,12 @@ void device::setcommType(comm_t commType)
                 syslog(LOG_ERR, " I2C setup : %d ", result);
             break;
 
-        case PWM:
+        /*case PWM:
             Init_PWM();
             if(result)
                 syslog(LOG_ERR, " PWM setup : %d ", result);
             device_Initialized = true;
-            break;
+            break;*/
 
         case UART:
             result = com.Init_UART();
@@ -261,7 +261,7 @@ uint8_t device::setPins(vector<uint8_t> pinNumbers)
 
                     }
                     break;
-                case SENSOR_ACTUATOR:
+                case uC:
                     directions = new uint8_t[pins.size()];
                     if(!directions)
                     {

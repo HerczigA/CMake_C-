@@ -14,6 +14,9 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <memory>
+#include <algorithm>
+#include <iterator>
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -80,21 +83,18 @@ class sensor : public device
 
 class actuator : public device
 {
-    std::unique_ptr<PWMclass> pwmObj;
-
+    
       public:
+      std::unique_ptr<PWMclass> pwmObj;
         actuator(string Name, Id_t ID, devType_t devtype, comm_t commtype, pwm_t *pwmtype) : device(Name,ID,devtype,commtype)
         {
             if(*pwmtype)
             {
                 pwmObj = std::make_unique<PWMclass>();
                 pwmObj->set_pwm_Type(*pwmtype);
-                
-                /*if(commType == PWM && pwmObj->pwm_Type == ServoPWM)
-                {
-                    pwmObj->pwmRange = PWM_RANGE_MAX;
-                    pwmObj->initValue = 0;
-                }*/
+                uint8_t pinSize  = pins.size();
+                pwmObj->Init_PWM(*pwmtype, pins, pinSize);
+
             }
             
         }
@@ -104,12 +104,12 @@ class actuator : public device
 
 };
 
-class display : public device
+class display 
 {
     display_Type_t displayType;
 
     public:
-        display() : device()  {}
+        display();
     
 
 };

@@ -1,14 +1,25 @@
-#ifndef _PWM_HPP_
-#define _PWM_HPP_
+#ifndef _PWM_OWN_HPP_
+#define _PWM_OWN_HPP_
 
 
 #include <vector>
 #include "../hdr/parameters.hpp"
-#ifdef RPI_VERSION
-    #include <wiringPi.h>
-#endif
 #include <unistd.h>
 #include <stdint.h>
+#include <softServo.h>
+#include <softPwm.h>
+#define MAX_PORTS_NUMBER 21
+#define MAX_DC 1024
+#define PWM_RANGE_MAX 100
+
+#define MAX_SERVO_PORTS 8
+#define SERVO_STEP 200
+#define SERVO_HIGH_LIMIT 1050
+#define SERVO_LOW_LIMIT -150
+#define MIN_SERVO_DELAY_TIME 100
+#define DEF_SERVO_TIME 200
+#define DEF_SERVO_POSITION 500
+
 using namespace std;
 
 class PWMclass 
