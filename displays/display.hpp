@@ -4,7 +4,11 @@
 #include "../Adafruit-ST7735-TFT/Adafruit-SPITFT.h"
 #include "../hdr/parameters.hpp"
 
+//just an example how to give specific address to pointer in embedded
+//volatile uint8_t * const LINE_0_SEGMENT_1 = (uint8_t *) 0x00;
 
+
+#define DIGITS_IN_LINE 16
 #define LINE_0_SEGMENT_1 0x00
 #define LINE_0_SEGMENT_2 0x01
 #define LINE_0_SEGMENT_3 0x02
@@ -51,7 +55,7 @@
 #define DLFULL 8
 #define DLHALF 4
 #define CLEAR_DSP 0x01
-#define  RET_HOME 0x02
+#define RET_HOME 0x02
 #define ENTRY_SET
 #define DISPLAY_ON_CNTR 0x0F
 #define INTERFACE_DL_8_N_2_F_1 0x3F
@@ -59,13 +63,7 @@
 //it is for just 4 pins! ->When 4-bus mode, it needs to transfer 4-bit data twice.
 #define INTERFACE_DL_4_N_2_F_1 0x2F 
 #define INTERFACE_DL_4_N_1_F_1 0x27
-/*E.G *msg = 0x43 msg = LINE_0_SEGMENT_1
-for(auto i = 0;i != 2; i++)
-{
-  char *sender = msg;
-  *msg = (*msg >> 4) && 0xFF;
-}
-*/
+
 //#define SET_CGRAM_DATA 0x0F
 //#define SET_DDRAM_DATA 0xFx
 
@@ -87,20 +85,34 @@ char heart[] =
 */
 class LCD_1602
 {
+  protected:
+    volatile static  bool isBusy;
+    uint8_t EN;
+    uint8_t RS;
+    uint8_t RW;
+    int dataPins[];
+    int pinsState[];
+    char *message;
+    bool modebus8;
+    void InitLCD();
+    void EntryModeSet();
+    void Cursor_Display_Shift();
+    bool Check_Busy_Flag();           //Done
+    void drivingLCD(uint8_t length, uint8_t *data);  //Done
 
-  uint8_t EN;
-  uint8_t RS;
-  uint8_t RW;
-  uint8_t dataPins; //[DLHALF]
   public:
-    LCD_1602(uint8_t EN, uint8_t RS, uint8_t RW, uint8_t dataPins);
-    void WriteData();
-    uint8_t Check_Busy_Flag();
+    LCD_1602(uint8_t EN, uint8_t RS, uint8_t RW, uint8_t *dataPins, const uint8_t numbOfPin);
+    void WriteData(uint8_t *msg);     //Done
+    void ClearLCD();
+    void RerturHome();
+    void DisplayON_OFF();
+    void SetDDRAM();
+
     //TODO: cursor direction setup
     // Enable for writing phyically data out
 
 };
-
+/*
 class display : public Adafruit_SPITFT, public LCD_1602
 {
 
@@ -110,7 +122,7 @@ class display : public Adafruit_SPITFT, public LCD_1602
 
 
 
-};
+};*/
 
 
 #endif
