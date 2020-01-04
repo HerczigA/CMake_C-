@@ -14,15 +14,17 @@ make = "make"
 isbuild = False
 cleaning = False
 iscompile = False
-dirName = "build"
-target = " mv RPI_IOT build/"
-rm = "rm -rf CMakeFiles *.ninja *.cmake *Cache* build/RPI_tutorial .ninja*"
+isdebug = False
+dirBuild = "build"
+dirDebug = "debug"
+target = " mv RPI_IOT "
+rm = "rm -rf CMakeFiles *.ninja *.cmake *Cache* build/RPI_IOT .ninja*"
 rm_withoutBinary = "rm -rf CMakeFiles *.ninja *.cmake *Cache* .ninja*"
 
 if argNum > 1:
-    helper = sys.argv[1]
-    if (helper == "--help")  or ( helper == "-h"):
-	print """
+	helper = sys.argv[1]
+	if (helper == "--help")  or ( helper == "-h"):
+		print """
 	*********************Build.py********************
 
 	It is a simple python script to help easily build
@@ -45,8 +47,13 @@ if argNum > 1:
 	
 	-x or --purge remove all the unnecessary build 
 	files, executable files  and directory(CMakeFiles)
+
+	-r or --Rb is similar to -x . Removes every unnecessary
+	files except binary
+
+	-d or --Debug you can build debug version software
 	"""
-	exit()
+		exit()
 else:
     print """
     Use <python ./build --help> or
@@ -57,47 +64,52 @@ else:
 
 
 if argNum > 1:
-    temp = sys.argv[1]
-    while cnt < argNum:
+	temp = sys.argv[cnt]
+	while cnt < argNum:
+		if temp  == "-c" or temp == "--cmake":
+			iscompile = True
+		
+		elif  temp == "-b" or temp == "--build":
+			isbuild = True
 
-        if temp  == "-c" or temp == "--cmake":
-	    isbuild = True
-	    print "will build"
-	    os.system(cmd)
+		elif temp == "-x" or temp == "--purge":
+			cleaning = True
 
-        elif  temp == "-b" or temp == "--build":
-            iscompile = True
+		elif temp == "-r" or temp == "--Rb":
+			os.system(rm_withoutBinary)
 
-	elif temp == "-x" or temp == "--purge":
-	    cleaning = True
+		elif temp == "-d" or temp == "--Debug":
+			isdebug = True
 
-	elif temp == "-r" or temp == "--Rb":
-	    os.system(rm_withoutBinary)
-
-	elif temp == "-d" or temp == "--Debug":
-	    cmd[-1]
-	    cmd = cmd + debug
-
-        cnt = cnt +1
-	if (argNum-1) >= cnt:
-	    temp = sys.argv[cnt]
-
+		cnt = cnt +1
+		if (argNum-1) >= cnt:
+			temp = sys.argv[cnt]
 
 if cleaning:
-    os.system(rm)
-    if isbuild :
-        os.system(cmd)
-    if iscompile:
-        os.system(ninja)
-        dirhandling.MakeDir_And_Mv_binary(dirName,target)
-
-elif isbuild :
-	print "building" 
-	os.system(cmd)
+	os.system(rm)
+	if isdebug:
+		cmd = cmd[:-1]
+		cmd = cmd + debug
 	if iscompile:
-	    os.system(ninja)
-        dirhandling.MakeDir_And_Mv_binary(dirName,target)
-	    
-elif iscompile:
-    os.system(ninja)    
-    dirhandling.MakeDir_And_Mv_binary(dirName,target)
+		os.system(cmd)
+	if isbuild:
+		print "Building"
+		os.system(ninja)
+		dirhandling.MakeDir_And_Mv_binary(dirBuild,target)
+
+
+elif iscompile :
+	if isdebug:
+		cmd = cmd[:-1]
+		cmd = cmd + debug
+	os.system(cmd)
+	if isbuild:
+		print "Building"
+		os.system(ninja)
+		dirhandling.MakeDir_And_Mv_binary(dirBuild,target)
+
+elif isbuild:
+	print "Building"
+	os.system(ninja)    
+	dirhandling.MakeDir_And_Mv_binary(dirBuild,target)
+

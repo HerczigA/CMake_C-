@@ -12,10 +12,10 @@ if(NOT CMAKE_CXX_COMPILER)
 
 endif()
 
-get_filename_component(RPI_IOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/ ABSOLUTE)
+#get_filename_component(RPI_IOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/ ABSOLUTE)
 
-list(APPEND CMAKE_MODULE_PATH ${RPI_IOT_PATH}/main_Init/)
-message(STATUS "CMAKE_MODULE_PATH " ${CMAKE_MODULE_PATH})
+#list(APPEND CMAKE_MODULE_PATH ${RPI_IOT_PATH}/main_Init/)
+#message(STATUS "CMAKE_MODULE_PATH " ${CMAKE_MODULE_PATH})
 #add_library(main_Init)
 
 
@@ -26,13 +26,16 @@ set(SOURCES Communication/i2c_module.cpp
     main_Init/main_Init.cpp
     JSON/json.cpp
     pwm/pwm.cpp
+    displays/display.cpp
     main.cpp)
+
 
 set(HEADERS Communication/communication.hpp
   main_Init/main_Init.hpp
   JSON/json.hpp
   hdr/device.hpp
   hdr/parameters.hpp
+  displays/display.hpp
   pwm/pwm.hpp)
 
 message(STATUS "These are the sources :" ${SOURCES})
