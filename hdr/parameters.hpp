@@ -7,14 +7,15 @@
 #include <algorithm>
 #include <iterator>
 #include <bits/stdc++.h>
-
-#define DEBUG_DEVICE 0
-
+#include <wiringPi.h>
+#include <time.h>
 
 #define BUTTON_READ_TIME 50
 
 #define RPI_VERSION 1
-
+#define TEST_DISPLAY_LCD 1
+#define DEBUG_DEVICE 0
+#define ARDUINO 0
 typedef uint8_t devType_t;
 typedef uint16_t Id_t;
 typedef uint8_t comm_t;
@@ -77,12 +78,12 @@ enum sensor_type
 
 enum display_type
 {
+    Unknow_display = 0,
     LCD = 1,
-    ST7735,
+    TFT_ST7735,
     _480x640_,
     DotMatrix,
     _7_segments,
-    Unknow_display,
     DISPLAY_TYPE
 };
 

@@ -8,6 +8,7 @@
 #include "../Communication/communication.hpp"
 #include "parameters.hpp"
 #include "../pwm/pwm.hpp"
+#include "../displays/display.hpp"
 #ifdef RPI_VERSION
     #include <wiringPi.h>
 #endif
@@ -76,7 +77,7 @@ class sensor : public device
             
         }
         sensor() : device() {};
-        void digital_Read(int pin);
+        void digital_Read_For_Button(int pin);
         bool getButtonState();
         bool buttonStateChanged();
 };

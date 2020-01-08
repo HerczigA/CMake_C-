@@ -21,7 +21,7 @@ device::device(): device_Initialized{false}
     directions = nullptr;
     dev_Type =  Unknow_device;
     commType =  Unknow_communication;
-    wiringPiSetup();
+    
 }
 
 device::device(string Name, Id_t ID, devType_t devtype,comm_t commtype): name{Name}, device_Initialized(false)
@@ -30,7 +30,7 @@ device::device(string Name, Id_t ID, devType_t devtype,comm_t commtype): name{Na
     id =( !ID && id_counter != 1 ) ? id_counter : id_counter++;
     dev_Type = (devtype >= SENSOR && devtype <= uC) ? devtype : Unknow_device;
     commType = (commtype >= SPI && commtype <= Bluetooth) ? commtype : Unknow_communication;
-    wiringPiSetup();
+    
 }
 
 device::~device()
@@ -140,13 +140,6 @@ void device::setcommType(comm_t commType)
                 syslog(LOG_ERR, " I2C setup : %d ", result);
             break;
 
-        /*case PWM:
-            Init_PWM();
-            if(result)
-                syslog(LOG_ERR, " PWM setup : %d ", result);
-            device_Initialized = true;
-            break;*/
-
         case UART:
             result = com.Init_UART();
             if(result)
@@ -163,18 +156,19 @@ void device::setcommType(comm_t commType)
 }
 
 
-void sensor::digital_Read(int pin)
+void sensor::digital_Read_For_Button(int pin)
 {
     if(pin >= MAX_PORTS_NUMBER)
-        return;
-        //should thrown exception
-
+        {
+            syslog(LOG_ERR,"pin parameter higher than MAX_PORTS_NUMBER in digital_REad()\n");
+            return;
+        }
+        
         if(digitalRead(pin))
         {
             delay(BUTTON_READ_TIME);
             buttonPushed = digitalRead(pin) ? true : false;
         }
-
 
         if(buttonPushed)
         {

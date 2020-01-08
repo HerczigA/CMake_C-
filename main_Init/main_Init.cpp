@@ -17,5 +17,6 @@ void InitBase()
     #endif
 
     openlog(NULL,  logopt, LOG_LOCAL1);
+    wiringPiSetup();
 
 }
