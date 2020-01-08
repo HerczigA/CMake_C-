@@ -1,8 +1,9 @@
 #ifndef _DISPLAY_HPP_
 #define _DISPLAY_HPP_
 
-#include "../Adafruit-ST7735-TFT/Adafruit-SPITFT.h"
+//#include "../Adafruit-ST7735-TFT/Adafruit_ST7735.h"
 #include "../hdr/parameters.hpp"
+#include <syslog.h>
 
 //just an example how to give specific address to pointer in embedded
 //volatile uint8_t * const LINE_0_SEGMENT_1 = (uint8_t *) 0x00;
@@ -43,35 +44,49 @@
 #define LINE_1_SEGMENT_15 0x4E
 #define LINE_1_SEGMENT_16 0x4F
 
-//RS = 0 W/R = 0
 //HIGH FOR RS IS DATAREGISTER
 //LOW FOR RS IS INSTRUCTIONREGISTER
-//RS for high level R/W for low electricity data can be written at ordinary times
-//For low electricity can be written instructions at ordinary times, or displays address,
-// when RS for low level R/W high power for at ordinary times can read busy signal
-//INTERFACE DL = 8 or 4 pins using -- 1 or 0
-//INTERFACE N = two  line or one using -- 1 or 0 
-//INTERFACE F = 5x10 dots or 5x7 dots using -- 1 or 0
-#define DLFULL 8
-#define DLHALF 4
-#define CLEAR_DSP 0x01
+
+#define CLEAR_DISPLAY 0x01
 #define RET_HOME 0x02
-#define ENTRY_SET
-#define DISPLAY_ON_CNTR 0x0F
-#define INTERFACE_DL_8_N_2_F_1 0x3F
-#define INTERFACE_DL_8_N_1_F_1 0x37
-//it is for just 4 pins! ->When 4-bus mode, it needs to transfer 4-bit data twice.
-#define INTERFACE_DL_4_N_2_F_1 0x2F 
-#define INTERFACE_DL_4_N_1_F_1 0x27
+#define ENTRY_SET 0x04
+#define DISPLAY_ON_CNTR 0x08
+#define CURSOR_DISPLAY_SHIFT 0x10
+#define FUNCTION_SET 0x20
+#define SETCGRAM 0x40
+#define SETDDRAM 0x80
 
-//#define SET_CGRAM_DATA 0x0F
-//#define SET_DDRAM_DATA 0xFx
+//ENTRY_SETUP
+#define ENTRY_CURSOR_RIGHT 0x02
+#define ENTRY_CURSOR_LOW 0x00
+#define SHIFT_ON 0x01
+#define SHIFT_OFF 0x00
 
-// if RS = 1 W/R = 0 write data to address
+//DISPLAY-CURSOR-BLINK_SETUP
+#define DISPLAY_ON 0x04
+#define DISPLAY_OFF 0x00
+#define CURSOR_ON 0x02
+#define CURSOR_OFF 0x00
+#define BLINK_ON 0x01
+#define BLINK_OFF 0x00
+
+//Cursor or displayshift
+#define MOVE_LEFT_CURSOR 0x00
+#define MOVE_RIGHT_CURSOR 0x04
+#define MOVE_LEFT_DISPLAY 0x08
+#define MOVE_RIGHT_DISPLAY 0x0C
+
+//Function setup
+#define WIRE_8 0x10
+#define WIRE_4 0x00
+#define LINE_2 0x08
+#define LINE_1 0x00
+#define FONT_5X11 0x04
+#define FONT_5X8 0x00
 
 
 /*
-Pattern for special character
+Pattern for special character soon CGRAM
 char heart[] = 
 {
   B01010,
@@ -83,35 +98,72 @@ char heart[] =
   B00000  
 }
 */
+const uint8_t DLFULL = 8;
+const uint8_t DLHALF = 4;
+
 class LCD_1602
 {
   protected:
-    volatile static  bool isBusy;
+    
+    bool isBusy = true;
+    bool isInited = false;
     uint8_t EN;
     uint8_t RS;
     uint8_t RW;
-    int dataPins[];
-    int pinsState[];
-    char *message;
-    bool modebus8;
-    void InitLCD();
-    void EntryModeSet();
-    void Cursor_Display_Shift();
-    bool Check_Busy_Flag();           //Done
-    void drivingLCD(uint8_t length, uint8_t *data);  //Done
-
+    uint8_t displayFunction;
+    uint8_t displayEntryMod;
+    uint8_t displayON_OFF;
+    uint8_t displayShifting;
+    int *dataPins;
+    const uint8_t DLENGTH ;
+    bool modebus8 = false;
+    bool displayState = false;
+    void InitLCD();   //Done
+    void EntryModeSet(uint8_t value);
+    void Cursor_Display_Shift(uint8_t value);
+    void SetFunction(uint8_t value);
+    void pulseEnable();
+    void writingLCD4(uint8_t data);  //Done
+    void dataWriting(uint8_t value);
+    void command(uint8_t value);
+    void send(uint8_t value, uint8_t mode); 
   public:
-    LCD_1602(uint8_t EN, uint8_t RS, uint8_t RW, uint8_t *dataPins, const uint8_t numbOfPin);
-    void WriteData(uint8_t *msg);     //Done
-    void ClearLCD();
-    void RerturHome();
-    void DisplayON_OFF();
-    void SetDDRAM();
+    LCD_1602(uint8_t EN, uint8_t RS, uint8_t RW, uint8_t *dataPins, uint8_t numbOfPin):
+      EN {EN},
+      RS {RS},
+      RW {RW},
+      DLENGTH {numbOfPin == DLHALF ? DLHALF : DLFULL}
+      {
+          displayFunction = FUNCTION_SET;
+          displayEntryMod = ENTRY_SET;
+          displayON_OFF = DISPLAY_ON_CNTR;
+          displayShifting = CURSOR_DISPLAY_SHIFT;
+          this->dataPins = new int[DLENGTH];
+          
+          if(!(this->dataPins))
+              syslog(LOG_ERR,"cannot new memory for datapins in LCD");
 
+          for(auto i = 0; i < DLENGTH; i++)
+              this->dataPins[i] = dataPins[i];
+          
+          delayMicroseconds(20);
+          InitLCD();
+      }
+    void Check_Busy_Flag();           //Done
+    void WriteData(uint8_t *msg);     //Done
+    void ClearLCD();    //Done
+    void ReturnHome();
+    void DisplaySwtichOnOFF(uint8_t state);
+    void display();
+    void noDisplay();
+   
+    void SetDDRAM();
+    ~LCD_1602();
     //TODO: cursor direction setup
     // Enable for writing phyically data out
 
 };
+
 /*
 class display : public Adafruit_SPITFT, public LCD_1602
 {
@@ -123,6 +175,4 @@ class display : public Adafruit_SPITFT, public LCD_1602
 
 
 };*/
-
-
 #endif
