@@ -2,21 +2,18 @@
 
 import sys
 import os
-sys.path.append("tools/pythonScripts/")
-import  dirhandling
 
 argNum = len(sys.argv)
 cnt = 1
 cmd =  "cmake -GNinja ."
 debug = "-DCMAKE_BUILD_TYPE=Debug ."
 ninja ="ninja"
-make = "make"
 isbuild = False
 cleaning = False
 iscompile = False
 isdebug = False
 dirBuild = "build"
-dirDebug = "debug"
+dirDebug = "_debug"
 target = " mv RPI_IOT "
 rm = "rm -rf CMakeFiles *.ninja *.cmake *Cache* build/RPI_IOT .ninja*"
 rm_withoutBinary = "rm -rf CMakeFiles *.ninja *.cmake *Cache* .ninja*"
@@ -24,7 +21,7 @@ rm_withoutBinary = "rm -rf CMakeFiles *.ninja *.cmake *Cache* .ninja*"
 if argNum > 1:
 	helper = sys.argv[1]
 	if (helper == "--help")  or ( helper == "-h"):
-		print """
+		print( """
 	*********************Build.py********************
 
 	It is a simple python script to help easily build
@@ -52,14 +49,14 @@ if argNum > 1:
 	files except binary
 
 	-d or --Debug you can build debug version software
-	"""
+	""")
 		exit()
 else:
-    print """
+    print("""
     Use <python ./build --help> or
     <python ./build -h> to get some
     help about the building script 
-    """
+    """)
     exit()
 
 
@@ -80,10 +77,13 @@ if argNum > 1:
 
 		elif temp == "-d" or temp == "--Debug":
 			isdebug = True
+			dirBuild = dirBuild + dirDebug
+
 
 		cnt = cnt +1
 		if (argNum-1) >= cnt:
 			temp = sys.argv[cnt]
+
 
 if cleaning:
 	os.system(rm)
@@ -91,11 +91,13 @@ if cleaning:
 		cmd = cmd[:-1]
 		cmd = cmd + debug
 	if iscompile:
+		cmd = cmd + '-B'+ dirBuild
 		os.system(cmd)
 	if isbuild:
-		print "Building"
+		print("Building")
+		os.system("cd ")
 		os.system(ninja)
-		dirhandling.MakeDir_And_Mv_binary(dirBuild,target)
+		
 
 
 elif iscompile :
@@ -104,12 +106,11 @@ elif iscompile :
 		cmd = cmd + debug
 	os.system(cmd)
 	if isbuild:
-		print "Building"
-		os.system(ninja)
-		dirhandling.MakeDir_And_Mv_binary(dirBuild,target)
+		print("Building")
+		
 
 elif isbuild:
-	print "Building"
+	print("Building")
 	os.system(ninja)    
-	dirhandling.MakeDir_And_Mv_binary(dirBuild,target)
+	
 

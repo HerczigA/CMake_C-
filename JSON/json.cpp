@@ -7,13 +7,13 @@
 #include <regex>
 #include <stdlib.h>
 #include <bits/stdc++.h>
-#include "json.hpp"
-#include "../main_Init/main_Init.hpp"
+#include "json.h"
+
 #include <string>
 
 using namespace std;
 
-json_herczig::json::json(const char &p): jsonFile{&p}
+json::json(const char &p): jsonFile{&p}
 {
                 deviceNumber = 0;
                 comPattern.SPIPattern = std::regex("(SPI)|(spi)]");
@@ -26,7 +26,7 @@ json_herczig::json::json(const char &p): jsonFile{&p}
 
 }
 
-json_herczig::json::json()
+json::json()
 {
                 deviceNumber = 0;
                 comPattern.SPIPattern = std::regex("(SPI)|(spi)]");
@@ -39,7 +39,7 @@ json_herczig::json::json()
 
 }
 
-bool json_herczig::json::OpenPattern()
+bool json::OpenPattern()
 {
     try
     {
@@ -63,7 +63,7 @@ bool json_herczig::json::OpenPattern()
 
 }
 
-void json_herczig::json::checkIO(std::string &text)
+void json::checkIO(std::string &text)
 {
 
     int dircnt = 0;
@@ -106,7 +106,7 @@ void json_herczig::json::checkIO(std::string &text)
         syslog(LOG_INFO,"There was not given any direction when checkIO is proceed.");
 }
 
-int json_herczig::json::calculatePinNumbers(std::string &text)
+int json::calculatePinNumbers(std::string &text)
 {
     text.erase(text.begin());
     bool twoDigit = true;
@@ -134,7 +134,7 @@ int json_herczig::json::calculatePinNumbers(std::string &text)
     return pins;
 
 }
-uint8_t json_herczig::json::regexmatcherForComType(std::string& temp)
+uint8_t json::regexmatcherForComType(std::string& temp)
 {
     uint8_t result = 0;
     if(regex_search(temp, comPattern.SPIPattern))
@@ -158,7 +158,7 @@ uint8_t json_herczig::json::regexmatcherForComType(std::string& temp)
     return result;
 }
 
-void json_herczig::json::processPattern()
+void json::processPattern()
 {
 
     size_t found;
@@ -281,14 +281,14 @@ void json_herczig::json::processPattern()
 #endif
 }
 
-void json_herczig::json::FinishProcess()
+void json::FinishProcess()
 {
     
-    Make_Device(getSensorsNumber(),Vec_Sensors, SENSOR);
-    Make_Device(getActuatorsNumber(),Vec_Actuators, ACTUATOR);
-    Make_Device(getSensorsActuatorsNumber(),Vec_SensActuators, SENSOR_ACTUATOR);
+    Make_Device(getSensorsNumber(), Vec_Sensors, SENSOR);
+    Make_Device(getActuatorsNumber(), Vec_Actuators, ACTUATOR);
+    Make_Device(getSensorsActuatorsNumber(), Vec_SensActuators, SENSOR_ACTUATOR);
 
-#if DEBUG
+#if DEBUG_DEVICE
     std::cout << "Details about devices after read" << std::endl;
     size_t i = 0;
     while(i < deviceNumber)
@@ -316,7 +316,7 @@ void json_herczig::json::FinishProcess()
 #endif
 }
 
-json_herczig::json::~json()
+json::~json()
 {
     name.clear();
     devicetype.clear();

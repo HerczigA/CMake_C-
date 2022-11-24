@@ -1,18 +1,12 @@
-#include <iostream>
-#include "hdr/device.hpp"
-#include "JSON/json.hpp"
-#include <wiringPi.h>
-#include <stdlib.h>
-#include <memory>
-#include "main_Init/main_Init.hpp"
+#include "mainApp.h"
 using namespace std;
 
 int main(int argc, char *argv[])
 {
 
-    InitBase();
+    MainApp mainApp();
     const char* JSONpath ="./JSON/pattern/template.json";
-    json_herczig::json JSONobj(*JSONpath);
+    json JSONobj(*JSONpath);
 
     if(!JSONobj.OpenPattern())
         return E_JSON_OPEN;
@@ -73,11 +67,11 @@ int main(int argc, char *argv[])
         while(true)
         {
             Vec_Sensors[0]->digital_Read(Vec_Sensors[0]->get_Pin(0));
-            if(Vec_Sensors[0]->buttonStateChanged())
-            {
+            // if(Vec_Sensors[0]->buttonStateChanged())
+            // {
 
-                Vec_Actuators[0]->pwm_Servo_Full_Limit(Vec_Actuators[0]->get_Pin(0), 500, Vec_Sensors[0]->getButtonState());
-            }
+            //     Vec_Actuators[0]->pwm_Servo_Full_Limit(Vec_Actuators[0]->get_Pin(0), 500, Vec_Sensors[0]->getButtonState());
+            // }
 
         }
     }

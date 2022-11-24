@@ -8,7 +8,7 @@
 #include <vector>
 #include <string.h>
 #include <wiringPi.h>
-#include "communication.hpp"
+#include "communication.h"
 
 using namespace std;
 

@@ -1,4 +1,4 @@
-#include "communication.hpp"
+#include "communication.h"
 #include <string>
 #include <iostream>
 #include <vector>
@@ -40,8 +40,8 @@ int Communication_c::Init_UART()
     SerialCom.serialport.term.c_oflag =0;
     SerialCom.serialport.term.c_cc[VTIME]=0;
     SerialCom.serialport.term.c_cc[VMIN]=0;
-    cfsetispeed(&SerialCom.serialport.term,(speed_t)&SerialCom.serialport.BAUD);
-    cfsetospeed(&SerialCom.serialport.term,(speed_t)&SerialCom.serialport.BAUD);
+    cfsetispeed(&SerialCom.serialport.term, SerialCom.serialport.BAUD);
+    cfsetospeed(&SerialCom.serialport.term, SerialCom.serialport.BAUD);
 
     tcflush(SerialCom.serialport.uartFD, TCIOFLUSH);
     if(!tcsetattr(SerialCom.serialport.uartFD,TCSANOW,&SerialCom.serialport.term))

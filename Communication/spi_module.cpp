@@ -1,4 +1,4 @@
-#include "communication.hpp"
+#include "communication.h"
 #include <iostream>
 
 const static std::string chn0 = "/dev/spidev0.0";

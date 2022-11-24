@@ -1,10 +1,10 @@
 #include <iostream>
-#include "hdr/device.hpp"
-#include "JSON/json.hpp"
+#include "hdr/device.h"
+#include "JSON/json.h"
 #include <wiringPi.h>
 #include <stdlib.h>
 #include <memory>
-#include "main_Init/main_Init.hpp"
+#include "main_Init/main_Init.h"
 using namespace std;
 
 int main(int argc, char *argv[])

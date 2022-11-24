@@ -19,30 +19,41 @@ endif()
 #add_library(main_Init)
 
 
-set(SOURCES Communication/i2c_module.cpp
-    Communication/spi_module.cpp
-    Communication/uart_module.cpp
-    src/device.cpp
-    main_Init/main_Init.cpp
+#     # pwm/pwm.cpp
+#     # displays/display.cpp
+
+file(GLOB SOURCES Communication/*.cpp 
+    device/device.cpp
+    mainApp/mainApp.cpp
     JSON/json.cpp
-    pwm/pwm.cpp
-    displays/display.cpp
-    main.cpp)
+    main.cpp
+    )
 
-
-set(HEADERS Communication/communication.hpp
-  main_Init/main_Init.hpp
-  JSON/json.hpp
-  hdr/device.hpp
-  hdr/parameters.hpp
-  displays/display.hpp
-  pwm/pwm.hpp)
+file(GLOB HEADERS Communication/*.h 
+    device/device.h
+    mainApp/mainApp.h
+    JSON/json.h
+    util/parameters.h
+    )
+#   # pwm/pwm..
 
 message(STATUS "These are the sources :" ${SOURCES})
 message(STATUS "And headers: " ${HEADERS})
 
-find_library(wiringPi_LIB wiringPi)
+# find_library(wiringPi_LIBRARIES wiringPi)
+
+find_library(WIRINGPI_LIBRARIES NAMES wiringPi)
 
 add_executable(${PROJECT} ${SOURCES} ${HEADERS})
 
-target_link_libraries(${PROJECT} ${wiringPi_LIB} pthread)
+target_link_libraries(${PROJECT} ${WIRINGPI_LIBRARIES} pthread)
+
+target_include_directories(${PROJECT} PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/mainApp
+    ${CMAKE_CURRENT_SOURCE_DIR}/device
+    ${CMAKE_CURRENT_SOURCE_DIR}/Communication
+    ${CMAKE_CURRENT_SOURCE_DIR}/database
+    ${CMAKE_CURRENT_SOURCE_DIR}/JSON
+    ${CMAKE_CURRENT_SOURCE_DIR}/util
+
+)
