@@ -1,15 +1,5 @@
 #include "device.h"
-#include <iostream>
-#include <string>
-#include <string.h>
-#include <errno.h>
-#include <error.h>
-#include <vector>
-#include <fstream>
-#include <algorithm>
-#include <iterator>
-#include <bits/stdc++.h>
-#include <wiringPi.h>
+
 #include <softServo.h>
 #include <softPwm.h>
 using namespace std;

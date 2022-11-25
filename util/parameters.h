@@ -57,6 +57,8 @@
 #include <string>
 #include <syslog.h>
 #include <vector>
+#include <errno.h>
+#include <error.h>
 #include <memory>
 #include <algorithm>
 #include <fstream>

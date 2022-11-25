@@ -1,21 +1,12 @@
 #pragma once 
 
-
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <linux/i2c-dev.h>
 #include <linux/spi/spidev.h>
-#include <string>
-#include <fstream>
-#include <iostream>
-#include <vector>
-#include <string.h>
 #include <termios.h>
 #include <unistd.h>
-#include <syslog.h>
-#include <errno.h>
 #include "parameters.h"
-
 
 /*
     BCM2835_SPI_CLOCK_DIVIDER_65536 = 0,       ///< 65536 = 262.144us = 3.814697260kHz (total H+L clock period) 
