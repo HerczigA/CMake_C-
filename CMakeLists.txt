@@ -1,23 +1,20 @@
 cmake_minimum_required(VERSION 3.6)
 
+option(ENABLE_CROSS_COMPILE "CROSS_COMPILE")
+
+if(${ENABLE_CROSS_COMPILE})
+  set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/tools/raspberry.cmake)
+  message(STATUS "Using toolchain file :${CMAKE_TOOLCHAIN_FILE}")
+else()
+  message(STATUS "Do not using toolchain file")
+endif()
+
+
 set(PROJECT "RPI_IOT")
 project(${PROJECT})
 
 set(PROJECT_VERSION_MAJOR 1)
 set(PROJECT_VERSION_MINOR 0)
-
-if(NOT CMAKE_CXX_COMPILER)
-    set(CMAKE_CXX_COMPILER /usr/bin/g++)
-    set(CMAKE_CXX_STANDARD 17)
-
-endif()
-
-#get_filename_component(RPI_IOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/ ABSOLUTE)
-
-#list(APPEND CMAKE_MODULE_PATH ${RPI_IOT_PATH}/main_Init/)
-#message(STATUS "CMAKE_MODULE_PATH " ${CMAKE_MODULE_PATH})
-#add_library(main_Init)
-
 
 #     # pwm/pwm.cpp
 #     # displays/display.cpp
@@ -42,11 +39,11 @@ message(STATUS "And headers: " ${HEADERS})
 
 # find_library(wiringPi_LIBRARIES wiringPi)
 
-find_library(WIRINGPI_LIBRARIES NAMES wiringPi)
+find_library(WIRINGPI_LIB wiringPi)
 
 add_executable(${PROJECT} ${SOURCES} ${HEADERS})
 
-target_link_libraries(${PROJECT} ${WIRINGPI_LIBRARIES} pthread)
+target_link_libraries(${PROJECT} ${WIRINGPI_LIB} pthread)
 
 target_include_directories(${PROJECT} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/mainApp

@@ -18,7 +18,7 @@ dirDebug = "build_debug"
 directory = dirBuild
 
 target = " mv RPI_IOT "
-rm = "rm -r build*"
+rm = "rm -r " + dirBuild + " " + dirDebug
 
 if argNum == arg_counter:
 	print("""\n
