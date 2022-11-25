@@ -6,7 +6,7 @@ import os
 argNum = len(sys.argv)
 arg_counter = 1
 cmd =  "cmake -DENABLE_CROSS_COMPILE=1 -GNinja "
-debug = "-DCMAKE_BUILD_TYPE=Debug ."
+debug = " -DCMAKE_BUILD_TYPE=Debug "
 # cmake -Bbuild -GNinja -DENABLE_CROSS_COMPILE=1 .
 ninja ="ninja"
 isbuild = False
@@ -76,6 +76,7 @@ else:
 
 		elif argument == "-d" or argument == "--Debug":
 			isdebug = True
+			cmd += debug
 			directory = dirDebug
 
 		arg_counter = arg_counter +1
@@ -83,31 +84,27 @@ else:
 
 if cleaning:
 	os.system(rm)
-	if isdebug:
-		directory = dirDebug
-		cmd = cmd + "-B" + directory
+	
 	if iscompile:
-		cmd = cmd + " ."
+		cmd = cmd + "-B" + directory + " ."
 		os.system(cmd)
 	if isbuild:
-		print("Building")
-		os.system("cd " + directory)
+		print("Building in ", directory)
+		os.chdir(directory)
 		os.system(ninja)
 		
 elif iscompile :
-	if isdebug:
-		directory = dirDebug	
 	cmd = cmd + "-B" + directory + " ."
 	os.system(cmd)
 	if isbuild:
-		print("Building")
-		os.system("cd " + directory)
+		print("Building in ", directory)
+		os.chdir(directory)
 		os.system(ninja)
 		
 
 elif isbuild:
-	print("Building")
-	os.system("cd " + directory)
+	print("Building in ", directory)
+	os.chdir(directory)
 	os.system(ninja)    
 	
 
