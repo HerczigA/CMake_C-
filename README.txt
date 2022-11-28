@@ -1,7 +1,9 @@
 It is a simple repo for practising of usage cmake and developing c++ skills.
-The basic concept is making a generic raspberry pi software for those adafruit devices and chinese sensors and actuators.
+The basic concept is making a generic raspberry pi software for those adafruit devices, chinese sensors and actuators.
 Moreover try to make communication with smarter devices also (STM/MSP430 etc...) via SPI, I2C, UART and Bluetooth.
-For using this devices I plan to use a simple JSON to reading the parameters which are IDs, names, device type and communication type. 
+For using this devices I plan to use a simple JSON compoent (which has been made by myself) to reading the parameters which are IDs, names, device type and communication type. 
+Moreover it seems, using nlohmann json component could be more easier and more useful. At least learning cmake usage with external packages like this
+(find_package...)
 Of course it is very easy and simple, but I plan to expand this JSON parsing wih more informations (e.g. databits for communcitons and
 connection between devices sensor-actuator pairs ). 
 Next to that I make different functions to using this devices, different type of reading and writing functions. 
@@ -12,6 +14,11 @@ with this "super" python script. Also I can remove easily unnecessary files afte
 early state so there are so many possibilities what I would like to integrate into this in the future. But for sure it works!
 
 To use type this "./build.py -c -b  ". However there is a little info for this if you type "./build.py --help". Feel free to use.
+
+
+Attached an extra cmake tool called raspberry.cmake. It is easier to work on a normal pc as host and making cross-compilation.
+If you would like please make a symlink in the tools foolder called "raspberry_sysroot". This is what cmake tool will look for.
+I got the important libs from an RPI 3B+ device somewhere to my host computer. It is easier to symlink will reference the exact path of the rpi's sysroot.
 
 Future plan:
 - Adding a simple database for the datas what will be measured.

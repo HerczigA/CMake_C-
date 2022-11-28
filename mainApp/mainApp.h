@@ -4,8 +4,8 @@
 #include <bits/stdc++.h>
 #include "parameters.h"
 #include "device.h"
-#include "device.h"
 #include "json.h"
+#include <nlohmann/json.hpp>
 
 extern vector<unique_ptr<sensor>> Vec_Sensors;
 extern vector<unique_ptr<actuator>> Vec_Actuators;

@@ -37,13 +37,13 @@ file(GLOB HEADERS Communication/*.h
 message(STATUS "These are the sources :" ${SOURCES})
 message(STATUS "And headers: " ${HEADERS})
 
-# find_library(wiringPi_LIBRARIES wiringPi)
-
 find_library(WIRINGPI_LIB wiringPi)
+
+find_package(nlohmann_json 3.11.2 REQUIRED)
 
 add_executable(${PROJECT} ${SOURCES} ${HEADERS})
 
-target_link_libraries(${PROJECT} ${WIRINGPI_LIB} pthread)
+target_link_libraries(${PROJECT} ${WIRINGPI_LIB} pthread nlohmann_json::nlohmann_json)
 
 target_include_directories(${PROJECT} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/mainApp
