@@ -1,18 +1,12 @@
 #include <stdint.h>
 #include <sys/ioctl.h>
-#include <fcntl.h>
-#include <linux/i2c-dev.h>
-#include <string>
-#include <fstream>
-#include <iostream>
-#include <vector>
+
 #include <string.h>
-#include <wiringPi.h>
 #include "communication.h"
 
 using namespace std;
 
-int Communication_c::get_I2C_Address()
+int Communication::get_I2C_Address()
 {
     std::string resultI2CAddress ="i2c_address.txt";
     std::ifstream ifile;
@@ -132,19 +126,19 @@ int Communication_c::get_I2C_Address()
     return result;
 }
 
-i2c_error_t Communication_c::Init_I2C(I2C_Frame i2c)
+i2c_error_t Communication::Init_I2C(I2C_Frame i2c)
 {
     (void) i2c;
     i2c_error_t result  = E_I2C_OK;
     const string Path_I2C = "/dev/i2c-1";
-    SerialCom.i2c.i2CFD = open (Path_I2C.c_str(),O_RDWR );
-    if(SerialCom.i2c.i2CFD >= 0)
+    mSerialCom.i2c.i2CFD = open (Path_I2C.c_str(),O_RDWR );
+    if(mSerialCom.i2c.i2CFD >= 0)
     {
         int temp = get_I2C_Address();
         if(temp) 
         {
-            SerialCom.i2c.address = temp;   
-            if(ioctl(SerialCom.i2c.i2CFD, I2C_SLAVE, SerialCom.i2c.address) < 0)
+            mSerialCom.i2c.mAddress = temp;   
+            if(ioctl(mSerialCom.i2c.i2CFD, I2C_SLAVE, mSerialCom.i2c.mAddress) < 0)
             {
                 cout << "Unable to select I2C device " << strerror(errno) << endl;
                 syslog(LOG_ERR,"%s",strerror(errno));

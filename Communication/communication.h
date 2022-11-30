@@ -30,18 +30,29 @@
     
 */
 
+#ifndef I2C_PACKET_LENGTH
+    #define I2C_PACKET_LENGTH 16
+#endif
 
-#define I2C_PACKET_LENGTH 16
-#define SPI_PACKET_LENGTH 8
-#define MAX_SPI_CLK 1000000 //MAX speed 1MHz
+#ifndef SPI_PACKET_LENGTH
+    #define SPI_PACKET_LENGTH 8
+#endif
 
-#define MAX_SPI_CHANNELS 2
+#ifndef MAX_SPI_CLK
+    #define MAX_SPI_CLK 1000000 //MAX speed 1MHz
+#endif
 
-typedef uint8_t i2c_error_t;
-typedef uint8_t spi_error;
+#ifndef MAX_SPI_CHANNELS
+    #define MAX_SPI_CHANNELS 2
+#endif
+
+using i2c_error_t = uint8_t;
+using spi_error = uint8_t;
+
 
 enum I2C_error
 {
+    E_I2C_BAD_FD = -1,
     E_I2C_OK,
     E_I2C_OPEN,
     E_I2C_SELECT,
@@ -54,7 +65,7 @@ enum I2C_error
 
 enum errorSPI
 {
-    E_BAD_FD = -1,
+    E_SPI_FD_BAD = -1,
     E_SPI_OK = 0,
     E_SPI_SPEED,
     E_SPI_PHA_POL,
@@ -66,15 +77,21 @@ enum errorSPI
 
 struct I2C_Frame
 {
-    uint32_t ClockSpeed;
-    char Packet[I2C_PACKET_LENGTH];
-    uint8_t address;
+    uint32_t mClockSpeed;
+    char mPacket[I2C_PACKET_LENGTH];
+    uint8_t mAddress;
     int i2CFD;
+    I2C_Frame(){};
+    I2C_Frame( uint32_t clockSpeed)
+        : mClockSpeed(clockSpeed)
+    {
+
+    }
 };
 
 struct term
 {
-    termios old;
+    termios oldTermios;
     termios term;
     int BAUD;
     speed_t uartFD;
@@ -100,9 +117,9 @@ struct SPI_Frame
     {
         for(size_t i = 0; i < MAX_SPI_CHANNELS ; i++)
         {
-            this->endianess[i] =  0;
-            this->clk_Pol_Pha[i] = SPI_MODE_0;
-            this->ClockSpeed[i] = MAX_SPI_CLK;
+            mEndianess[i] =  0;
+            mClk_Pol_Pha[i] = SPI_MODE_0;
+            mClockSpeed[i] = MAX_SPI_CLK;
         }
         
     }
@@ -110,37 +127,43 @@ struct SPI_Frame
     {
         for(size_t i = 0; i < MAX_SPI_CHANNELS ; i++)
         {
-            this->endianess[i] =  endianess;
-            this->clk_Pol_Pha[i] = clk_Pol_Pha;
-            this->ClockSpeed[i] = ClockSpeed;
+            mEndianess[i] =  endianess;
+            mClk_Pol_Pha[i] = clk_Pol_Pha;
+            mClockSpeed[i] = ClockSpeed;
         }
         
     }
-    uint32_t ClockSpeed[MAX_SPI_CHANNELS];
-    std::vector<std::string> spiChns;
-    int clk_Pol_Pha[MAX_SPI_CHANNELS];
-    uint8_t endianess[MAX_SPI_CHANNELS];    //0 MSB other LSB
-    char Packet[SPI_PACKET_LENGTH];
-    int spiFD[MAX_SPI_CHANNELS];
+    uint32_t mClockSpeed[MAX_SPI_CHANNELS];
+    std::vector<std::string> mSpiChns;
+    int mClk_Pol_Pha[MAX_SPI_CHANNELS];
+    uint8_t mEndianess[MAX_SPI_CHANNELS];    //0 MSB other LSB
+    char mPacket[SPI_PACKET_LENGTH];
+    int mSpiFD[MAX_SPI_CHANNELS];
     spi_ioc_transfer buffer;
 
 };
 
-struct serialcomm_t
+struct SerialComm
 {
+    public:
+        SerialComm(){};
+    
+    // private:
     SPI_Frame spi;
     I2C_Frame i2c;
     term serialport;
 };
 
-class Communication_c
+class Communication
 {
     public:
-        
+        Communication(){};
+
+    // private:
         spi_error Init_SPI(SPI_Frame spi);
         i2c_error_t Init_I2C(I2C_Frame i2c);
         //int Init_Bluetooth();
-        serialcomm_t SerialCom; 
+        SerialComm mSerialCom; 
         int get_I2C_Address();
         int Init_UART();
     

@@ -7,7 +7,7 @@ const static std::string chn1 = "/dev/spidev0.1";
 using namespace std;
 
 
-spi_error Communication_c::Init_SPI(SPI_Frame spi)
+spi_error Communication::Init_SPI(SPI_Frame spi)
 {
     (void) spi;
     spi_error result =E_SPI_OK;
@@ -23,24 +23,24 @@ spi_error Communication_c::Init_SPI(SPI_Frame spi)
     int WR_SPEED_CNT = 0;
     int RD_SPEED_CNT = 0;
     
-    SerialCom.spi.spiFD[0] = E_BAD_FD;
-    SerialCom.spi.spiFD[1] = E_BAD_FD;
-    SerialCom.spi.spiChns.push_back(chn0);
+    mSerialCom.spi.mSpiFD[0] = E_SPI_FD_BAD;
+    mSerialCom.spi.mSpiFD[1] = E_SPI_FD_BAD;
+    mSerialCom.spi.mSpiChns.push_back(chn0);
     
-    SerialCom.spi.spiChns.push_back(chn1);
+    mSerialCom.spi.mSpiChns.push_back(chn1);
     
     for(; i < MAX_SPI_CHANNELS; i++)
     {   
-        string temp = SerialCom.spi.spiChns[i];
-        SerialCom.spi.spiFD[i] = open(temp.c_str(), O_RDWR);
-        if(SerialCom.spi.spiFD[i] < 0)
+        string temp = mSerialCom.spi.mSpiChns[i];
+        mSerialCom.spi.mSpiFD[i] = open(temp.c_str(), O_RDWR);
+        if(mSerialCom.spi.mSpiFD[i] < 0)
            {
                 cnt++;
                 if(cnt == 1 && i == 1)
                         channel++;
                 if(cnt == MAX_SPI_CHANNELS)
                 {
-                    syslog(LOG_ERR, "No fd[0] : %d  fd[1] : %d", SerialCom.spi.spiFD[0], SerialCom.spi.spiFD[1]);
+                    syslog(LOG_ERR, "No fd[0] : %d  fd[1] : %d", mSerialCom.spi.mSpiFD[0], mSerialCom.spi.mSpiFD[1]);
                     result = E_SPI_FD_OPEN;
                 }   
            }        
@@ -68,10 +68,10 @@ spi_error Communication_c::Init_SPI(SPI_Frame spi)
     spiChDiff = limit - i;
     for(; i < limit; i++ )
     {
-        if (ioctl (SerialCom.spi.spiFD[i], SPI_IOC_WR_MODE, &SerialCom.spi.clk_Pol_Pha[i])< 0)
+        if (ioctl (mSerialCom.spi.mSpiFD[i], SPI_IOC_WR_MODE, &mSerialCom.spi.mClk_Pol_Pha[i])< 0)
         {
             WR_POLPHA_CNT++;
-            cout<< "SPI Write Mode POL & Pha failure" << (string) SerialCom.spi.spiChns[i] << endl;
+            cout<< "SPI Write Mode POL & Pha failure" << (string) mSerialCom.spi.mSpiChns[i] << endl;
             syslog(LOG_ERR,"SPI Write Mode POL & Pha failure -> %s", strerror(errno));
             if(WR_POLPHA_CNT == spiChDiff)
             {
@@ -81,10 +81,10 @@ spi_error Communication_c::Init_SPI(SPI_Frame spi)
             
         }
 
-        if (ioctl (SerialCom.spi.spiFD[i], SPI_IOC_RD_MODE, &SerialCom.spi.clk_Pol_Pha[i])< 0)
+        if (ioctl (mSerialCom.spi.mSpiFD[i], SPI_IOC_RD_MODE, &mSerialCom.spi.mClk_Pol_Pha[i])< 0)
         {
             RD_POLPHA_CNT++;
-            cout<< "SPI Read Mode POL & Pha failure" << (string) SerialCom.spi.spiChns[i] << endl;
+            cout<< "SPI Read Mode POL & Pha failure" << (string) mSerialCom.spi.mSpiChns[i] << endl;
             syslog(LOG_ERR,"SPI Read Mode POL & Pha failure -> %s", strerror(errno));
             if(RD_POLPHA_CNT == spiChDiff)
             {
@@ -94,10 +94,10 @@ spi_error Communication_c::Init_SPI(SPI_Frame spi)
             
         }        
          
-        if (ioctl (SerialCom.spi.spiFD[i], SPI_IOC_WR_LSB_FIRST, &SerialCom.spi.endianess[i]) < 0)
+        if (ioctl (mSerialCom.spi.mSpiFD[i], SPI_IOC_WR_LSB_FIRST, &mSerialCom.spi.mEndianess[i]) < 0)
         {
             WR_ENDIANESS_CNT++;
-            cout<< "SPI Read Mode LSB/MSB failure" << SerialCom.spi.spiChns[i] << endl;
+            cout<< "SPI Read Mode LSB/MSB failure" << mSerialCom.spi.mSpiChns[i] << endl;
             if(WR_ENDIANESS_CNT == spiChDiff)
             {
                 result =   E_SPI_ENDIANESS;
@@ -105,10 +105,10 @@ spi_error Communication_c::Init_SPI(SPI_Frame spi)
             }
         }
 
-        if (ioctl (SerialCom.spi.spiFD[i], SPI_IOC_RD_LSB_FIRST, &SerialCom.spi.endianess[i]) < 0)
+        if (ioctl (mSerialCom.spi.mSpiFD[i], SPI_IOC_RD_LSB_FIRST, &mSerialCom.spi.mEndianess[i]) < 0)
         {
             RD_ENDIANESS_CNT++;
-            cout<< "SPI Write Mode LSB/MSB failure" << SerialCom.spi.spiChns[i] << endl;
+            cout<< "SPI Write Mode LSB/MSB failure" << mSerialCom.spi.mSpiChns[i] << endl;
             if(RD_ENDIANESS_CNT == spiChDiff)
             {
                 result =   E_SPI_ENDIANESS;
@@ -116,10 +116,10 @@ spi_error Communication_c::Init_SPI(SPI_Frame spi)
             }
         }
 
-        if (ioctl (SerialCom.spi.spiFD[i], SPI_IOC_WR_MAX_SPEED_HZ,&SerialCom.spi.ClockSpeed[i]) < 0)
+        if (ioctl (mSerialCom.spi.mSpiFD[i], SPI_IOC_WR_MAX_SPEED_HZ,&mSerialCom.spi.mClockSpeed[i]) < 0)
         {
             WR_SPEED_CNT++;
-            cout<< "SPI Write Mode speed failure" << SerialCom.spi.spiChns[i] << endl;
+            cout<< "SPI Write Mode speed failure" << mSerialCom.spi.mSpiChns[i] << endl;
            if(WR_SPEED_CNT == spiChDiff)
             {
                 result =   E_SPI_SPEED;
@@ -127,10 +127,10 @@ spi_error Communication_c::Init_SPI(SPI_Frame spi)
             }
         }
 
-        if (ioctl (SerialCom.spi.spiFD[i], SPI_IOC_RD_MAX_SPEED_HZ,&SerialCom.spi.ClockSpeed[i]) < 0)
+        if (ioctl (mSerialCom.spi.mSpiFD[i], SPI_IOC_RD_MAX_SPEED_HZ,&mSerialCom.spi.mClockSpeed[i]) < 0)
         {
             RD_SPEED_CNT++;
-            cout<< "SPI Read Mode speed failure" << SerialCom.spi.spiChns[i] << endl;
+            cout<< "SPI Read Mode speed failure" << mSerialCom.spi.mSpiChns[i] << endl;
             if(RD_SPEED_CNT == spiChDiff)
             {
                 result =   E_SPI_SPEED;

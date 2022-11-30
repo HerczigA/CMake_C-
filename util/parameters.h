@@ -87,7 +87,7 @@ enum comm_type
     I2C,
     PWM,
     Bluetooth,
-    Unknow_communication,
+    Unknown_communication,
     COMMTYPE
 
 };
@@ -117,7 +117,7 @@ enum dev_type
     ACTUATOR,
     SENSOR_ACTUATOR,
     DISPLAY,
-    Unknow_device,
+    Unknown_device,
     DEVTYPE
 };
 

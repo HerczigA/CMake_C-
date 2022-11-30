@@ -1,26 +1,24 @@
 #pragma once
 
 #include "communication.h"
-// #include <nlohmann/json.hpp>
 #include "parameters.h"
-
 
 typedef uint8_t pwm_t;
 
 class device
 {
     protected:
-        Id_t id;
-        comm_t commType;
-        string name;
-        devType_t dev_Type;
-        vector<uint8_t> pins;
-        vector<uint8_t> dirs;
-        uint8_t *directions;
+        Id_t mId;
+        comm_t mCommType;
+        string mName;
+        devType_t mDev_Type;
+        vector<uint8_t> mPins;
+        vector<uint8_t> mDirs;
+        uint8_t *mDirections;
 
-        bool device_Initialized;
-        bool communication_Initialized;
-        Communication_c com;
+        bool mDevice_Initialized;
+        bool mCommunication_Initialized;
+        Communication mComm;
 
     public:
         device();
@@ -28,20 +26,20 @@ class device
         ~device();
         uint8_t setPins(vector<uint8_t> pinNumbers);
         string &get_Name();
-        devType_t get_Dev_Type();
-        Id_t get_ID();
-        comm_t get_Comm_Type();
-        uint8_t get_PinNumbers();
-        uint8_t get_Pin(int i);
+        devType_t get_Dev_Type() const;
+        Id_t get_ID() const;
+        comm_t get_Comm_Type() const;
+        uint8_t get_PinNumbers() const;
+        uint8_t get_Pin(int i) const;
         vector<uint8_t> &get_Pins();
-        uint8_t get_Dirs(int i);
+        uint8_t get_Dirs(int i) const;
         void setName(string &devName);
         void setID(Id_t id);
         void setdevType(devType_t dev);
         void setcommType(comm_t commType);
         void setPinNumbers(uint8_t pins);
         void setPinsForuC(uint8_t pins, uint8_t dirs);
-        int InitDevice();
+        // int InitDevice();
 };
 
 class sensor : public device

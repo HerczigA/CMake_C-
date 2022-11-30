@@ -5,7 +5,7 @@
 
 using namespace std;
 
-int Communication_c::Init_UART()
+int Communication::Init_UART()
 {
     vector<string> serial;
     serial.push_back("/dev/ttyUSB0");
@@ -18,12 +18,12 @@ int Communication_c::Init_UART()
     for(auto it = serial.begin(); it != endOfDev; ++it)
     {
         const string temp = *it;
-        SerialCom.serialport.uartFD = open(temp.c_str(),O_RDWR | O_NOCTTY | O_NDELAY );    /* code */
-        if(SerialCom.serialport.uartFD > 0)   
+        mSerialCom.serialport.uartFD = open(temp.c_str(),O_RDWR | O_NOCTTY | O_NDELAY );    /* code */
+        if(mSerialCom.serialport.uartFD > 0)   
             break;
     }
     
-    if(SerialCom.serialport.uartFD < 0)
+    if(mSerialCom.serialport.uartFD < 0)
         {
             cout <<"Invalid Filedescriptor\n" \
                    "maybe don't connect any wire or privilage not proper?" \
@@ -31,20 +31,20 @@ int Communication_c::Init_UART()
             syslog(LOG_ERR,"%s",strerror(errno));
             return -1;
         }
-    fcntl(SerialCom.serialport.uartFD,F_SETFL,O_RDWR);
+    fcntl(mSerialCom.serialport.uartFD,F_SETFL,O_RDWR);
     
-    tcgetattr(SerialCom.serialport.uartFD,&SerialCom.serialport.old);
-    SerialCom.serialport.term.c_cflag = CS8 | CLOCAL | CREAD ;
-    SerialCom.serialport.term.c_iflag = IGNPAR;
-    SerialCom.serialport.term.c_lflag &= ~( ICANON | ECHO | ISIG);
-    SerialCom.serialport.term.c_oflag =0;
-    SerialCom.serialport.term.c_cc[VTIME]=0;
-    SerialCom.serialport.term.c_cc[VMIN]=0;
-    cfsetispeed(&SerialCom.serialport.term, SerialCom.serialport.BAUD);
-    cfsetospeed(&SerialCom.serialport.term, SerialCom.serialport.BAUD);
+    tcgetattr(mSerialCom.serialport.uartFD,&mSerialCom.serialport.oldTermios);
+    mSerialCom.serialport.term.c_cflag = CS8 | CLOCAL | CREAD ;
+    mSerialCom.serialport.term.c_iflag = IGNPAR;
+    mSerialCom.serialport.term.c_lflag &= ~( ICANON | ECHO | ISIG);
+    mSerialCom.serialport.term.c_oflag =0;
+    mSerialCom.serialport.term.c_cc[VTIME]=0;
+    mSerialCom.serialport.term.c_cc[VMIN]=0;
+    cfsetispeed(&mSerialCom.serialport.term, mSerialCom.serialport.BAUD);
+    cfsetospeed(&mSerialCom.serialport.term, mSerialCom.serialport.BAUD);
 
-    tcflush(SerialCom.serialport.uartFD, TCIOFLUSH);
-    if(!tcsetattr(SerialCom.serialport.uartFD,TCSANOW,&SerialCom.serialport.term))
+    tcflush(mSerialCom.serialport.uartFD, TCIOFLUSH);
+    if(!tcsetattr(mSerialCom.serialport.uartFD,TCSANOW,&mSerialCom.serialport.term))
         {
           
             cout <<"Serial port has succesfully initialized" << endl;
@@ -55,8 +55,8 @@ int Communication_c::Init_UART()
         {
             //closeOnFAIL(init);
             
-            //syslog(LOG_ERR,"%s %d",strerror(errno),SerialCom.serialport.uartFD);
-            close(SerialCom.serialport.uartFD);
+            //syslog(LOG_ERR,"%s %d",strerror(errno),mSerialCom.serialport.uartFD);
+            close(mSerialCom.serialport.uartFD);
             return -1;
         }
 

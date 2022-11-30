@@ -1,93 +1,94 @@
 #include "device.h"
-
 #include <softServo.h>
 #include <softPwm.h>
-using namespace std;
 
 static Id_t id_counter = 1;
 
-device::device(): device_Initialized{false}
+device::device()
+    : mDevice_Initialized{false}
 {
-    id = 0;
-    directions = nullptr;
-    dev_Type =  Unknow_device;
-    commType =  Unknow_communication;
+    mId = 0;
+    mDirections = nullptr;
+    mDev_Type =  Unknown_device;
+    mCommType =  Unknown_communication;
     wiringPiSetup();
 }
 
-device::device(string Name, Id_t ID, devType_t devtype,comm_t commtype): name{Name}, device_Initialized(false)
+device::device(string Name, Id_t ID, devType_t devtype,comm_t commtype)
+    : mName{Name}
+    , mDevice_Initialized(false)
 {
-    directions = nullptr;
-    id =( !ID && id_counter != 1 ) ? id_counter : id_counter++;
-    dev_Type = (devtype >= SENSOR && devtype <= SENSOR_ACTUATOR) ? devtype : Unknow_device;
-    commType = (commtype >= SPI && commtype <= Bluetooth) ? commtype : Unknow_communication;
+    mId =( !ID && id_counter != 1 ) ? id_counter : id_counter++;
+    mDirections = nullptr;
+    mDev_Type = (devtype >= SENSOR && devtype <= SENSOR_ACTUATOR) ? devtype : Unknown_device;
+    mCommType = (commtype >= SPI && commtype <= Bluetooth) ? commtype : Unknown_communication;
     wiringPiSetup();
 }
 
 device::~device()
 {
-    delete[] directions;
+    delete[] mDirections;
 }
 
 string &device::get_Name()
 {
-    return name;
+    return mName;
 }
 
-devType_t device::get_Dev_Type()
+devType_t device::get_Dev_Type() const
 {
-    return dev_Type;
+    return mDev_Type;
 }
 
-Id_t device::get_ID()
+Id_t device::get_ID() const
 {
-    return id;
+    return mId;
 }
 
-comm_t device::get_Comm_Type()
+comm_t device::get_Comm_Type() const
 {
-    return commType;
+    return mCommType;
 }
 
-uint8_t device::get_PinNumbers()
+uint8_t device::get_PinNumbers() const 
 {
-    return pins.size();
+    return mPins.size();
 }
 
-uint8_t device::get_Pin(int i)
+uint8_t device::get_Pin(int i) const
 {
-    return pins[i];
+    return mPins[i];
 }
 
 vector<uint8_t> &device::get_Pins()
 {
-    return pins;
+    return mPins;
 }
 
-uint8_t device::get_Dirs(int i)
+uint8_t device::get_Dirs(int i) const
 {
-    return directions[i];
+    return mDirections[i];
 }
 
 void device::setName(string &devName)
 {
-    name = devName;
+    mName = devName;
 }
 
 void device::setdevType(devType_t dev )
 {
-    dev_Type = dev;
+    mDev_Type = dev;
 }
 
 void device::setPinNumbers(uint8_t pins)
 {
-    this->pins.push_back(pins);
+    mPins.push_back(pins);
 }
 
 void device::setPinsForuC(uint8_t pins, uint8_t dirs)
 {
-    this->pins.push_back(pins);
-    this->dirs.push_back(dirs);
+    mPins.push_back(pins);
+    mDirs.push_back(dirs);
 }
 
 void device::setID(Id_t id)
@@ -95,8 +96,8 @@ void device::setID(Id_t id)
     if(!id || id < (id_counter-1) || id > id_counter)
         {
 
-            this->id = id_counter;
-            id_counter += 1;
+            mId = id_counter;
+            id_counter++;
 
             #if DEBUG_DEVICE
                 cout << "in if setid  " << id << " id_counter: " << id_counter<< " id: "<<id<< endl;
@@ -105,7 +106,7 @@ void device::setID(Id_t id)
 
     else
         {
-            this->id = id;
+            mId = id;
             #if DEBUG_DEVICE
                 cout << "in else setid  " << id << endl;
             #endif
@@ -115,18 +116,18 @@ void device::setID(Id_t id)
 
 void device::setcommType(comm_t commType)
 {
-    this->commType = commType;
+    mCommType = commType;
     int result = 0;
-    switch(commType)
+    switch(mCommType)
     {
         case SPI:
-            result = com.Init_SPI(com.SerialCom.spi);
+            result = mComm.Init_SPI(mComm.mSerialCom.spi);
             if(result)
                 syslog(LOG_ERR, " SPI setup : %d ", result);
             break;
 
         case I2C:
-            result = com.Init_I2C(com.SerialCom.i2c);
+            result = mComm.Init_I2C(mComm.mSerialCom.i2c);
             if(result)
                 syslog(LOG_ERR, " I2C setup : %d ", result);
             break;
@@ -136,7 +137,7 @@ void device::setcommType(comm_t commType)
             break;*/
 
         case UART:
-            result = com.Init_UART();
+            result = mComm.Init_UART();
             if(result)
                 syslog(LOG_ERR, " UART setup : %d ", result);
             break;
@@ -177,11 +178,11 @@ void device::Init_Communication()
     switch(commType)
     {
         case SPI:
-            com.Init_SPI(com.SerialCom.spi);
+            com.Init_SPI(com.mSerialCom.spi);
             break;
 
         case I2C:
-            com.Init_I2C(com.SerialCom.i2c);
+            com.Init_I2C(com.mSerialCom.i2c);
             break;
 
         case PWM:
@@ -255,7 +256,7 @@ uint8_t device::setPins(vector<uint8_t> pinNumbers)
     int result = 0;
     if(pinNumbers.empty() || pinNumbers.size() >= MAX_PORTS_NUMBER )
     {
-         cout << "Nullpointer for pinNumbers or too much number for ports bastard!? " << endl;
+         cout << "Empty vector has been received for pinNumbers\n or too much number for ports, bastard!? " << endl;
          result = 1;
     }
     else
@@ -266,26 +267,26 @@ uint8_t device::setPins(vector<uint8_t> pinNumbers)
         {
 
             int j = 0 ;
-            switch (dev_Type)
+            switch (mDev_Type)
             {
                 case SENSOR:
-                    directions = new uint8_t[ pins.size()];
-                    if(!directions)
+                    mDirections = new uint8_t[ mPins.size()];
+                    if(!mDirections)
                     {
                         cout<< "no memory for alloc directions " << endl;
                         result = 4;
                         break;
                     }
-                    while(j <  pins.size())
+                    while(j <  mPins.size())
                     {
-                        directions[j] = INPUT;
+                        mDirections[j] = INPUT;
                         j++;
                     }
                     break;
 
                 case ACTUATOR:
-                    directions = new uint8_t[pins.size()];
-                    if(!directions)
+                    mDirections = new uint8_t[mPins.size()];
+                    if(!mDirections)
                     {
                         cout<< "no memory for alloc directions " << endl;
                         result = 4;
@@ -293,26 +294,26 @@ uint8_t device::setPins(vector<uint8_t> pinNumbers)
                     }
                     j = 0;
 
-                    while(j < pins.size())
+                    while(j < mPins.size())
                     {
-                        directions[j] = OUTPUT;
+                        mDirections[j] = OUTPUT;
                         j++;
 
                     }
                     break;
                 case SENSOR_ACTUATOR:
-                    directions = new uint8_t[pins.size()];
-                    if(!directions)
+                    mDirections = new uint8_t[mPins.size()];
+                    if(!mDirections)
                     {
                         cout<< "no memory for alloc directions " << endl;
                         result = 4;
                         break;
                     }
                     j = 0;
-                    while(j < pins.size())
+                    while(j < mPins.size())
                     {
 
-                        directions[j] = dirs[j] ? OUTPUT : INPUT;
+                        mDirections[j] = mDirs[j] ? OUTPUT : INPUT;
                         j++;
 
                     }
@@ -323,7 +324,7 @@ uint8_t device::setPins(vector<uint8_t> pinNumbers)
                     break;
             }
             //TODO: check the same size of pinnumbers and directions
-	            pinMode(pinNumbers[i],directions[i]);
+	            pinMode(pinNumbers[i], mDirections[i]);
 		        i++;
 
         }
