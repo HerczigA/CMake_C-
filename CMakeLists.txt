@@ -2,11 +2,12 @@ cmake_minimum_required(VERSION 3.6)
 
 option(ENABLE_CROSS_COMPILE "CROSS_COMPILE")
 
-if(${ENABLE_CROSS_COMPILE})
+if(${ENABLE_CROSS_COMPILE})  
+
+  message(STATUS "Using arm-linux-gnueabihf as architecture")
   set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/tools/raspberry.cmake)
-  message(STATUS "Using toolchain file :${CMAKE_TOOLCHAIN_FILE}")
 else()
-  message(STATUS "Do not using toolchain file")
+  message(STATUS "Using host computer as architecture")
 endif()
 
 
@@ -26,7 +27,7 @@ file(GLOB SOURCES Communication/*.cpp
     main.cpp
     )
 
-file(GLOB HEADERS Communication/*.h 
+file(GLOB HEADERS Communication/communication.h 
     device/device.h
     mainApp/mainApp.h
     JSON/json.h
