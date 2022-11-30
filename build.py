@@ -3,21 +3,44 @@
 import sys
 import os
 
+def runCmake(cmd, directory, isCrossCompiled):
+	debug = " -DCMAKE_BUILD_TYPE=Debug "
+	platform = "1" if isCrossCompiled else "0"
+	if "debug" in directory:
+		cmd = cmd + debug
+	cmd = cmd + " -B" + directory +" -DENABLE_CROSS_COMPILE=" + platform +" ."
+	os.system(cmd)
+
+def building(cmd):
+	dirBuild = "build"
+	dirDebug = "build_debug"
+	if os.path.exists(dirBuild):
+		print("Building in", dirBuild)
+		os.chdir(dirBuild)
+		os.system(cmd)
+	elif os.path.exists(dirDebug):
+		print("Building in", dirDebug)
+		os.chdir(dirDebug)
+		os.system(cmd)
+	else:
+		print("There is no build directory")
+
 argNum = len(sys.argv)
 arg_counter = 1
-cmd =  "cmake -DENABLE_CROSS_COMPILE=1 -GNinja "
-debug = " -DCMAKE_BUILD_TYPE=Debug "
-# cmake -Bbuild -GNinja -DENABLE_CROSS_COMPILE=1 .
+cmd = "cmake -GNinja "
 ninja ="ninja"
-isbuild = False
-cleaning = False
-iscompile = False
-isdebug = False
+switches = {
+			"-c": False,
+			"-b": False,
+			"-r" : False,
+			"-d" : False,
+			"-C" : False
+			}
+
 dirBuild = "build"
 dirDebug = "build_debug"
 directory = dirBuild
 
-target = " mv RPI_IOT "
 rm = "rm -r " + dirBuild + " " + dirDebug
 
 if argNum == arg_counter:
@@ -40,71 +63,50 @@ elif sys.argv[arg_counter] =="--help" or sys.argv[arg_counter] =="-h":
 	more than one arguments.
 	
 	Possibilities:
-	 -c or --cmake -> It will generate
+	-c -> It will generate
 	cmake scripts and environment for build the project.
 	It will generate for ninja not for make.
 	
-	-b or --build -> If the CMakeLists.txt is proper 
+	-b -> If the CMakeLists.txt is proper 
 	and the script could generate the important cmake
 	files, then the python script try to compile the 
 	project with ninja.
 	
-	-x or --purge remove all the unnecessary build 
+	-r remove all the unnecessary build 
 	files, executable files  and directory(CMakeFiles)
 
-	-r or --Rb is similar to -x . Removes every unnecessary
-	files except binary
+	-d you can build debug version of the software.
 
-	-d or --Debug you can build debug version software
+	-C -> choose to cross-compile 
     """)
     exit()
 
 else:
 	while arg_counter < argNum:
 		argument = sys.argv[arg_counter]
-		if argument  == "-c" or argument == "--cmake":
-			iscompile = True
+		if argument in switches:
+			switches[argument] = True
 		
-		elif  argument == "-b" or argument == "--build":
-			isbuild = True
-
-		elif argument == "-x" or argument == "--purge":
-			cleaning = True
-
-		# elif argument == "-r" or argument == "--Rb":
-		# 	os.system(rm_withoutBinary)
-
-		elif argument == "-d" or argument == "--Debug":
-			isdebug = True
-			cmd += debug
+		if argument == "-d":
 			directory = dirDebug
 
 		arg_counter = arg_counter +1
 
 
-if cleaning:
+if switches["-r"]:
 	os.system(rm)
+	if switches["-c"]:
+		runCmake(cmd, directory, switches["-C"])
+	if switches["-b"]:
+		building(ninja)
+		
+elif switches["-c"]:
+	runCmake(cmd, directory, switches["-C"])
 	
-	if iscompile:
-		cmd = cmd + "-B" + directory + " ."
-		os.system(cmd)
-	if isbuild:
-		print("Building in ", directory)
-		os.chdir(directory)
-		os.system(ninja)
+	if switches["-b"]:
+		building(ninja)
 		
-elif iscompile :
-	cmd = cmd + "-B" + directory + " ."
-	os.system(cmd)
-	if isbuild:
-		print("Building in ", directory)
-		os.chdir(directory)
-		os.system(ninja)
-		
-
-elif isbuild:
-	print("Building in ", directory)
-	os.chdir(directory)
-	os.system(ninja)    
+elif switches["-b"]:
+	building(ninja)
 	
 
