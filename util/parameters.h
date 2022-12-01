@@ -52,6 +52,26 @@
     #define MAX_DEV_TYPE 3
 #endif
 
+#ifndef SPI_PACKET_LENGTH
+    #define SPI_PACKET_LENGTH 8
+#endif
+
+#ifndef MAX_SPI_CLK
+    #define MAX_SPI_CLK 1000000 //MAX speed 1MHz
+#endif
+
+#ifndef MAX_SPI_CHANNELS
+    #define MAX_SPI_CHANNELS 2
+#endif
+
+#ifndef I2C_MAX_SPEED
+    #define I2C_MAX_SPEED 400000
+#endif
+
+#ifndef I2C_MAX_PACKET_LENGTH
+    #define I2C_MAX_PACKET_LENGTH 16
+#endif
+
 #include <stdint.h>
 #include <iostream>
 #include <string>
@@ -67,6 +87,7 @@
 #include <wiringPi.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/ioctl.h>
 
 using  devType_t = uint8_t;
 using namespace std;

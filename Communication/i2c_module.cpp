@@ -6,12 +6,24 @@
 
 using namespace std;
 
-int Communication::get_I2C_Address()
+com_error_t I2C_Comm::initCommunication()
 {
-    std::string resultI2CAddress ="i2c_address.txt";
-    std::ifstream ifile;
-    std::string line;
-    int result =0;
+    int result = E_OK;
+    result = initPacket();
+    if(result == E_OK)
+        result = get_I2C_Address();
+    if(result == E_OK)
+        result = Init_I2C();
+
+    return result;
+}
+
+com_error_t I2C_Comm::get_I2C_Address()
+{
+    string pathOfI2CRequest ="i2c_address.txt";
+    ifstream ifile;
+    string line;
+    com_error_t result = E_I2C_ADDRESS_NOK;
     system("sudo i2cdetect -y 1 > i2c_address.txt");
     //maybe delay does not need system blocking function call... 
     /*Blocking and non-blocking are just logical names to describe the behaviour
@@ -40,15 +52,15 @@ int Communication::get_I2C_Address()
     delay(10);*/
     try
     {
-        ifile.open(resultI2CAddress.c_str(), std::ifstream::in);
+        ifile.open(pathOfI2CRequest.c_str(), ifstream::in);
         if(!ifile.is_open())
            throw "could not open i2c file";
     }
-    catch(const std::string msg)
+    catch(const exception &msg)
     {
-        syslog(LOG_ERR,"%s",strerror(errno));
-        std::cout << msg << std::endl;
-        return E_I2C_FILE_OPEN;
+        syslog(LOG_ERR,"%s",msg.what());
+        cout << msg.what() << endl;
+        return E_I2C_FILE_OPEN_NOK;
     }
     int j =0;
 
@@ -77,34 +89,35 @@ int Communication::get_I2C_Address()
                     t++;
                     if(isdigit(*t))
                     {
-                        result = atoi(t);   //hex number also!
+                        mAddress = atoi(t);   //hex number also!
                         *t = 'a';
+                        result = E_OK;
                     }
                     else
                     {
                         switch (*t)
                         {
                         case 'a':
-                            result = 10;
+                            mAddress = 10;
                             break;
                         case 'b':
-                            result = 11;
+                            mAddress = 11;
                             break;
 
                         case 'c':
-                            result = 12;
+                            mAddress = 12;
                             break;
 
                         case 'd':
-                            result = 13;
+                            mAddress = 13;
                             break;
 
                         case 'e':
-                            result = 14;
+                            mAddress = 14;
                             break;
 
                         case 'f':
-                            result = 15;
+                            mAddress = 15;
                             break;
 
                         default:
@@ -112,7 +125,8 @@ int Communication::get_I2C_Address()
                         }
                     }
 
-                    result = result + (16*atoi(p));
+                    mAddress += (16*atoi(p));
+                    result = E_OK;
                     break;
                 }
                 p++;
@@ -121,41 +135,38 @@ int Communication::get_I2C_Address()
         }
 
     }
-    std::cout << "I2C slave address : " << result << std::endl;
+    cout << "I2C slave address : " << result << endl;
     syslog(LOG_INFO,"I2C slave address :%d ", (int)result);
     return result;
 }
 
-i2c_error_t Communication::Init_I2C(I2C_Frame i2c)
+com_error_t I2C_Comm::Init_I2C()
 {
-    (void) i2c;
-    i2c_error_t result  = E_I2C_OK;
+    int result  = SerialComm_Error::E_OK;
     const string Path_I2C = "/dev/i2c-1";
-    mSerialCom.i2c.i2CFD = open (Path_I2C.c_str(),O_RDWR );
-    if(mSerialCom.i2c.i2CFD >= 0)
+    mFd = open(Path_I2C.c_str(),O_RDWR );
+    if(mFd >= 0)
     {
-        int temp = get_I2C_Address();
-        if(temp) 
+        if(mAddress) 
         {
-            mSerialCom.i2c.mAddress = temp;   
-            if(ioctl(mSerialCom.i2c.i2CFD, I2C_SLAVE, mSerialCom.i2c.mAddress) < 0)
+            if(ioctl(mFd, I2C_SLAVE, mAddress) < 0)
             {
                 cout << "Unable to select I2C device " << strerror(errno) << endl;
-                syslog(LOG_ERR,"%s",strerror(errno));
-                result = E_I2C_SELECT;    
+                syslog(LOG_ERR,"Unable to select I2C device because: %s",strerror(errno));
+                result = E_I2C_SELECT_NOK;    
             }
         }
         else
         {
-            cout << "address is 0"  << endl;
+            cout << "Cannot get the address for i2c slave"  << endl;
             syslog(LOG_ERR,"%s",strerror(errno));
-            result = E_I2C_ADDRESS;
+            result = E_I2C_ADDRESS_NOK;
         }
     }
     else
     {
-        cout<< "can not open I2C.Try with sudo or check the path, wiring!" << endl;
-        result = E_I2C_OPEN;
+        cout<< "Could not open I2C.Try with sudo or check the path, wiring!" << endl;
+        result = E_I2C_OPEN_NOK;
         syslog(LOG_ERR,"%s",strerror(errno));
     }
     
