@@ -4,7 +4,7 @@
 
 static Id_t id_counter = 1;
 
-device::device()
+Device::Device()
     : mDevice_Initialized{false}
 {
     mId = 0;
@@ -14,7 +14,7 @@ device::device()
     wiringPiSetup();
 }
 
-device::device(string Name, Id_t ID, devType_t devtype,comm_t commtype)
+Device::Device(string Name, Id_t ID, devType_t devtype,comm_t commtype)
     : mName{Name}
     , mDevice_Initialized(false)
 {
@@ -25,73 +25,73 @@ device::device(string Name, Id_t ID, devType_t devtype,comm_t commtype)
     wiringPiSetup();
 }
 
-device::~device()
+Device::~Device()
 {
     delete[] mDirections;
 }
 
-string &device::get_Name()
+string &Device::get_Name()
 {
     return mName;
 }
 
-devType_t device::get_Dev_Type() const
+devType_t Device::get_Dev_Type() const
 {
     return mDev_Type;
 }
 
-Id_t device::get_ID() const
+Id_t Device::get_ID() const
 {
     return mId;
 }
 
-comm_t device::get_Comm_Type() const
+comm_t Device::get_Comm_Type() const
 {
     return mCommType;
 }
 
-uint8_t device::get_PinNumbers() const 
+uint8_t Device::get_PinNumbers() const 
 {
     return mPins.size();
 }
 
-uint8_t device::get_Pin(int i) const
+uint8_t Device::get_Pin(int i) const
 {
     return mPins[i];
 }
 
-vector<uint8_t> &device::get_Pins()
+vector<uint8_t> &Device::get_Pins()
 {
     return mPins;
 }
 
-uint8_t device::get_Dirs(int i) const
+uint8_t Device::get_Dirs(int i) const
 {
     return mDirections[i];
 }
 
-void device::setName(string &devName)
+void Device::setName(string &devName)
 {
     mName = devName;
 }
 
-void device::setdevType(devType_t dev )
+void Device::setdevType(devType_t dev )
 {
     mDev_Type = dev;
 }
 
-void device::setPinNumbers(uint8_t pins)
+void Device::setPinNumbers(uint8_t pins)
 {
     mPins.push_back(pins);
 }
 
-void device::setPinsForuC(uint8_t pins, uint8_t dirs)
+void Device::setPinsForuC(uint8_t pins, uint8_t dirs)
 {
     mPins.push_back(pins);
     mDirs.push_back(dirs);
 }
 
-void device::setID(Id_t id)
+void Device::setID(Id_t id)
 {
     if(!id || id < (id_counter-1) || id > id_counter)
         {
@@ -114,33 +114,33 @@ void device::setID(Id_t id)
 
 }
 
-void device::setcommType(comm_t commType)
+void Device::setcommType(comm_t commType)
 {
     mCommType = commType;
     int result = 0;
     switch(mCommType)
     {
-        case SPI:
-            result = mComm.Init_SPI(mComm.mSerialCom.spi);
-            if(result)
-                syslog(LOG_ERR, " SPI setup : %d ", result);
-            break;
+        // case SPI:
+        //     result = mComm.Init_SPI(mComm.mSerialCom.spi);
+        //     if(result)
+        //         syslog(LOG_ERR, " SPI setup : %d ", result);
+        //     break;
 
-        case I2C:
-            result = mComm.Init_I2C(mComm.mSerialCom.i2c);
-            if(result)
-                syslog(LOG_ERR, " I2C setup : %d ", result);
-            break;
+        // case I2C:
+        //     result = mComm.Init_I2C(mComm.mSerialCom.i2c);
+        //     if(result)
+        //         syslog(LOG_ERR, " I2C setup : %d ", result);
+        //     break;
 
        /* case PWM:
             Init_PWM();
             break;*/
 
-        case UART:
-            result = mComm.Init_UART();
-            if(result)
-                syslog(LOG_ERR, " UART setup : %d ", result);
-            break;
+        // case UART:
+        //     result = mComm.Init_UART();
+        //     if(result)
+        //         syslog(LOG_ERR, " UART setup : %d ", result);
+        //     break;
 
         case Bluetooth:
             //Init_Bluetooth();
@@ -172,7 +172,7 @@ void device::setcommType(comm_t commType)
     return result;
 }*/
 /*
-void device::Init_Communication()
+void Device::Init_Communication()
 {
 
     switch(commType)
@@ -251,7 +251,7 @@ bool sensor::buttonStateChanged()
     return result;
 }
 
-uint8_t device::setPins(vector<uint8_t> pinNumbers)
+uint8_t Device::setPins(vector<uint8_t> pinNumbers)
 {
     int result = 0;
     if(pinNumbers.empty() || pinNumbers.size() >= MAX_PORTS_NUMBER )

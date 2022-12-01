@@ -5,7 +5,7 @@
 
 typedef uint8_t pwm_t;
 
-class device
+class Device
 {
     protected:
         Id_t mId;
@@ -21,9 +21,9 @@ class device
         Communication mComm;
 
     public:
-        device();
-        device(string Name, Id_t ID, devType_t devtype,comm_t commtype);
-        ~device();
+        Device();
+        Device(string Name, Id_t ID, devType_t devtype,comm_t commtype);
+        ~Device();
         uint8_t setPins(vector<uint8_t> pinNumbers);
         string &get_Name();
         devType_t get_Dev_Type() const;
@@ -42,36 +42,36 @@ class device
         // int InitDevice();
 };
 
-class sensor : public device
+class sensor : public Device
 {
     bool buttonPushed;
     bool prevButtonState;
     bool buttonState;
     public:
-        sensor(string Name, Id_t ID, devType_t devtype, comm_t commtype) : device(Name,ID,devtype,commtype) {
+        sensor(string Name, Id_t ID, devType_t devtype, comm_t commtype) : Device(Name,ID,devtype,commtype) {
             buttonPushed = false;
             buttonState = LOW;
             prevButtonState = LOW;
         }
-        sensor() : device() {};
+        sensor() : Device() {};
         void digital_Read(int pin);
         bool getButtonState();
         bool buttonStateChanged();
 };
 
-class actuator : public device
+class actuator : public Device
 {
         // int pwmRange ;
         int initValue ;
 
       public:
         actuator(string Name, Id_t ID, devType_t devtype, comm_t commtype) 
-        : device(Name,ID,devtype,commtype) 
+        : Device(Name,ID,devtype,commtype) 
         {
             // pwmRange = PWM_RANGE_MAX;
             initValue = 0;
         }
-        actuator() : device() {};
+        actuator() : Device() {};
         // pwm_t pwm_Setup(vector<uint8_t> pinNumber);
         // pwm_t pwm_ServoSetup(vector<uint8_t> pinNumbers,  uint8_t numberOfPorts);
         // pwm_t Init_PWM(int pwm, vector<uint8_t> pinNumbers, uint8_t numberOfPorts);
