@@ -1,46 +1,29 @@
 {
-    "Device1" :
+    "Devices":
     {
-        "Sensor" :
-        {
-    	    "commtype" : "Unknown_communication",
-    	    "name" : "Button",
-            "pin(s)": "4",
-            "ID" : "0"
-        }
-    }, 
-    
-    "Device2" :
-    {
-        "Actuator" :
-        {
-    	    "commtype" : "pwm",
-            "name" : "ServoMotor",
-            "pin(s)": "5",
-    	    "ID" : "1"
-        }
-    }, 
-    
-    "Device3" :
-    {
-        "Sensor_Actuator" :
-        {
-    	    "commtype" : "SPI",
-            "name" : "MSP430",
-            "pin(s)": ["9,10,8"],
-            "dir" : ["IN,OUT,OUT"],
-    	    "ID" : "1"
+        "Device1":
+        { 
+            "type": "Sensor",
+            "commtype":"Unknown_communication",
+            "name" : "Button",
+            "pin(s)":"4"
+        },
+
+        "Device2":
+        { 
+            "type": "Actuator",
+            "commtype":"i2c",
+            "name" : "lcd",
+            "pin(s)":["4", "7", "8", "9"]
         }
     },
 
-    "Device4" :
+    "Database" :
     {
-        "Actuator" :
-        {
-    	    "commtype" : "SPI",
-    	    "name" : "Display",
-            "pin(s)": ["15,16"],
-            "ID" : "0"
-        }
-    }        
+        "type" : "sqlite",
+        "host" : "127.0.0.1:50001",
+        "dbName" : "learning",
+        "user" : "admin",
+        "password" : "pwd123"
+    }
 }
