@@ -1,29 +1,24 @@
 #include "communication.h"
 
-void SerialComm::setClock(uint32_t &clockSpeed) 
-{ 
-    if(mMaxSpeed >= clockSpeed)
-        mClockSpeed = clockSpeed;
-}
 
 void SerialComm::setPacketLength(int &length)
 { 
-    mLength = length;
+    mPacketLength = length;
 }
 
-com_error_t SerialComm::updatePacketForWrite(char* packet, int &length)
+com_error_t SerialComm::updatePacketForWrite(const char* packet)
 {
     com_error_t result = E_OK;
-    if(!packet || mLength < length)
+    if(!packet)
     {
         result = E_UPDATE_PACKET_NOK;
-        syslog(LOG_ERR, "Too big the length or nullptr received in serial com");
+        syslog(LOG_ERR, "Nullptr received in updatePacket()");
         
     }
     else
     {
-        bzero(mWritePacket, mLength);
-        memcpy(mWritePacket, packet, length);
+        bzero(mWritePacket, mPacketLength);
+        memcpy(mWritePacket, packet, mPacketLength);
     }
     
     return result;
@@ -32,13 +27,13 @@ com_error_t SerialComm::updatePacketForWrite(char* packet, int &length)
 com_error_t SerialComm::initPacket()
 {
     com_error_t result = E_OK;
-    mReadPacket = new char[mLength];
+    mReadPacket = new char[mPacketLength];
     if(!mReadPacket)
     {
         syslog(LOG_ERR, " No memory for allocating serial com");
         result = E_INIT_PACKET_NOK;
     }
-    mWritePacket = new char[mLength];
+    mWritePacket = new char[mPacketLength];
     if(!mWritePacket)
     {
         syslog(LOG_ERR, " No memory for allocating serial com");
@@ -56,26 +51,34 @@ SerialComm::~SerialComm()
 }
 
 
-com_error_t SerialComm::writeBytes(char* packet, int length)
+Communication::Communication( )
+    : mCommNok(false)
 {
-    com_error_t result = updatePacketForWrite(packet, length);
-    if(result == E_OK)
+    mCommNok = wiringPiSetup();
+    if(mCommNok)
     {
-        if(write(mFd, mWritePacket, mLength)!= mLength)
+        mCommNok = wiringPiSetupGpio();
+        if(!mCommNok)
         {
-            result = E_WRITE_NOK;
+            mI2c = make_unique<I2C_Comm>();
+            mUart = make_unique<Serial_UART>();    
         }
     }
+}
+
+bool Communication::getCommInitStatus() const
+{
+    return mCommNok;
+}
+
+int Communication::sendPackeges(SerialComm *writer , const char* package, const int & length)
+{
+    int result = writer->writeBytes(package, length);
     return result;
 }
 
-com_error_t SerialComm::readBytes()
+int Communication::getPackeges(SerialComm *receiver , char buffer[], const int & length)
 {
-    com_error_t result = E_OK;
-    bzero(mReadPacket, mLength);
-    if(read(mFd, mReadPacket, mLength)!= mLength)
-    {
-        result = E_READ_NOK;
-    }
+    int result = receiver->readBytes(buffer, length);
     return result;
 }

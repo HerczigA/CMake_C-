@@ -1,6 +1,5 @@
 #include <stdint.h>
 #include <sys/ioctl.h>
-
 #include <string.h>
 #include "communication.h"
 
@@ -17,6 +16,13 @@ com_error_t I2C_Comm::initCommunication()
 
     return result;
 }
+
+void I2C_Comm::setClock(uint32_t &clockSpeed) 
+{ 
+    if(mMaxSpeed >= clockSpeed)
+        mClockSpeed = clockSpeed;
+}
+
 
 com_error_t I2C_Comm::get_I2C_Address()
 {
@@ -144,7 +150,7 @@ com_error_t I2C_Comm::Init_I2C()
 {
     int result  = SerialComm_Error::E_OK;
     const string Path_I2C = "/dev/i2c-1";
-    mFd = open(Path_I2C.c_str(),O_RDWR );
+    mFd = open(Path_I2C.c_str(),O_RDWR);
     if(mFd >= 0)
     {
         if(mAddress) 
@@ -168,6 +174,50 @@ com_error_t I2C_Comm::Init_I2C()
         cout<< "Could not open I2C.Try with sudo or check the path, wiring!" << endl;
         result = E_I2C_OPEN_NOK;
         syslog(LOG_ERR,"%s",strerror(errno));
+    }
+    
+    return result;
+}
+
+com_error_t I2C_Comm::writeBytes(const char* packet, const int &length)
+{
+    com_error_t result = E_OK;
+    if(!packet)
+        return E_PACKET_NULLPTR;
+    
+    char data[mPacketLength];
+    for(int i = 0; i < length; )
+    {
+        data[0]=packet[i++];
+        if(i != length)
+            data[1]=packet[i++];
+        result = updatePacketForWrite(data);
+        if(result == E_OK)
+        {
+            if(write(mFd, mWritePacket, mPacketLength)!= mPacketLength)
+            {
+                result = E_WRITE_NOK;
+                syslog(LOG_ERR, "Write error in i2c at the number of %d package\n", i);
+            }
+        }    
+    }
+    
+    return result;
+}
+
+com_error_t I2C_Comm::readBytes(char buffer[], const int &length)
+{
+    com_error_t result = E_OK;
+    for(int i = 0; i < length; )
+    {
+        bzero(mReadPacket, mPacketLength);
+        if(read(mFd, mReadPacket, mPacketLength) != mPacketLength)
+        {
+            result = E_READ_NOK;
+            break;
+        }
+        buffer[i++]=mReadPacket[0];
+        buffer[i++]=mReadPacket[1];
     }
     
     return result;

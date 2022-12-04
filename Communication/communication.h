@@ -28,8 +28,6 @@
     
 */
 
-
-
 using com_error_t = uint8_t;
 
 
@@ -39,8 +37,9 @@ class SerialComm
     
         enum SerialComm_Error
         {
-            E_OK=0,
+            E_OK = 0,
             E_FD_NOK,
+            E_FD_ALLOC_NOK,
             E_INIT_PACKET_NOK,
             E_READ_NOK,
             E_WRITE_NOK,
@@ -50,144 +49,132 @@ class SerialComm
             E_I2C_SPEED_SET_NOK,
             E_I2C_FILE_OPEN_NOK,
             E_I2C_ADDRESS_NOK,
-            E_UART_SETUP_NOK
+            E_UART_SETUP_NOK,
+            E_SPI_SPEED_NOK,
+            E_SPI_PHA_POL_NOK,
+            E_SPI_FD_OPEN_NOK,
+            E_SPI_ENDIANESS_NOK,
+            E_PACKET_NULLPTR
         };
 
-        SerialComm(uint32_t clockSpeed, uint length)
+        SerialComm(){};
+        SerialComm(uint32_t clockSpeed, int packetLength)
         : mClockSpeed(clockSpeed)
-        , mLength(length)
+        , mPacketLength(packetLength)
         {
-
+            
         };
         virtual ~SerialComm();
         virtual com_error_t initCommunication() = 0;
-        com_error_t writeBytes(char* packet, int length);
-        com_error_t readBytes();
-        void setClock(uint32_t &clockSpeed);
+        virtual com_error_t writeBytes(const char* packet,const  int &length) = 0;
+        virtual com_error_t readBytes(char buffer[], const int &length) = 0;
+        
         void setPacketLength(int &length);
         
     protected:
-        speed_t mFd;
+        com_error_t updatePacketForWrite(const char* packet);
+        int mFd;
         com_error_t initPacket(); 
-        uint32_t mMaxSpeed;
-
-    private:
-        com_error_t updatePacketForWrite(char* packet, int &length);
         uint32_t mClockSpeed;
+        int mPacketLength;
         char* mReadPacket;
         char* mWritePacket;
-        int mLength;
         
-
 };
 
 class I2C_Comm : public SerialComm
 {
     public:
-        
         I2C_Comm()
-        : SerialComm(I2C_MAX_SPEED, I2C_MAX_PACKET_LENGTH)
+        : SerialComm(I2C_MAX_SPEED, I2C_MAX_PACKET_LENGTH) 
+        , mMaxSpeed(I2C_MAX_SPEED) 
+        , mAddress(0)
         {
-            mMaxSpeed = I2C_MAX_SPEED;
-            mAddress = 0;
+
         };
-        I2C_Comm( uint32_t clockSpeed, uint length) 
-        : SerialComm(clockSpeed, length)
+        I2C_Comm(uint32_t clockSpeed, uint length)
+        : SerialComm(clockSpeed, length)  
+        , mMaxSpeed(I2C_MAX_SPEED)
+        , mAddress(0)
         {
-            mMaxSpeed = I2C_MAX_SPEED;
-            mAddress = 0;
+
         };
-        com_error_t initCommunication();
-     
+        com_error_t initCommunication() override;
+        com_error_t writeBytes(const char* packet,const int &length) override;
+        com_error_t readBytes(char buffer[], const int &length) override;
+        void setClock(uint32_t &clockSpeed);
     private:
         com_error_t get_I2C_Address();
         com_error_t Init_I2C();
+        uint32_t mMaxSpeed;
         uint8_t mAddress;
+        
 };
 
 class Serial_UART : public SerialComm
 {
     public:
-        Serial_UART()
-        : SerialComm(0,0)
-        {
-
-        };
-        com_error_t initCommunication();
+        Serial_UART(){};
+        com_error_t initCommunication() override;
+        com_error_t writeBytes(const char* packet,const int &length) override;
+        com_error_t readBytes(char buffer[], const int &length) override;
         void setBaud(const int& baud);
     private:
-    void closeOnFAIL();
-    termios mOldTermios;
-    termios mTerm;
-    int mBAUD;
+        set<int> mBaudrates={4800, 9600,
+                            19200, 38400,
+                            57600, 115200,
+                            230400,460800,
+                            500000 };
+        void closeOnFAIL();
+        termios mOldTermios;
+        termios mTerm;
+        int mBAUD;
     
 };
-/*
-class SPI_Comm : public SerialComm
-{
-    // For Full duplex com-> ioctl(fd,SPI_IOC_MESSAGE,struct spi_ioc_transfer).
-    //   Full duplex communication needs:
-    //   Cross-compile with cross-gcc -I/path/to/cross-kernel/include
-    //   if you don't work on the fixed hardware.
-    //   For half duplex, read or write but just one at time read/write()... 
 
-    //   Is the phase zero (CPHA = 0), then data is sampled at rising edge with CPOL=0
-    //   and falling edge with CPOL=1. This behaviour switches with CPHA=1, then data is sampled at falling edge with CPOL=0 and rising edge with CPOL=1.
-    //   MODE     CPOL    CPHA
-    //     0   	0 	    0
-    //     1 	    0 	    1
-    //     2 	    1 	    0
-    //     3 	    1 	    1
+// class SPI_Comm : public SerialComm
+// {
+//     /*For Full duplex com-> ioctl(fd,SPI_IOC_MESSAGE,struct spi_ioc_transfer).
+//       Full duplex communication needs:
+//       Cross-compile with cross-gcc -I/path/to/cross-kernel/include
+//       if you don't work on the fixed hardware.
+//       For half duplex, read or write but just one at time read/write()... 
+
+//       Is the phase zero (CPHA = 0), then data is sampled at rising edge with CPOL=0
+//       and falling edge with CPOL=1. This behaviour switches with CPHA=1, then data is sampled at falling edge with CPOL=0 and rising edge with CPOL=1.
+//       MODE     CPOL    CPHA
+//         0   	0 	    0
+//         1 	    0 	    1
+//         2 	    1 	    0
+//         3 	    1 	    1*/
       
-     public:
-        enum SPI_Error
-        {
-            E_SPI_FD_BAD = -1,
-            E_SPI_OK = 0,
-            E_SPI_SPEED,
-            E_SPI_PHA_POL,
-            E_SPI_FD_OPEN,
-            E_SPI_ENDIANESS,
-            E_SPI_UNKNOW,
-            E_SPI_ALL
-        };
-        SPI_Comm()
-        {
-            for(size_t i = 0; i < MAX_SPI_CHANNELS ; i++)
-            {
-                mEndianess[i] =  0;
-                mClk_Pol_Pha[i] = SPI_MODE_0;
-                mClockSpeed[i] = MAX_SPI_CLK;
-            }
-            
-        }
-        SPI_Comm(uint8_t endianess, int clk_Pol_Pha, uint32_t ClockSpeed)
-        {
-            for(size_t i = 0; i < MAX_SPI_CHANNELS ; i++)
-            {
-                mEndianess[i] =  endianess;
-                mClk_Pol_Pha[i] = clk_Pol_Pha;
-                mClockSpeed[i] = ClockSpeed;
-            }
-            
-        }
-        uint32_t mClockSpeed[MAX_SPI_CHANNELS];
-        std::vector<std::string> mSpiChns;
-        int mClk_Pol_Pha[MAX_SPI_CHANNELS];
-        uint8_t mEndianess[MAX_SPI_CHANNELS];    //0 MSB other LSB
-        char mPacket[SPI_PACKET_LENGTH];
-        
-        spi_ioc_transfer buffer;
-
-};*/
+//      public:
+//         SPI_Comm();
+//         SPI_Comm(uint32_t clockSpeed, int length, uint8_t spiChannelNumbers);
+//         SPI_Comm(uint8_t endianess, int clk_Pol_Pha, uint32_t clockSpeed, int length, uint8_t spiChannelNumbers);
+//         com_error_t Init_SPI();
+//         int mClk_Pol_Pha[MAX_SPI_CHANNELS];
+//         void setClock(uint32_t &clockSpeed);
+//         uint8_t mEndianess[MAX_SPI_CHANNELS];    //0 MSB other LSB
+//         private:
+//             int mFd2;
+//             uint8_t mChannelNumbers;
+//             // spi_ioc_transfer buffer;
+// };
 
 
 
 class Communication
 {
+    public:
+        Communication( );
+        bool getCommInitStatus() const ;
+        int sendPackeges(SerialComm *writer , const char* package, const int & length);
+        int getPackeges(SerialComm *receiver , char buffer[], const int & length);
 
     private:
         unique_ptr<I2C_Comm> mI2c;
         unique_ptr<Serial_UART> mUart;
+        bool mCommNok;
         
 };

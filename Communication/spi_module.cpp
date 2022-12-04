@@ -6,11 +6,43 @@
 
 // using namespace std;
 
-
-// spi_error Communication::Init_SPI(SPI_Frame spi)
+// SPI_Comm::SPI_Comm()
+//     : SerialComm(MAX_SPI_CLK, MAX_SPI_PACKET_LENGTH)
+//     , mChannelNumbers(1)
 // {
-//     (void) spi;
-//     spi_error result =E_SPI_OK;
+//     for(size_t i = 0; i < mChannelNumbers ; i++)
+//     {
+//         mEndianess[i] =  0;
+//         mClk_Pol_Pha[i] = SPI_MODE_0;
+//     }
+// }
+// SPI_Comm::SPI_Comm(uint32_t clockSpeed, int length, uint8_t spiChannelNumbers)
+//     : SerialComm(clockSpeed, length)
+//     , mChannelNumbers((spiChannelNumbers > MAX_SPI_CHANNELS) || spiChannelNumbers == 0 ? MAX_SPI_CHANNELS : spiChannelNumbers) 
+// {
+//     for(size_t i = 0; i < mChannelNumbers ; i++)
+//     {
+//         mEndianess[i] =  0;
+//         mClk_Pol_Pha[i] = SPI_MODE_0;
+//     }
+// }
+
+
+// SPI_Comm::SPI_Comm(uint8_t endianess, int clk_Pol_Pha, uint32_t clockSpeed, int length, uint8_t spiChannelNumbers)
+//     : SerialComm(clockSpeed, length)
+//     , mChannelNumbers((spiChannelNumbers > MAX_SPI_CHANNELS) || spiChannelNumbers == 0 ? MAX_SPI_CHANNELS : spiChannelNumbers)
+// {
+//     for(size_t i = 0; i < MAX_SPI_CHANNELS ; i++)
+//     {
+//         mEndianess[i] =  endianess;
+//         mClk_Pol_Pha[i] = clk_Pol_Pha;
+//     }
+// }
+
+// com_error_t SPI_Comm::Init_SPI()
+// {
+    
+//     com_error_t result =E_OK;
 //     size_t cnt = 0;
 //     size_t channel = 0;
 //     size_t i = 0;
@@ -23,24 +55,21 @@
 //     int WR_SPEED_CNT = 0;
 //     int RD_SPEED_CNT = 0;
     
-//     mSerialCom.spi.mSpiFD[0] = E_SPI_FD_BAD;
-//     mSerialCom.spi.mSpiFD[1] = E_SPI_FD_BAD;
-//     mSerialCom.spi.mSpiChns.push_back(chn0);
+//     mFd = E_FD_NOK;
+//     mFd2 = E_FD_NOK;
     
-//     mSerialCom.spi.mSpiChns.push_back(chn1);
-    
-//     for(; i < MAX_SPI_CHANNELS; i++)
+//     for(; i < mChannelNumbers; i++)
 //     {   
-//         string temp = mSerialCom.spi.mSpiChns[i];
-//         mSerialCom.spi.mSpiFD[i] = open(temp.c_str(), O_RDWR);
-//         if(mSerialCom.spi.mSpiFD[i] < 0)
+//         string temp = mSpiChns[i];
+//         mSpiFD[i] = open(chn0.c_str(), O_RDWR);
+//         if(mSpiFD[i] < 0)
 //            {
 //                 cnt++;
 //                 if(cnt == 1 && i == 1)
 //                         channel++;
 //                 if(cnt == MAX_SPI_CHANNELS)
 //                 {
-//                     syslog(LOG_ERR, "No fd[0] : %d  fd[1] : %d", mSerialCom.spi.mSpiFD[0], mSerialCom.spi.mSpiFD[1]);
+//                     syslog(LOG_ERR, "No fd[0] : %d  fd[1] : %d", mSpiFD[0], mSpiFD[1]);
 //                     result = E_SPI_FD_OPEN;
 //                 }   
 //            }        
@@ -68,10 +97,10 @@
 //     spiChDiff = limit - i;
 //     for(; i < limit; i++ )
 //     {
-//         if (ioctl (mSerialCom.spi.mSpiFD[i], SPI_IOC_WR_MODE, &mSerialCom.spi.mClk_Pol_Pha[i])< 0)
+//         if (ioctl (mSpiFD[i], SPI_IOC_WR_MODE, &mClk_Pol_Pha[i])< 0)
 //         {
 //             WR_POLPHA_CNT++;
-//             cout<< "SPI Write Mode POL & Pha failure" << (string) mSerialCom.spi.mSpiChns[i] << endl;
+//             cout<< "SPI Write Mode POL & Pha failure" << (string) mSpiChns[i] << endl;
 //             syslog(LOG_ERR,"SPI Write Mode POL & Pha failure -> %s", strerror(errno));
 //             if(WR_POLPHA_CNT == spiChDiff)
 //             {
@@ -81,10 +110,10 @@
             
 //         }
 
-//         if (ioctl (mSerialCom.spi.mSpiFD[i], SPI_IOC_RD_MODE, &mSerialCom.spi.mClk_Pol_Pha[i])< 0)
+//         if (ioctl (mSpiFD[i], SPI_IOC_RD_MODE, &mClk_Pol_Pha[i])< 0)
 //         {
 //             RD_POLPHA_CNT++;
-//             cout<< "SPI Read Mode POL & Pha failure" << (string) mSerialCom.spi.mSpiChns[i] << endl;
+//             cout<< "SPI Read Mode POL & Pha failure" << (string) mSpiChns[i] << endl;
 //             syslog(LOG_ERR,"SPI Read Mode POL & Pha failure -> %s", strerror(errno));
 //             if(RD_POLPHA_CNT == spiChDiff)
 //             {
@@ -94,32 +123,32 @@
             
 //         }        
          
-//         if (ioctl (mSerialCom.spi.mSpiFD[i], SPI_IOC_WR_LSB_FIRST, &mSerialCom.spi.mEndianess[i]) < 0)
+//         if (ioctl (mSpiFD[i], SPI_IOC_WR_LSB_FIRST, &mEndianess[i]) < 0)
 //         {
 //             WR_ENDIANESS_CNT++;
-//             cout<< "SPI Read Mode LSB/MSB failure" << mSerialCom.spi.mSpiChns[i] << endl;
+//             cout<< "SPI Read Mode LSB/MSB failure" << mSpiChns[i] << endl;
 //             if(WR_ENDIANESS_CNT == spiChDiff)
 //             {
-//                 result =   E_SPI_ENDIANESS;
+//                 result =   E_SPI_ENDIANESS_NOK;
 //                 break;  
 //             }
 //         }
 
-//         if (ioctl (mSerialCom.spi.mSpiFD[i], SPI_IOC_RD_LSB_FIRST, &mSerialCom.spi.mEndianess[i]) < 0)
+//         if (ioctl (mSpiFD[i], SPI_IOC_RD_LSB_FIRST, &mEndianess[i]) < 0)
 //         {
 //             RD_ENDIANESS_CNT++;
-//             cout<< "SPI Write Mode LSB/MSB failure" << mSerialCom.spi.mSpiChns[i] << endl;
+//             cout<< "SPI Write Mode LSB/MSB failure" << mSpiChns[i] << endl;
 //             if(RD_ENDIANESS_CNT == spiChDiff)
 //             {
-//                 result =   E_SPI_ENDIANESS;
+//                 result =   E_SPI_ENDIANESS_NOK;
 //                 break;  
 //             }
 //         }
 
-//         if (ioctl (mSerialCom.spi.mSpiFD[i], SPI_IOC_WR_MAX_SPEED_HZ,&mSerialCom.spi.mClockSpeed[i]) < 0)
+//         if (ioctl (mSpiFD[i], SPI_IOC_WR_MAX_SPEED_HZ,&mClockSpeed[i]) < 0)
 //         {
 //             WR_SPEED_CNT++;
-//             cout<< "SPI Write Mode speed failure" << mSerialCom.spi.mSpiChns[i] << endl;
+//             cout<< "SPI Write Mode speed failure" << mSpiChns[i] << endl;
 //            if(WR_SPEED_CNT == spiChDiff)
 //             {
 //                 result =   E_SPI_SPEED;
@@ -127,10 +156,10 @@
 //             }
 //         }
 
-//         if (ioctl (mSerialCom.spi.mSpiFD[i], SPI_IOC_RD_MAX_SPEED_HZ,&mSerialCom.spi.mClockSpeed[i]) < 0)
+//         if (ioctl (mSpiFD[i], SPI_IOC_RD_MAX_SPEED_HZ,&mClockSpeed[i]) < 0)
 //         {
 //             RD_SPEED_CNT++;
-//             cout<< "SPI Read Mode speed failure" << mSerialCom.spi.mSpiChns[i] << endl;
+//             cout<< "SPI Read Mode speed failure" << mSpiChns[i] << endl;
 //             if(RD_SPEED_CNT == spiChDiff)
 //             {
 //                 result =   E_SPI_SPEED;
